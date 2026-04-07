@@ -1,4 +1,4 @@
-# NATCA UI Kit
+# NATCA UI Shell
 
 Design system and style guide for all NATCA web properties.
 
@@ -6,12 +6,12 @@ Design system and style guide for all NATCA web properties.
 
 - **Status:** Draft — design proposals, not production code yet
 - **Org:** NATCA-ITC
-- **Repo:** `NATCA-ITC/natca-ui-kit`
+- **Repo:** `NATCA-ITC/natca-ui-shell`
 - **Purpose:** Single source of truth for visual direction, design tokens, component patterns, and navigation architecture across all MyNATCA apps
 
 ## What This Repo Contains
 
-Static HTML design documents (no build step) that serve as the design source for the `@natca/admin-shell` Vue component package:
+Static HTML design documents (no build step) that serve as the design source for the `@natca/ui-shell` Vue component package:
 - `natca-design-system.html` — Full token reference + component library (colors, typography, spacing, buttons, cards, badges, alerts, forms, tables, light/dark themes)
 - `natca-header-variants.html` — 5 public nav options + 2 authenticated shell options (Auth A = admin shell, Auth B = member shell) for team review
 
@@ -25,7 +25,7 @@ This repo defines the visual language that all other MyNATCA apps should follow:
 ## Architecture Direction
 
 - **Phase 1 (current):** Static HTML design proposals — the files in this repo
-- **Phase 2:** `@natca/admin-shell` Vue + Vuetify component package — shared shell that all apps import
+- **Phase 2:** `@natca/ui-shell` Vue + Vuetify component package — shared shell that all apps import
 - **Phase 3:** Module Federation — Hub becomes a unified portal that loads app admin modules at runtime
 
 Key patterns documented in header variants:

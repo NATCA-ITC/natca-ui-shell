@@ -1,4 +1,4 @@
-# NATCA UI Kit
+# NATCA UI Shell
 
 > **Status: DRAFT** — Design proposals ready for team review. Not yet implemented as production code.
 
@@ -56,13 +56,13 @@ All NATCA apps should consume these tokens. The design system CSS can be dropped
 
 ## Architecture Direction
 
-This UI kit will evolve into a **`@natca/admin-shell`** Vue + Vuetify component package (Option 2 from the architecture discussion):
+This repo will evolve into a **`@natca/ui-shell`** Vue + Vuetify component package (Option 2 from the architecture discussion):
 
 - **Shared shell, not duplicated chrome.** Each app imports the shared shell package — header, sidebar, app switcher, and layout are owned in one place.
 - **App switcher** provides cross-app navigation within the MyNATCA ecosystem. Apps register themselves in a central app registry with routes and metadata.
 - **Contextual second row pattern:** Sub-links appear at section roots (e.g., BID > Facilities, BID > Reports). When the user navigates deep into a record, the second row switches to breadcrumbs.
 - **Future: Module Federation (Option 3).** The long-term path is for Hub to become a true unified portal that loads app admin modules at runtime via Module Federation. The shared shell package is a prerequisite — once apps share a common shell contract, they can be loaded as federated modules without visual seams.
-- **Design proposals inform Vue components.** The static HTML files in this repo are the design source that directly drives the Vue components to be built in the `@natca/admin-shell` package.
+- **Design proposals inform Vue components.** The static HTML files in this repo are the design source that directly drives the Vue components to be built in the `@natca/ui-shell` package.
 
 ### Shell Contract (Tentative)
 
@@ -91,13 +91,34 @@ The shell provides layout and platform context. Each app provides its own nav co
 
 This contract carries forward into Module Federation — the shape of what apps provide doesn't change, only the loading mechanism.
 
+### Deliverables
+
+| Deliverable | What it is | Consumers |
+|---|---|---|
+| `natca-tokens.css` | CSS custom properties (`:root` block only) | Everything — WordPress, Vue apps, email templates |
+| `natca-components.css` | Buttons, cards, badges, alerts, forms, tables, loading/empty/error/toast states | WordPress theme + Vue apps |
+| `@natca/ui-shell` | Vue layout components (Auth A, Auth B, app switcher, contextual nav) | Vue apps only |
+| `theme.json` mappings | WordPress-native token registration (colors, fonts) | WordPress theme only |
+
+### WordPress Integration
+
+The NATCA public site (natca.org) runs WordPress. It consumes the design system through CSS, not Vue components:
+
+- **Tokens:** WordPress theme enqueues `natca-tokens.css` as the first stylesheet. All custom CSS uses token variables.
+- **Components:** `natca-components.css` provides `.btn`, `.card`, `.alert`, `.badge`, etc. — usable directly in PHP templates, Gutenberg blocks, or shortcodes.
+- **Navigation:** The public nav options (1–5) translate directly into a WordPress `header.php` template or FSE template part once the team picks a direction.
+- **`theme.json`:** WordPress 6.x maps tokens natively — colors appear in the block editor palette, fonts in the typography picker.
+- **Theme:** WordPress is always `data-theme="light"` (public-facing). The dark theme is for authenticated Vue apps only.
+
+WordPress does NOT use the Vue shell components, app switcher, or auth context — those are for Platform-authenticated apps.
+
 ## Where This Fits
 
 This repo sits alongside the other MyNATCA ecosystem projects:
 
 | Project | Purpose |
 |---------|---------|
-| **natca-ui-kit** (this repo) | Design system, tokens, style guide |
+| **natca-ui-shell** (this repo) | Design system, tokens, style guide |
 | **Platform** | Auth, Supabase, data sync, API services |
 | **Hub** | Admin dashboard (Vue 3 + Vuetify) |
 | **BID** | Facility bid management (Laravel + Vue) |
@@ -111,7 +132,7 @@ This repo sits alongside the other MyNATCA ecosystem projects:
 1. Team reviews nav options (1–5) and picks public navigation direction
 2. Team reviews auth shell (Option A vs B) for authenticated apps
 3. Finalize token values and extract CSS into standalone `natca-tokens.css`
-4. Extract shared shell into `@natca/admin-shell` Vue + Vuetify component package
+4. Extract shared shell into `@natca/ui-shell` Vue + Vuetify component package
 5. Define app switcher app registry and routing
 6. Build as importable package for Vue/Vuetify apps (Hub, BID, DMS, Pay, GATS)
 7. Enable GitHub Pages for shareable review link
