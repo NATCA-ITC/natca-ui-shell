@@ -27,6 +27,7 @@ const adminTabs: NatcaTab[] = [
   { id: 'facilities', label: 'Facilities', icon: 'mdi-office-building', to: '/admin/facilities' },
   { id: 'regions', label: 'Regions', icon: 'mdi-map', to: '/admin/regions' },
   { id: 'reports', label: 'Reports', icon: 'mdi-chart-bar', to: '/admin/reports' },
+  { id: 'components', label: 'Components', icon: 'mdi-puzzle', to: '/admin/components' },
 ]
 
 const adminSidebar: NatcaNavSection[] = [
@@ -51,6 +52,7 @@ const adminSidebar: NatcaNavSection[] = [
       { id: 'reports', label: 'Reports', icon: 'mdi-chart-bar', to: '/admin/reports' },
       { id: 'infrastructure', label: 'Infrastructure', icon: 'mdi-server', to: '/admin/infrastructure' },
       { id: 'config', label: 'Config', icon: 'mdi-cog', to: '/admin/config' },
+      { id: 'components', label: 'Components', icon: 'mdi-puzzle', to: '/admin/components' },
     ],
   },
 ]

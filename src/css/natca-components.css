@@ -594,6 +594,114 @@ p.lead { font-size: var(--text-lg); line-height: 1.7; }
 }
 
 /* ============================================================
+   TABS
+   ============================================================ */
+
+/* Container — horizontal strip with bottom border */
+.ds-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--color-border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Individual tab */
+.ds-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+.ds-tab:hover {
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+.ds-tab--active,
+.ds-tab[aria-selected="true"] {
+  color: var(--natca-blue);
+  border-bottom-color: var(--natca-blue);
+}
+
+/* Tab with badge/count */
+.ds-tab__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--space-1);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-body);
+  color: var(--color-text-muted);
+}
+.ds-tab--active .ds-tab__count,
+.ds-tab[aria-selected="true"] .ds-tab__count {
+  background: var(--natca-blue-subtle);
+  color: var(--natca-blue);
+}
+
+/* Tab panel */
+.ds-tab-panel {
+  padding: var(--space-6) 0;
+}
+.ds-tab-panel[hidden] {
+  display: none;
+}
+
+/* Variant: pills (for card headers, toolbars) */
+.ds-tabs--pills {
+  border-bottom: none;
+  gap: var(--space-1);
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius);
+  padding: 3px;
+  display: inline-flex;
+}
+.ds-tabs--pills .ds-tab {
+  border-bottom: none;
+  margin-bottom: 0;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-4);
+  font-size: var(--text-xs);
+}
+.ds-tabs--pills .ds-tab:hover {
+  background: var(--color-bg-surface);
+}
+.ds-tabs--pills .ds-tab--active,
+.ds-tabs--pills .ds-tab[aria-selected="true"] {
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Variant: contained (underline with surface bg, for page-level sections) */
+.ds-tabs--contained {
+  background: var(--color-bg-surface);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
+}
+
+/* ============================================================
    FOOTER
    ============================================================ */
 footer {

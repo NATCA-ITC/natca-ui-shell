@@ -7,31 +7,17 @@ import '../src/css/natca-tokens.css'
 import '../src/css/natca-components.css'
 import '@mdi/font/css/materialdesignicons.css'
 
+// Use the shared theme preset — same thing consuming apps will import
+import { natcaVuetifyTheme, natcaDefaults } from '../src/theme/index'
+
 import App from './App.vue'
 import { router } from './router'
 
 const vuetify = createVuetify({
   components,
   directives,
-  theme: {
-    defaultTheme: 'natcaDark',
-    themes: {
-      natcaDark: {
-        dark: true,
-        colors: {
-          primary: '#CE0E2D',
-          secondary: '#003366',
-          accent: '#6AC9FF',
-          background: '#0a0f1a',
-          surface: '#111825',
-          'on-primary': '#FFFFFF',
-          'on-secondary': '#FFFFFF',
-          'on-background': '#FFFFFF',
-          'on-surface': '#FFFFFF',
-        },
-      },
-    },
-  },
+  theme: natcaVuetifyTheme,
+  defaults: natcaDefaults,
 })
 
 const app = createApp(App)

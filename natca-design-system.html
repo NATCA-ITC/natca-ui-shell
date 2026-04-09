@@ -619,6 +619,112 @@
       </div>
     </div>
 
+    <!-- TABS -->
+    <div class="ds-section">
+      <div class="ds-section-title">Tabs</div>
+      <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-8);">Three tab variants for different contexts. Uses <code>ds-tabs</code> prefix to avoid collision with Vuetify's <code>v-tabs</code>. In Vuetify apps, prefer <code>v-tabs</code> with NATCA theme tokens — use these for non-Vuetify pages (WordPress, static HTML).</p>
+
+      <h4 style="margin-bottom: var(--space-4);">Default — Underline</h4>
+      <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">Primary tab pattern. Use for page sections, detail views, settings pages.</p>
+      <div class="card" style="margin-bottom: var(--space-8);">
+        <div class="ds-tabs" role="tablist">
+          <button class="ds-tab ds-tab--active" role="tab" aria-selected="true" onclick="switchTab(event, 'overview')">Overview</button>
+          <button class="ds-tab" role="tab" aria-selected="false" onclick="switchTab(event, 'members')">Members <span class="ds-tab__count">312</span></button>
+          <button class="ds-tab" role="tab" aria-selected="false" onclick="switchTab(event, 'positions')">Positions</button>
+          <button class="ds-tab" role="tab" aria-selected="false" onclick="switchTab(event, 'history')">History</button>
+        </div>
+        <div class="ds-tab-panel" id="panel-overview" role="tabpanel">
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm);">Facility overview content would appear here. The active tab gets a blue underline indicator using <code>--natca-blue</code>.</p>
+        </div>
+        <div class="ds-tab-panel" id="panel-members" role="tabpanel" hidden>
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm);">Member list with 312 entries. The count badge uses <code>ds-tab__count</code> and shifts to blue tint when active.</p>
+        </div>
+        <div class="ds-tab-panel" id="panel-positions" role="tabpanel" hidden>
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm);">Position assignments and details.</p>
+        </div>
+        <div class="ds-tab-panel" id="panel-history" role="tabpanel" hidden>
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm);">Audit log and change history.</p>
+        </div>
+      </div>
+
+      <h4 style="margin-bottom: var(--space-4);">Pills</h4>
+      <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">Compact toggle for card headers, toolbars, and filter bars. Segmented-control feel.</p>
+      <div style="margin-bottom: var(--space-8);">
+        <div class="ds-row" style="gap: var(--space-8);">
+          <div>
+            <p class="eyebrow" style="margin-bottom: var(--space-3);">View Toggle</p>
+            <div class="ds-tabs ds-tabs--pills" role="tablist">
+              <button class="ds-tab ds-tab--active" role="tab" aria-selected="true">List</button>
+              <button class="ds-tab" role="tab" aria-selected="false">Grid</button>
+              <button class="ds-tab" role="tab" aria-selected="false">Map</button>
+            </div>
+          </div>
+          <div>
+            <p class="eyebrow" style="margin-bottom: var(--space-3);">Time Range</p>
+            <div class="ds-tabs ds-tabs--pills" role="tablist">
+              <button class="ds-tab" role="tab" aria-selected="false">7d</button>
+              <button class="ds-tab ds-tab--active" role="tab" aria-selected="true">30d</button>
+              <button class="ds-tab" role="tab" aria-selected="false">90d</button>
+              <button class="ds-tab" role="tab" aria-selected="false">1y</button>
+            </div>
+          </div>
+          <div>
+            <p class="eyebrow" style="margin-bottom: var(--space-3);">Status Filter</p>
+            <div class="ds-tabs ds-tabs--pills" role="tablist">
+              <button class="ds-tab ds-tab--active" role="tab" aria-selected="true">All</button>
+              <button class="ds-tab" role="tab" aria-selected="false">Open</button>
+              <button class="ds-tab" role="tab" aria-selected="false">Closed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h4 style="margin-bottom: var(--space-4);">Contained</h4>
+      <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">Tabs sit on a surface background with border. Use for page-level section navigation where tabs feel more structural.</p>
+      <div style="margin-bottom: var(--space-8);">
+        <div class="ds-tabs ds-tabs--contained" role="tablist">
+          <button class="ds-tab ds-tab--active" role="tab" aria-selected="true">Profile</button>
+          <button class="ds-tab" role="tab" aria-selected="false">Preferences</button>
+          <button class="ds-tab" role="tab" aria-selected="false">Notifications</button>
+          <button class="ds-tab" role="tab" aria-selected="false">Security</button>
+        </div>
+        <div class="card" style="border-top:none;border-radius:0 0 var(--radius-md) var(--radius-md);">
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm);">Panel content for the contained variant. The tabs and card form a single visual unit.</p>
+        </div>
+      </div>
+
+      <h4 style="margin-bottom: var(--space-4);">In Context — Card with Tabs</h4>
+      <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">Common real-world pattern: tabs inside a card for detail views (member profile, bid details, facility info).</p>
+      <div class="card card--accent" style="padding:0;overflow:hidden;">
+        <div style="padding: var(--space-5) var(--space-6) 0;">
+          <p class="card__meta">Facility · ZJX</p>
+          <p class="card__title">Jacksonville ARTCC</p>
+        </div>
+        <div class="ds-tabs" role="tablist" style="padding: 0 var(--space-6); margin-top: var(--space-4);">
+          <button class="ds-tab ds-tab--active" role="tab" aria-selected="true">Details</button>
+          <button class="ds-tab" role="tab" aria-selected="false">Members <span class="ds-tab__count">198</span></button>
+          <button class="ds-tab" role="tab" aria-selected="false">Bids <span class="ds-tab__count">3</span></button>
+          <button class="ds-tab" role="tab" aria-selected="false">Documents</button>
+        </div>
+        <div style="padding: var(--space-5) var(--space-6);">
+          <div class="ds-row">
+            <div class="ds-col">
+              <p class="eyebrow" style="margin-bottom: var(--space-1);">Region</p>
+              <p style="font-size: var(--text-sm); color: var(--color-text-body);">Southern</p>
+            </div>
+            <div class="ds-col">
+              <p class="eyebrow" style="margin-bottom: var(--space-1);">Type</p>
+              <p style="font-size: var(--text-sm); color: var(--color-text-body);">ARTCC</p>
+            </div>
+            <div class="ds-col">
+              <p class="eyebrow" style="margin-bottom: var(--space-1);">Status</p>
+              <span class="badge badge-success">Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- TOASTS / NOTIFICATIONS -->
     <div class="ds-section">
       <div class="ds-section-title">Toasts &amp; Notifications</div>
@@ -686,6 +792,25 @@
 </footer>
 
 <script>
+function switchTab(event, panelId) {
+  const tablist = event.target.closest('[role="tablist"]');
+  // Deactivate all tabs in this group
+  tablist.querySelectorAll('.ds-tab').forEach(function(t) {
+    t.classList.remove('ds-tab--active');
+    t.setAttribute('aria-selected', 'false');
+  });
+  // Activate clicked tab
+  event.target.classList.add('ds-tab--active');
+  event.target.setAttribute('aria-selected', 'true');
+  // Switch panels if they exist
+  var card = tablist.closest('.card') || tablist.parentElement;
+  var panels = card.querySelectorAll('.ds-tab-panel');
+  if (panels.length > 0) {
+    panels.forEach(function(p) { p.hidden = true; });
+    var target = document.getElementById('panel-' + panelId);
+    if (target) target.hidden = false;
+  }
+}
 function toggleTheme() {
   const html = document.documentElement;
   const current = html.getAttribute('data-theme');

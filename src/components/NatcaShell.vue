@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<NatcaShellProps>(), {
 const emit = defineEmits<{
   search: [query: string]
   'app-select': [app: any]
+  'profile-action': [action: string]
 }>()
 
 defineSlots<{
@@ -80,6 +81,7 @@ function handleShellClick(e: MouseEvent) {
       :show-notifications="showNotifications"
       :notification-count="notificationCount"
       :apps="apps"
+      @profile-action="(action: string) => emit('profile-action', action)"
     />
 
     <!-- Everything below topbar wrapped for search overlay positioning -->

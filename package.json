@@ -1,25 +1,28 @@
 {
   "name": "@natca-itc/ui-shell",
-  "version": "0.2.0-beta.1",
+  "version": "0.2.0-beta.2",
   "description": "NATCA Design System — tokens, components, Vue shell, and shared styles for all NATCA web properties (BETA)",
   "license": "UNLICENSED",
   "private": false,
   "type": "module",
-  "main": "dist/vue/natca-ui-shell.es.js",
-  "module": "dist/vue/natca-ui-shell.es.js",
-  "types": "dist/vue/index.d.ts",
+  "main": "dist/vue/natca-ui-shell.js",
+  "module": "dist/vue/natca-ui-shell.js",
   "files": [
     "dist/",
     "assets/"
   ],
   "exports": {
     ".": {
-      "import": "./dist/vue/natca-ui-shell.es.js",
+      "import": "./dist/vue/natca-ui-shell.js",
       "types": "./dist/vue/index.d.ts"
+    },
+    "./theme": {
+      "import": "./dist/vue/natca-ui-shell.js",
+      "types": "./dist/vue/theme/index.d.ts"
     },
     "./tokens": "./dist/natca-tokens.css",
     "./components": "./dist/natca-components.css",
-    "./shell-styles": "./dist/vue/style.css",
+    "./shell-styles": "./dist/vue/natca-ui-shell.css",
     "./theme.json": "./dist/theme.json"
   },
   "scripts": {
@@ -31,8 +34,8 @@
   },
   "peerDependencies": {
     "vue": "^3.4.0",
-    "vuetify": "^3.6.0",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "vuetify": "^3.6.0"
   },
   "devDependencies": {
     "@mdi/font": "^7.4.47",
@@ -60,5 +63,6 @@
     "ui",
     "vue",
     "vuetify"
-  ]
+  ],
+  "dependencies": {}
 }

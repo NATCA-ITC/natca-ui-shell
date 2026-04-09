@@ -58,3 +58,10 @@ export interface NatcaShellProps {
   showNotifications?: boolean
   notificationCount?: number
 }
+
+/**
+ * Re-export component-level types for convenience.
+ * Canonical definitions live in each component file.
+ */
+export type { NatcaTabItem } from '../components/NatcaTabs.vue'
+export type { MemberCardData } from '../components/NatcaMemberCard.vue'

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DashboardPage from './pages/DashboardPage.vue'
 import MembersPage from './pages/MembersPage.vue'
 import PlaceholderPage from './pages/PlaceholderPage.vue'
+import ComponentsPage from './pages/ComponentsPage.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -78,6 +79,17 @@ export const router = createRouter({
       path: '/admin/activity',
       component: PlaceholderPage,
       meta: { title: 'Activity', breadcrumbs: [{ label: 'Hub', to: '/admin' }, { label: 'Activity' }] },
+    },
+    {
+      path: '/admin/components',
+      component: ComponentsPage,
+      meta: {
+        title: 'Components',
+        breadcrumbs: [
+          { label: 'Hub', to: '/admin' },
+          { label: 'Components' },
+        ],
+      },
     },
 
     // ── BID Member (Variant 2: tabs only, no sidebar) ──
