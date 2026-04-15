@@ -19,7 +19,12 @@ export const resolvedTheme = computed(() =>
     : _preference.value
 )
 
+const isDark = computed(() => resolvedTheme.value === _systemDark)
+
 // ── Composable ──
+// Note: options are only read on first initialization (singleton).
+// Subsequent callers share state and their options are ignored.
+// resolvedTheme is also exported directly for NatcaShell's Vuetify sync watch.
 
 export function useNatcaTheme(options?: NatcaThemeOptions) {
   if (!_initialized) {
@@ -37,7 +42,7 @@ export function useNatcaTheme(options?: NatcaThemeOptions) {
   return {
     preference: readonly(_preference),
     resolved:   resolvedTheme,
-    isDark:     computed(() => resolvedTheme.value === _systemDark),
+    isDark,
     setTheme(pref: string) { _preference.value = pref },
   }
 }
