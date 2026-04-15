@@ -1,6 +1,23 @@
 <script setup lang="ts">
+/**
+ * NatcaThemeToggle — Standalone theme selection dropdown.
+ *
+ * Reads and writes the active theme preference via `useNatcaTheme()`.
+ * Drop anywhere in your app; persist the preference via the `@change` event.
+ *
+ * @example
+ * // Minimal — Light / Dark / System
+ * <NatcaThemeToggle @change="pref => localStorage.setItem('natca-theme', pref)" />
+ *
+ * @example
+ * // Custom theme list with icons
+ * <NatcaThemeToggle
+ *   :themes="['light', 'dark', { value: 'glass', label: 'Glass', icon: '🪟' }]"
+ *   @change="saveThemePreference"
+ * />
+ */
 import { computed } from 'vue'
-import { VSelect, VIcon } from 'vuetify/components'
+import { VSelect, VIcon, VListItem } from 'vuetify/components'
 import { useNatcaTheme } from '../composables/useNatcaTheme'
 import type { NatcaThemeOption } from '../types'
 
@@ -65,16 +82,29 @@ const selected = computed({
       <v-list-item v-bind="itemProps">
         <template #prepend>
           <VIcon v-if="item.raw.icon?.startsWith('mdi-')" :icon="item.raw.icon" size="small" class="mr-2" />
-          <span v-else class="mr-2" style="font-size: 14px; line-height: 1;">{{ item.raw.icon }}</span>
+          <span v-else class="mr-2 natca-theme-icon">{{ item.raw.icon }}</span>
         </template>
       </v-list-item>
     </template>
     <template #selection="{ item }">
-      <span style="display: flex; align-items: center; gap: 6px;">
+      <span class="natca-theme-selection">
         <VIcon v-if="item.raw.icon?.startsWith('mdi-')" :icon="item.raw.icon" size="small" />
-        <span v-else style="font-size: 14px; line-height: 1;">{{ item.raw.icon }}</span>
+        <span v-else class="natca-theme-icon">{{ item.raw.icon }}</span>
         {{ item.raw.label }}
       </span>
     </template>
   </VSelect>
 </template>
+
+<style scoped>
+.natca-theme-selection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.natca-theme-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+</style>
