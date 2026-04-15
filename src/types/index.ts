@@ -1,5 +1,11 @@
 import type { RouteLocationRaw } from 'vue-router'
 
+export interface NatcaThemeOption {
+  value: string   // theme name, e.g. 'glass'
+  label?: string  // display label — defaults to title-cased value
+  icon?:  string  // emoji or MDI icon name ('mdi-*' renders as <v-icon>, else inline text)
+}
+
 export interface NatcaTab {
   id: string
   label: string
