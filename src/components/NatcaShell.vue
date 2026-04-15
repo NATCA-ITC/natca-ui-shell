@@ -2,7 +2,7 @@
 import { computed, watch } from 'vue'
 import { useTheme } from 'vuetify'
 import { useShellState } from '../composables/useShellState'
-import { resolvedTheme } from '../composables/useNatcaTheme'
+import { useNatcaTheme } from '../composables/useNatcaTheme'
 import type { NatcaShellProps } from '../types'
 import NatcaTopBar from './NatcaTopBar.vue'
 import NatcaTabNav from './NatcaTabNav.vue'
@@ -34,6 +34,7 @@ defineSlots<{
 const { state, closeSearch, closeAppSwitcher } = useShellState()
 
 const vuetifyTheme = useTheme()
+const { resolved: resolvedTheme } = useNatcaTheme()
 
 // Sync resolved NATCA theme → Vuetify active theme
 // 'light' → 'natcaLight', 'dark' → 'natcaDark', 'glass' → 'natcaGlass', etc.

@@ -111,12 +111,13 @@ export const natcaDarkTheme: ThemeDefinition = {
 /**
  * Complete Vuetify theme config — drop into createVuetify().
  *
- * Light is the Vuetify default. Active theme is controlled at runtime
- * by useNatcaTheme() — NatcaShell syncs it on mount via a watch.
+ * Dark is the static Vuetify fallback (backwards-compatible for existing apps).
+ * Active theme is controlled at runtime by useNatcaTheme() — NatcaShell
+ * overrides it on mount via a watch with { immediate: true }.
  * Apps call setTheme(savedPreference ?? 'dark') on boot to restore preference.
  */
 export const natcaVuetifyTheme = {
-  defaultTheme: 'natcaLight',
+  defaultTheme: 'natcaDark',
   themes: {
     natcaLight: natcaLightTheme,
     natcaDark: natcaDarkTheme,
