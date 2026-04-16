@@ -20,14 +20,14 @@ function serveRepoRoot() {
             return
           }
         }
-        // Serve src/ CSS files referenced by the HTML pages
-        if (url?.startsWith('/src/')) {
+        // Serve repo-root files referenced by the HTML pages (src/, assets/)
+        if (url?.startsWith('/src/') || url?.startsWith('/assets/')) {
           const filePath = resolve(repoRoot, url.slice(1))
           if (existsSync(filePath)) {
             const ext = url.split('.').pop()
-            const types: Record<string, string> = { css: 'text/css', js: 'text/javascript', json: 'application/json' }
-            res.setHeader('Content-Type', types[ext!] || 'text/plain')
-            res.end(readFileSync(filePath, 'utf-8'))
+            const types: Record<string, string> = { css: 'text/css', js: 'text/javascript', json: 'application/json', png: 'image/png', jpg: 'image/jpeg', svg: 'image/svg+xml', ico: 'image/x-icon' }
+            res.setHeader('Content-Type', types[ext!] || 'application/octet-stream')
+            res.end(readFileSync(filePath))
             return
           }
         }

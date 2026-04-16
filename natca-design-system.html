@@ -575,7 +575,7 @@ body.ctx-auth .auth-only { display: block; }
   </div>
   <div class="ds-control-sep"></div>
   <span class="ds-control-btn active" style="cursor: default;">Design Standards</span>
-  <a href="http://localhost:1310" class="ds-control-btn">Playground</a>
+  <a href="http://localhost:1310" class="ds-control-btn" title="Requires: npm run dev">Playground</a>
   <a href="natca-header-variants.html" class="ds-control-btn">Nav Design Ideas</a>
 </div>
 
@@ -869,29 +869,102 @@ body.ctx-auth .auth-only { display: block; }
 
       <div class="auth-shell-preview">
         <div class="auth-shell-topbar">
-          <span class="auth-shell-topbar-logo">NATCA</span>
+          <img src="assets/natca-logo.png" alt="NATCA" style="height:22px;width:auto;">
           <span style="width:1px;height:20px;background:rgba(255,255,255,0.12);margin:0 6px;"></span>
-          <span class="auth-shell-topbar-chip">Email</span>
+          <span class="auth-shell-topbar-logo">NATCA</span>
+          <span class="auth-shell-topbar-chip">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:0.5;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Hub <span style="font-size:8px;opacity:0.4;">&#9662;</span>
+          </span>
           <div class="auth-shell-topbar-right">
-            <div class="auth-shell-topbar-icon">ZJX</div>
-            <div class="auth-shell-topbar-icon">&#x1F50D;</div>
-            <div class="auth-shell-topbar-icon">&#x1F514;</div>
+            <div class="auth-shell-topbar-icon" style="padding:0 6px;font-size:10px;font-weight:600;width:auto;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ZJX
+            </div>
+            <div class="auth-shell-topbar-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+            <div class="auth-shell-topbar-icon" style="position:relative;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><div style="position:absolute;top:2px;right:2px;width:6px;height:6px;background:var(--natca-red);border-radius:50%;border:1.5px solid var(--natca-navy);"></div></div>
             <div class="auth-shell-topbar-avatar">JD</div>
           </div>
         </div>
         <div class="auth-shell-tabs">
-          <div class="auth-shell-tab active">Dashboard</div>
-          <div class="auth-shell-tab">Accounts</div>
-          <div class="auth-shell-tab">Migration</div>
-          <div class="auth-shell-tab">Settings</div>
+          <div class="auth-shell-tab active"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.7;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Dashboard</div>
+          <div class="auth-shell-tab"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.5;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Members</div>
+          <div class="auth-shell-tab"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.5;"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> Facilities</div>
+          <div class="auth-shell-tab"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.5;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Reports</div>
+          <div class="auth-shell-tab"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.5;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33"/></svg> Config</div>
         </div>
         <div class="auth-shell-breadcrumb">
-          <a href="#" style="color: var(--color-text-faint);">Dashboard</a>
+          <div style="width:22px;height:22px;background:var(--overlay-subtle);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);flex-shrink:0;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </div>
+          <a href="#" style="color: var(--color-text-faint);">Hub</a>
           <span>/</span>
-          <span class="current">Member Accounts</span>
+          <a href="#" style="color: var(--color-text-faint);">Members</a>
+          <span>/</span>
+          <span class="current">ZJX Roster</span>
+          <span style="margin-left:auto;font-size:9px;color:var(--color-text-faint);">247 members</span>
         </div>
-        <div class="auth-shell-content-area">
-          App content renders here. Background uses <code>var(--color-shell-content)</code>.
+        <!-- Body: sidebar + content -->
+        <div style="display:flex;flex:1;min-height:220px;">
+          <!-- Sidebar -->
+          <div style="width:180px;background:var(--color-shell-sidebar);border-right:1px solid var(--color-border-light);padding:8px 6px;display:flex;flex-direction:column;gap:1px;overflow:hidden;flex-shrink:0;">
+            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--color-text-faint);padding:6px 8px 3px;">Overview</div>
+            <a href="#" style="display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:5px;text-decoration:none;color:var(--color-text-muted);font-size:11px;font-weight:500;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:0.6;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+            </a>
+            <a href="#" style="display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:5px;text-decoration:none;color:var(--color-text-muted);font-size:11px;font-weight:500;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:0.6;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Activity Feed
+            </a>
+            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--color-text-faint);padding:8px 8px 3px;">Management</div>
+            <a href="#" style="display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:5px;text-decoration:none;color:var(--color-text-primary);font-size:11px;font-weight:500;background:rgba(var(--natca-red-rgb),0.15);">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--natca-red)" stroke-width="2" style="flex-shrink:0;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Members
+              <span style="margin-left:auto;background:var(--natca-red);color:white;font-size:8px;font-weight:700;padding:1px 5px;border-radius:10px;">12</span>
+            </a>
+            <a href="#" style="display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:5px;text-decoration:none;color:var(--color-text-muted);font-size:11px;font-weight:500;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:0.6;"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Facilities
+            </a>
+            <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--color-text-faint);padding:8px 8px 3px;">Tools</div>
+            <a href="#" style="display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:5px;text-decoration:none;color:var(--color-text-muted);font-size:11px;font-weight:500;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:0.6;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Reports
+            </a>
+            <a href="#" style="display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:5px;text-decoration:none;color:var(--color-text-muted);font-size:11px;font-weight:500;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:0.6;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33"/></svg>Config
+            </a>
+            <!-- Sign out at bottom -->
+            <div style="margin-top:auto;padding-top:6px;border-top:1px solid var(--color-border-light);">
+              <a href="#" style="display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:5px;text-decoration:none;color:rgba(var(--natca-red-rgb),0.6);font-size:11px;font-weight:500;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out
+              </a>
+            </div>
+          </div>
+          <!-- Content area -->
+          <div style="flex:1;background:var(--color-shell-content);padding:14px 18px;overflow:auto;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <div>
+                <div style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--color-text-primary);">ZJX Member Roster</div>
+                <div style="font-size:10px;color:var(--color-text-faint);margin-top:1px;">Jacksonville ARTCC &middot; 247 active members</div>
+              </div>
+              <div style="font-size:9px;color:var(--color-text-faint);">Last sync: Today 09:42</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+              <div style="background:var(--overlay-subtle);border:1px solid var(--overlay-border);border-radius:6px;padding:10px;">
+                <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-faint);margin-bottom:3px;">Total</div>
+                <div style="font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--color-text-primary);">247</div>
+                <div style="font-size:9px;color:var(--color-success);margin-top:2px;">+3 this month</div>
+              </div>
+              <div style="background:var(--overlay-subtle);border:1px solid var(--overlay-border);border-radius:6px;padding:10px;">
+                <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-faint);margin-bottom:3px;">CPCs</div>
+                <div style="font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--color-text-primary);">182</div>
+              </div>
+              <div style="background:var(--overlay-subtle);border:1px solid var(--overlay-border);border-radius:6px;padding:10px;">
+                <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-faint);margin-bottom:3px;">Devs</div>
+                <div style="font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--color-text-primary);">41</div>
+              </div>
+              <div style="background:var(--overlay-subtle);border:1px solid var(--overlay-border);border-radius:6px;padding:10px;">
+                <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-faint);margin-bottom:3px;">Open Bids</div>
+                <div style="font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--color-text-primary);">24</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
