@@ -9,7 +9,7 @@
 
     <div class="placeholder-body">
       <div class="placeholder-card">
-        <v-icon size="48" color="rgba(255,255,255,0.1)">mdi-view-grid-outline</v-icon>
+        <v-icon size="48" :color="'var(--color-text-faint)'">mdi-view-grid-outline</v-icon>
         <p class="placeholder-text">This is the <strong>{{ title }}</strong> page.</p>
         <p class="placeholder-sub">Content goes here. This placeholder shows the shell is rendering correctly for this route.</p>
       </div>
@@ -70,29 +70,29 @@ const shellMode = computed(() => {
   justify-content: center;
   gap: 16px;
   padding: 48px;
-  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border: 1px dashed var(--overlay-border);
   border-radius: 12px;
   text-align: center;
 }
 
 .placeholder-text {
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-text-body);
 }
 
 .placeholder-text strong {
-  color: white;
+  color: var(--color-text-primary);
 }
 
 .placeholder-sub {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--color-text-faint);
   max-width: 400px;
 }
 
 .placeholder-info {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--overlay-subtle);
+  border: 1px solid var(--overlay-border);
   border-radius: 8px;
   padding: 16px;
   display: flex;
@@ -109,7 +109,7 @@ const shellMode = computed(() => {
 
 .info-label {
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--color-text-faint);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-size: 10px;
@@ -118,10 +118,10 @@ const shellMode = computed(() => {
 }
 
 .info-val {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-text-muted);
   font-family: monospace;
   font-size: 12px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-subtle);
   padding: 2px 8px;
   border-radius: 4px;
 }

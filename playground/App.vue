@@ -140,8 +140,8 @@ const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
 
 html, body, #app {
   height: 100%;
-  background: #070b14;
-  color: white;
+  background: var(--color-shell-base);
+  color: var(--color-text-primary);
 }
 
 /* Override shell margin for full-viewport playground */

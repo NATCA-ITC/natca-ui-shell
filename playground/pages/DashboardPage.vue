@@ -31,7 +31,7 @@
     </div>
 
     <div class="dashboard-activity">
-      <div class="natca-shell-content-head" style="border-top: 1px solid rgba(255,255,255,0.06);">
+      <div class="natca-shell-content-head" style="border-top: 1px solid var(--overlay-border);">
         <div class="natca-shell-content-title" style="font-size: 15px;">Recent Activity</div>
       </div>
       <div class="activity-list">
@@ -82,7 +82,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--color-sep);
   font-size: 13px;
 }
 
@@ -95,12 +95,12 @@
 
 .activity-text {
   flex: 1;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-text-body);
 }
 
 .activity-time {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--color-text-faint);
   white-space: nowrap;
 }
 </style>

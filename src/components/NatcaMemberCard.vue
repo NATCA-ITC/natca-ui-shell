@@ -142,8 +142,8 @@ const memberTypeColor = computed(() => {
   transition: background 150ms, border-color 150ms;
 }
 .natca-member-card:hover {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: var(--overlay-subtle) !important;
+  border-color: var(--overlay-active) !important;
 }
 
 .natca-member-card--accent {

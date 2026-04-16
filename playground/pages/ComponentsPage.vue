@@ -139,7 +139,7 @@ function handleMemberClick(member: MemberCardData) {
     <p class="eyebrow">Router Tabs</p>
     <div class="demo-card">
       <NatcaTabs :items="routerTabItems" />
-      <p class="demo-text-muted" style="margin-top: 8px;">
+      <p class="demo-text-muted" style="margin: 10px 12px 4px;">
         These navigate via Vue Router. Click one to change the active shell route.
       </p>
     </div>
@@ -204,7 +204,7 @@ function handleMemberClick(member: MemberCardData) {
 
 .page-desc code {
   font-size: 11px;
-  background: rgba(255,255,255,0.06);
+  background: var(--overlay-hover);
   padding: 1px 4px;
   border-radius: 3px;
 }
@@ -228,8 +228,8 @@ function handleMemberClick(member: MemberCardData) {
 }
 
 .demo-card {
-  background: rgba(255,255,255,0.025);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--color-shell-elevated);
+  border: 1px solid var(--overlay-border);
   border-radius: 6px;
   padding: 0;
   margin-bottom: 20px;

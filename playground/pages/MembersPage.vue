@@ -72,19 +72,19 @@ const members = [
   font-weight: 700;
   letter-spacing: 0.8px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--color-text-faint);
   padding: 10px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--overlay-border);
 }
 
 .members-table td {
   padding: 10px 12px;
-  color: rgba(255, 255, 255, 0.6);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--color-text-body);
+  border-bottom: 1px solid var(--color-sep);
 }
 
 .member-name {
-  color: white !important;
+  color: var(--color-text-primary) !important;
   font-weight: 600;
 }
 

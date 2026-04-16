@@ -170,9 +170,9 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside, true
   right: 0;
   width: 220px;
   background: var(--color-shell-surface);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--overlay-border);
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-lg);
   z-index: 200;
   overflow: hidden;
 }
@@ -205,12 +205,12 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside, true
 }
 
 .natca-shell-user-menu-meta-sep {
-  color: rgba(255, 255, 255, 0.15);
+  color: var(--overlay-divider);
 }
 
 .natca-shell-user-menu-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--overlay-hover);
 }
 
 .natca-shell-user-menu-item {
@@ -228,7 +228,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside, true
 }
 
 .natca-shell-user-menu-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--overlay-hover);
   color: var(--color-text-primary);
 }
 

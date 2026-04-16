@@ -2,77 +2,81 @@
  * NATCA Shell Layout Styles
  * Auto-extracted from natca-header-variants.html (Auth Option C - Hybrid Shell)
  *
- * Requires natca-tokens.css to be loaded first for CSS custom properties:
- *   --natca-red, --natca-blue, --natca-sky, --font-display, --font-body
+ * Requires natca-tokens.css to be loaded first for CSS custom properties.
+ * Uses theme-aware overlay tokens (--overlay-*) so light + dark both work.
+ *
+ * NOTE: The topbar is ALWAYS navy (#003366) regardless of theme.
+ * Elements sitting on the topbar keep hardcoded white-alpha overlays because
+ * their background is always dark. Everything else uses tokens.
  */
 
 /* ── Shell Container ── */
 .natca-shell { display: flex; flex-direction: column; background: var(--color-shell-base); min-height: 100vh; font-family: var(--font-body); }
 
-/* ── Top Bar ── */
+/* ── Top Bar (always navy — white-alpha overlays are intentional here) ── */
 .natca-shell-topbar { background: var(--natca-navy); height: 52px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; border-bottom: 1px solid var(--color-border); }
 .natca-shell-logo-zone { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
 .natca-shell-logo-zone img { height: 28px; width: auto; }
-.natca-shell-app-chip { display: inline-flex; align-items: center; gap: 5px; margin-left: 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 4px 10px; font-family: var(--font-display); font-size: 12px; font-weight: 700; color: var(--color-text-primary); cursor: pointer; transition: all 150ms; white-space: nowrap; }
+.natca-shell-app-chip { display: inline-flex; align-items: center; gap: 5px; margin-left: 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 4px 10px; font-family: var(--font-display); font-size: 12px; font-weight: 700; color: #FFFFFF; cursor: pointer; transition: all 150ms; white-space: nowrap; }
 .natca-shell-app-chip:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.2); }
 .natca-shell-app-chip .natca-shell-chip-grid { opacity: 0.5; flex-shrink: 0; }
 .natca-shell-app-chip .natca-shell-chip-caret { font-size: 9px; opacity: 0.4; margin-left: 2px; }
 .natca-shell-topbar-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
-.natca-shell-top-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-muted); transition: all 150ms; position: relative; }
-.natca-shell-top-icon:hover { background: rgba(255,255,255,0.09); color: var(--color-text-primary); border-color: rgba(255,255,255,0.14); }
+.natca-shell-top-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.6); transition: all 150ms; position: relative; }
+.natca-shell-top-icon:hover { background: rgba(255,255,255,0.09); color: #FFFFFF; border-color: rgba(255,255,255,0.14); }
 .natca-shell-top-badge { position: absolute; top: 2px; right: 2px; width: 7px; height: 7px; background: var(--natca-red); border-radius: 50%; border: 1.5px solid var(--natca-navy); }
-.natca-shell-avatar { width: 32px; height: 32px; border-radius: 8px; background: var(--natca-red); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--color-text-primary); cursor: pointer; flex-shrink: 0; }
+.natca-shell-avatar { width: 32px; height: 32px; border-radius: 8px; background: var(--natca-red); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #FFFFFF; cursor: pointer; flex-shrink: 0; }
 
-/* ── Wordmark + Divider ── */
-.natca-shell-wordmark { font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--color-text-primary); white-space: nowrap; }
+/* ── Wordmark + Divider (on navy topbar — always white) ── */
+.natca-shell-wordmark { font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #FFFFFF; white-space: nowrap; }
 .natca-shell-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.12); margin: 0 12px 0 10px; flex-shrink: 0; }
 
-/* ── Facility Badge ── */
-.natca-shell-facility { display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--color-text-primary);white-space:nowrap;height:32px;cursor:pointer;transition:all 150ms; }
+/* ── Facility Badge (on navy topbar) ── */
+.natca-shell-facility { display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;color:#FFFFFF;white-space:nowrap;height:32px;cursor:pointer;transition:all 150ms; }
 .natca-shell-facility:hover { background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.2); }
 
-/* ── Tab Bar ── */
+/* ── Tab Bar (theme-aware) ── */
 .natca-shell-tabs { background: var(--color-shell-elevated); height: 44px; display: flex; align-items: stretch; padding: 0 20px; border-bottom: 1px solid var(--color-border-light); flex-shrink: 0; gap: 0; }
 .natca-shell-tab { display: flex; align-items: center; gap: 7px; padding: 0 16px; font-family: var(--font-display); font-size: 12.5px; font-weight: 600; color: var(--color-text-muted); text-decoration: none; letter-spacing: 0.3px; white-space: nowrap; border-bottom: 2px solid transparent; transition: color 150ms, border-color 150ms; }
-.natca-shell-tab:hover { color: rgba(255,255,255,0.8); }
+.natca-shell-tab:hover { color: var(--color-text-hover); }
 .natca-shell-tab.natca-shell-tab-active { color: var(--color-text-primary); border-bottom-color: var(--natca-red); }
 .natca-shell-tab-icon { width: 14px; height: 14px; opacity: 0.5; flex-shrink: 0; }
 .natca-shell-tab:hover .natca-shell-tab-icon, .natca-shell-tab.natca-shell-tab-active .natca-shell-tab-icon { opacity: 1; }
 .natca-shell-tab-more { display: flex; align-items: center; gap: 4px; padding: 0 14px; font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--color-text-faint); cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: color 150ms; }
-.natca-shell-tab-more:hover { color: rgba(255,255,255,0.7); }
+.natca-shell-tab-more:hover { color: var(--color-text-hover); }
 
-/* ── Breadcrumb Row ── */
-.natca-shell-breadcrumb-row { background: var(--color-shell-subtle); height: 38px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.04); flex-shrink: 0; }
+/* ── Breadcrumb Row (theme-aware) ── */
+.natca-shell-breadcrumb-row { background: var(--color-shell-subtle); height: 38px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--color-sep); flex-shrink: 0; }
 .natca-shell-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--color-text-faint); }
 .natca-shell-breadcrumb a { color: var(--color-text-faint); text-decoration: none; }
-.natca-shell-breadcrumb a:hover { color: rgba(255,255,255,0.65); }
-.natca-shell-breadcrumb .natca-shell-sep { color: rgba(255,255,255,0.12); }
+.natca-shell-breadcrumb a:hover { color: var(--color-text-hover); }
+.natca-shell-breadcrumb .natca-shell-sep { color: var(--overlay-divider); }
 .natca-shell-breadcrumb .natca-shell-current { color: var(--color-text-body); }
 .natca-shell-breadcrumb-right { margin-left: auto; font-size: 11px; color: var(--color-text-faint); }
-.natca-shell-breadcrumb-hamburger { width: 28px; height: 28px; background: rgba(255,255,255,0.05); border: none; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-muted); transition: all 150ms; flex-shrink: 0; margin-right: 10px; }
-.natca-shell-breadcrumb-hamburger:hover { background: rgba(255,255,255,0.1); color: var(--color-text-primary); }
+.natca-shell-breadcrumb-hamburger { width: 28px; height: 28px; background: var(--overlay-subtle); border: none; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-muted); transition: all 150ms; flex-shrink: 0; margin-right: 10px; }
+.natca-shell-breadcrumb-hamburger:hover { background: var(--overlay-hover); color: var(--color-text-primary); }
 .natca-shell.natca-shell-no-sidebar .natca-shell-breadcrumb-hamburger { display: none; }
 .natca-shell.natca-shell-no-breadcrumb .natca-shell-breadcrumb-row { display: none; }
 
 /* ── Below-Topbar Wrapper (for search overlay positioning) ── */
 .natca-shell-below-topbar { display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
 
-/* ── Body + Sidebar ── */
+/* ── Body + Sidebar (theme-aware) ── */
 .natca-shell-body { display: flex; flex: 1; overflow: hidden; }
-.natca-shell-sidebar { width: 240px; background: var(--color-shell-surface); border-right: 1px solid var(--color-border-light); display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; transition: width 300ms cubic-bezier(0.4,0,0.2,1); }
+.natca-shell-sidebar { width: 240px; background: var(--color-shell-sidebar); border-right: 1px solid var(--color-border-light); display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; transition: width 300ms cubic-bezier(0.4,0,0.2,1); }
 .natca-shell-sidebar-inner { padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; overflow-x: hidden; }
-.natca-shell-sec-title { font-size: 9.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.2); padding: 10px 10px 4px; white-space: nowrap; overflow: hidden; transition: opacity 250ms; }
+.natca-shell-sec-title { font-size: 9.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--color-text-faint); padding: 10px 10px 4px; white-space: nowrap; overflow: hidden; transition: opacity 250ms; }
 .natca-shell-nav-link { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; text-decoration: none; color: var(--color-text-muted); font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; transition: all 150ms; }
-.natca-shell-nav-link:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.9); }
+.natca-shell-nav-link:hover { background: var(--overlay-hover); color: var(--color-text-hover); }
 .natca-shell-nav-link.natca-shell-active { background: rgba(var(--natca-red-rgb), 0.15); color: var(--color-text-primary); }
 .natca-shell-nav-link.natca-shell-active .natca-shell-nav-icon { color: var(--natca-red); }
 .natca-shell-nav-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: inherit; opacity: 0.7; }
 .natca-shell-nav-link:hover .natca-shell-nav-icon, .natca-shell-nav-link.natca-shell-active .natca-shell-nav-icon { opacity: 1; }
 .natca-shell-nav-label { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; transition: opacity 200ms; }
-.natca-shell-nav-badge { background: var(--natca-red); color: var(--color-text-primary); font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 20px; flex-shrink: 0; transition: opacity 200ms; }
+.natca-shell-nav-badge { background: var(--natca-red); color: #FFFFFF; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 20px; flex-shrink: 0; transition: opacity 200ms; }
 .natca-shell-sidebar-foot { padding: 10px 8px; border-top: 1px solid var(--color-border-light); display: flex; flex-direction: column; gap: 2px; }
-.natca-shell-sidebar-toggle { width: 26px; height: 26px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-muted); transition: all 150ms; flex-shrink: 0; margin: 10px 8px 4px; }
-.natca-shell-sidebar-toggle:hover { background: rgba(255,255,255,0.1); color: var(--color-text-primary); border-color: rgba(255,255,255,0.15); }
+.natca-shell-sidebar-toggle { width: 26px; height: 26px; background: var(--overlay-subtle); border: 1px solid var(--overlay-border); border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-muted); transition: all 150ms; flex-shrink: 0; margin: 10px 8px 4px; }
+.natca-shell-sidebar-toggle:hover { background: var(--overlay-hover); color: var(--color-text-primary); border-color: var(--overlay-border-hover); }
 .natca-shell-toggle-icon { transition: transform 300ms cubic-bezier(0.4,0,0.2,1); }
 
 /* ── Content Area ── */
@@ -81,9 +85,9 @@
 .natca-shell-content-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--color-text-primary); }
 .natca-shell-content-sub { font-size: 12px; color: var(--color-text-faint); margin-top: 2px; }
 
-/* ── Stat Cards ── */
+/* ── Stat Cards (theme-aware) ── */
 .natca-shell-stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; padding: 16px 24px; }
-.natca-shell-stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px; }
+.natca-shell-stat-card { background: var(--overlay-subtle); border: 1px solid var(--overlay-border); border-radius: 8px; padding: 14px; }
 .natca-shell-stat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--color-text-faint); margin-bottom: 6px; }
 .natca-shell-stat-val { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--color-text-primary); line-height: 1; }
 .natca-shell-stat-change { font-size: 11px; color: var(--color-success); margin-top: 4px; }

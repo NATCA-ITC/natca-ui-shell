@@ -145,7 +145,7 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
 }
 
 .natca-tabs {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--overlay-border);
   background: transparent !important;
   position: relative;
 }
@@ -172,6 +172,12 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
   text-transform: uppercase;
   min-height: 32px;
   height: 32px;
+  color: var(--color-text-muted);
+}
+
+/* Active tab gets full primary color from Vuetify — inactive needs readable contrast */
+.natca-tabs :deep(.v-tab--selected) {
+  color: rgb(var(--v-theme-primary));
 }
 
 /* Ensure slide-group content aligns flush — no gap below buttons */
@@ -189,7 +195,7 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
   gap: 4px;
 }
 
-/* Kill Vuetify's white hover overlay — doesn't fit dark theme */
+/* Kill Vuetify's default hover overlay — we handle our own */
 .natca-tabs :deep(.v-tab .v-btn__overlay) {
   display: none !important;
 }
@@ -203,7 +209,8 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
   height: 14px;
   padding: 0 4px;
   margin-left: 5px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--overlay-active);
+  color: var(--color-text-primary);
   border-radius: 7px;
   font-family: var(--font-body, 'Public Sans', sans-serif);
   font-size: 9px;
@@ -225,7 +232,7 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
 }
 
 .natca-tabs--pills {
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: var(--overlay-hover) !important;
   border-radius: 5px;
   border-bottom: none;
   padding: 2px;
@@ -245,26 +252,28 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
   min-height: 22px;
   height: 22px;
   border-radius: 3px;
+  color: var(--color-text-muted);
 }
 
 .natca-tabs--pills :deep(.v-tab--selected) {
-  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-text-primary);
+  background: var(--overlay-active);
   border-radius: 3px;
 }
 
-/* Kill Vuetify's overlay on hover — it's white on dark and looks wrong */
+/* Kill Vuetify's overlay on hover — we handle our own */
 .natca-tabs--pills :deep(.v-tab .v-btn__overlay) {
   display: none !important;
 }
 
 /* Subtle hover for inactive pills */
 .natca-tabs--pills :deep(.v-tab:hover) {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--overlay-hover);
 }
 
 /* Active pill hover — slightly brighter, keep text visible */
 .natca-tabs--pills :deep(.v-tab--selected:hover) {
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--overlay-active);
 }
 
 /* Kill slider on pills — selection shown by bg highlight */

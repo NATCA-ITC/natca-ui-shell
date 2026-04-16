@@ -1,0 +1,31 @@
+/*
+ * Vuetify Overrides — NATCA UI Shell
+ *
+ * Vuetify's list-item overlay system uses opacity variables multiplied by
+ * a per-color overlay multiplier. The multiplier varies by color luma and
+ * theme, making it impossible to get consistent subtle tints through theme
+ * variables alone. These overrides set the final rendered opacity directly.
+ */
+
+/* Hover: subtle tint */
+.v-list-item:hover > .v-list-item__overlay {
+  opacity: 0.06 !important;
+}
+
+/* Active/selected item */
+.v-list-item--active > .v-list-item__overlay,
+.v-list-item[aria-haspopup="menu"][aria-expanded="true"] > .v-list-item__overlay {
+  opacity: 0.1 !important;
+}
+
+/* Active + hover */
+.v-list-item--active:hover > .v-list-item__overlay,
+.v-list-item[aria-haspopup="menu"][aria-expanded="true"]:hover > .v-list-item__overlay {
+  opacity: 0.14 !important;
+}
+
+/* Active + focus */
+.v-list-item--active:focus-visible > .v-list-item__overlay,
+.v-list-item[aria-haspopup="menu"][aria-expanded="true"]:focus-visible > .v-list-item__overlay {
+  opacity: 0.14 !important;
+}

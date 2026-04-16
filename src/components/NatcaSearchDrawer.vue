@@ -142,7 +142,7 @@ function handleKeydown(e: KeyboardEvent) {
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--overlay-border);
 }
 
 .natca-shell-search-title {
@@ -160,8 +160,8 @@ function handleKeydown(e: KeyboardEvent) {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--overlay-subtle);
+  border: 1px solid var(--overlay-border);
   border-radius: 8px;
   padding: 8px 12px;
 }
@@ -200,7 +200,7 @@ function handleKeydown(e: KeyboardEvent) {
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-faint);
   padding: 8px 0 6px;
 }
 </style>

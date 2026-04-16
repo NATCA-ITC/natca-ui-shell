@@ -100,12 +100,27 @@
   --natca-red-rgb:  206, 14, 45;
   --natca-blue-rgb: 0, 51, 102;
 
-  /* --- Shell Surfaces (light theme — for future use) --- */
+  /* --- Shell Surfaces (light theme) --- */
   --color-shell-base:     var(--color-bg-page);
   --color-shell-surface:  var(--color-bg-surface);
   --color-shell-elevated: var(--color-bg-elevated);
   --color-shell-subtle:   var(--color-bg-subtle);
   --color-shell-content:  var(--color-bg-page);
+  --color-shell-sidebar:  #D6E2F0;
+
+  /* --- Interactive Overlays (light theme — black alpha on light backgrounds) --- */
+  --overlay-subtle:       rgba(0,0,0,0.04);
+  --overlay-hover:        rgba(0,0,0,0.08);
+  --overlay-active:       rgba(0,0,0,0.12);
+  --overlay-border:       rgba(0,0,0,0.10);
+  --overlay-border-hover: rgba(0,0,0,0.18);
+  --overlay-divider:      rgba(0,0,0,0.10);
+
+  /* --- Interactive text hover (light theme) --- */
+  --color-text-hover:     #1A1A1A;
+
+  /* --- Separator / muted line (light theme) --- */
+  --color-sep:            rgba(0,0,0,0.08);
 }
 
 /* ============================================================
@@ -162,4 +177,19 @@
   --color-shell-elevated: #0f1520;
   --color-shell-subtle:   #0c1119;
   --color-shell-content:  #111825;
+  --color-shell-sidebar:  #0d1420;
+
+  /* --- Interactive Overlays (dark theme — white alpha on dark backgrounds) --- */
+  --overlay-subtle:       rgba(255,255,255,0.04);
+  --overlay-hover:        rgba(255,255,255,0.08);
+  --overlay-active:       rgba(255,255,255,0.14);
+  --overlay-border:       rgba(255,255,255,0.08);
+  --overlay-border-hover: rgba(255,255,255,0.18);
+  --overlay-divider:      rgba(255,255,255,0.12);
+
+  /* --- Interactive text hover (dark theme) --- */
+  --color-text-hover:     rgba(255,255,255,0.9);
+
+  /* --- Separator / muted line (dark theme) --- */
+  --color-sep:            rgba(255,255,255,0.04);
 }

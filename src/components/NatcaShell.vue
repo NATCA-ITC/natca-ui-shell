@@ -49,8 +49,14 @@ watch(
 const hasSidebar = computed(() => !!props.sidebarSections && props.sidebarSections.length > 0)
 const hasBreadcrumbs = computed(() => !!props.breadcrumbs && props.breadcrumbs.length > 0)
 
+// Apply Vuetify theme class to shell root so --v-theme-* CSS variables propagate
+// to all Vuetify components inside the shell (same role as <v-app> but without
+// its layout/background interference).
+const vuetifyThemeClass = computed(() => vuetifyTheme.global.name.value ? `v-theme--${vuetifyTheme.global.name.value}` : '')
+
 const shellClasses = computed(() => ({
   'natca-shell': true,
+  [vuetifyThemeClass.value]: true,
   'natca-shell-collapsed': state.sidebarCollapsed,
   'natca-shell-no-sidebar': !hasSidebar.value,
   'natca-shell-no-breadcrumb': !hasBreadcrumbs.value,

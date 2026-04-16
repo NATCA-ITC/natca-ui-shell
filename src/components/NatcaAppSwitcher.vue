@@ -51,16 +51,16 @@ function handleSelect(app: NatcaApp) {
   left: 140px;
   width: 320px;
   background: var(--color-shell-surface);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--overlay-border);
   border-radius: 10px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-lg);
   z-index: 110;
   overflow: hidden;
 }
 
 .natca-shell-app-switcher-header {
   padding: 12px 16px 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--overlay-border);
 }
 
 .natca-shell-app-switcher-title {
@@ -92,7 +92,7 @@ function handleSelect(app: NatcaApp) {
 }
 
 .natca-shell-app-switcher-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--overlay-hover);
   color: var(--color-text-primary);
 }
 
@@ -104,8 +104,8 @@ function handleSelect(app: NatcaApp) {
 .natca-shell-app-switcher-icon {
   width: 36px;
   height: 36px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--overlay-hover);
+  border: 1px solid var(--overlay-border);
   border-radius: 8px;
   display: flex;
   align-items: center;

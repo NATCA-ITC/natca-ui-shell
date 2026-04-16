@@ -1,4 +1,5 @@
 import './styles/shell.css'
+import './styles/vuetify-overrides.css'
 
 import type { App } from 'vue'
 
