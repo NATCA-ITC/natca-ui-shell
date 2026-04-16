@@ -62,6 +62,7 @@ export interface NatcaShellProps {
   apps?: NatcaApp[]
   showSearch?: boolean
   showNotifications?: boolean
+  showThemeToggle?: boolean
   notificationCount?: number
 }
 

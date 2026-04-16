@@ -215,6 +215,19 @@ export const natcaDefaults = {
     density: 'compact' as const,
     size: 'small',
   },
+  // ── Button Toggle (pill nav) ──
+  VBtnToggle: {
+    rounded: 'pill',
+    density: 'compact' as const,
+    variant: 'outlined' as const,
+    divided: true,
+    mandatory: true as any,
+    VBtn: {
+      variant: 'text' as const,
+      size: 'small',
+      rounded: 'pill',
+    },
+  },
   // ── Chips & Badges ──
   VChip: {
     rounded: 'pill',

@@ -16,6 +16,14 @@ import NatcaAppSwitcher from './components/NatcaAppSwitcher.vue'
 import NatcaTabs from './components/NatcaTabs.vue'
 import NatcaMemberCard from './components/NatcaMemberCard.vue'
 
+// Composite pattern components
+import NatcaHeaderCard from './components/NatcaHeaderCard.vue'
+import NatcaStatCard from './components/NatcaStatCard.vue'
+import NatcaStatGrid from './components/NatcaStatGrid.vue'
+import NatcaEmptyState from './components/NatcaEmptyState.vue'
+import NatcaPageHeader from './components/NatcaPageHeader.vue'
+import NatcaAnnotation from './components/NatcaAnnotation.vue'
+
 // Theme components
 import NatcaThemeToggle from './components/NatcaThemeToggle.vue'
 
@@ -34,6 +42,16 @@ export {
 export {
   NatcaTabs,
   NatcaMemberCard,
+}
+
+// Composite pattern components
+export {
+  NatcaHeaderCard,
+  NatcaStatCard,
+  NatcaStatGrid,
+  NatcaEmptyState,
+  NatcaPageHeader,
+  NatcaAnnotation,
 }
 
 // Theme components
@@ -71,6 +89,13 @@ export const NatcaUiShell = {
     // Shared components
     app.component('NatcaTabs', NatcaTabs)
     app.component('NatcaMemberCard', NatcaMemberCard)
+    // Composite pattern components
+    app.component('NatcaHeaderCard', NatcaHeaderCard)
+    app.component('NatcaStatCard', NatcaStatCard)
+    app.component('NatcaStatGrid', NatcaStatGrid)
+    app.component('NatcaEmptyState', NatcaEmptyState)
+    app.component('NatcaPageHeader', NatcaPageHeader)
+    app.component('NatcaAnnotation', NatcaAnnotation)
     // Theme
     app.component('NatcaThemeToggle', NatcaThemeToggle)
   },

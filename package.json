@@ -1,6 +1,6 @@
 {
   "name": "@natca-itc/ui-shell",
-  "version": "0.3.0-beta.1",
+  "version": "0.3.0-beta.2",
   "description": "NATCA Design System — tokens, components, Vue shell, and shared styles for all NATCA web properties (BETA)",
   "license": "UNLICENSED",
   "private": false,
@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@mdi/font": "^7.4.47",
+    "@playwright/test": "^1.59.1",
     "@vitejs/plugin-vue": "^5.2.4",
     "typescript": "^5.5.0",
     "vite": "^6.0.0",
@@ -63,6 +64,5 @@
     "ui",
     "vue",
     "vuetify"
-  ],
-  "dependencies": {}
+  ]
 }

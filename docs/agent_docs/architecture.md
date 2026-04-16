@@ -12,6 +12,7 @@
 | Vuetify Theme Preset | `import { natcaVuetifyTheme, natcaDefaults }` | Vuetify apps only |
 | Shell Components | `import { NatcaShell, NatcaTopBar, ... }` | Vuetify apps only |
 | Shared Components | `import { NatcaTabs, NatcaMemberCard }` | Vuetify apps only |
+| Composite Patterns | `import { NatcaHeaderCard, NatcaStatCard, ... }` | Vuetify apps only |
 | Standalone CSS | `@natca-itc/ui-shell/components` | WordPress, static HTML — NOT Vuetify apps |
 | WordPress theme.json | `@natca-itc/ui-shell/theme.json` | WordPress block editor |
 
@@ -27,10 +28,11 @@ UI Shell does NOT replace Vuetify — it wraps it:
 Apps should use Vuetify components directly for standard UI (buttons, forms, dialogs, tables). They should use ui-shell components for:
 - Shell layout (NatcaShell, NatcaTopBar, NatcaSidebar, NatcaTabNav)
 - Cross-app patterns (NatcaTabs, NatcaMemberCard)
+- Composite patterns that have no single Vuetify equivalent (NatcaHeaderCard, NatcaStatCard, NatcaStatGrid, NatcaEmptyState, NatcaPageHeader, NatcaAnnotation)
 
 ## Shell Contract
 
-**Shell provides:** topbar, tab navigation, sidebar, breadcrumbs, search drawer, app switcher, theme
+**Shell provides:** topbar (with theme toggle + toolbar-actions slot), tab navigation, sidebar, breadcrumbs, search drawer, app switcher, theme
 
 **App provides via props:**
 - `appId` / `appName` — identifies the app in the switcher

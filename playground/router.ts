@@ -3,6 +3,7 @@ import DashboardPage from './pages/DashboardPage.vue'
 import MembersPage from './pages/MembersPage.vue'
 import PlaceholderPage from './pages/PlaceholderPage.vue'
 import ComponentsPage from './pages/ComponentsPage.vue'
+import DesignStandardsPage from './pages/DesignStandardsPage.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -88,6 +89,17 @@ export const router = createRouter({
         breadcrumbs: [
           { label: 'Hub', to: '/admin' },
           { label: 'Components' },
+        ],
+      },
+    },
+    {
+      path: '/admin/design-standards',
+      component: DesignStandardsPage,
+      meta: {
+        title: 'Design Standards',
+        breadcrumbs: [
+          { label: 'Hub', to: '/admin' },
+          { label: 'Design Standards' },
         ],
       },
     },

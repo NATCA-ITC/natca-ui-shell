@@ -1,3 +1,6 @@
+/* Auto-load NATCA brand fonts — Barlow (display/headings) + Public Sans (body) */
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Public+Sans:wght@400;500;600;700&display=swap');
+
 /*
  * NATCA Shell Layout Styles
  * Auto-extracted from natca-header-variants.html (Auth Option C - Hybrid Shell)

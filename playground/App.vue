@@ -28,6 +28,7 @@ const adminTabs: NatcaTab[] = [
   { id: 'regions', label: 'Regions', icon: 'mdi-map', to: '/admin/regions' },
   { id: 'reports', label: 'Reports', icon: 'mdi-chart-bar', to: '/admin/reports' },
   { id: 'components', label: 'Components', icon: 'mdi-puzzle', to: '/admin/components' },
+  { id: 'design-standards', label: 'Design Standards', icon: 'mdi-palette', to: '/admin/design-standards' },
 ]
 
 const adminSidebar: NatcaNavSection[] = [
@@ -53,6 +54,7 @@ const adminSidebar: NatcaNavSection[] = [
       { id: 'infrastructure', label: 'Infrastructure', icon: 'mdi-server', to: '/admin/infrastructure' },
       { id: 'config', label: 'Config', icon: 'mdi-cog', to: '/admin/config' },
       { id: 'components', label: 'Components', icon: 'mdi-puzzle', to: '/admin/components' },
+      { id: 'design-standards', label: 'Design Standards', icon: 'mdi-palette', to: '/admin/design-standards' },
     ],
   },
 ]
@@ -125,6 +127,7 @@ const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
     :show-search="true"
     :show-notifications="true"
     :notification-count="3"
+    @theme-change="pref => localStorage.setItem('natca-theme', pref)"
   >
     <router-view />
   </NatcaShell>

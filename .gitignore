@@ -1,6 +1,7 @@
 node_modules/
 dist/
 TEMP/
+test-results/
 .superpowers/
 .claude/commands/daily-standup.md
 .claude/commands/finish-task.md

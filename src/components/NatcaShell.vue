@@ -14,6 +14,7 @@ import NatcaAppSwitcher from './NatcaAppSwitcher.vue'
 const props = withDefaults(defineProps<NatcaShellProps>(), {
   showSearch: true,
   showNotifications: false,
+  showThemeToggle: true,
   notificationCount: 0,
 })
 
@@ -21,6 +22,7 @@ const emit = defineEmits<{
   search: [query: string]
   'app-select': [app: any]
   'profile-action': [action: string]
+  'theme-change': [preference: string]
 }>()
 
 defineSlots<{
@@ -29,6 +31,7 @@ defineSlots<{
   'sidebar-footer'?: () => any
   'search-recent'?: () => any
   'search-quick-links'?: () => any
+  'toolbar-actions'?: () => any
 }>()
 
 const { state, closeSearch, closeAppSwitcher } = useShellState()
@@ -100,10 +103,16 @@ function handleShellClick(e: MouseEvent) {
       :user="user"
       :show-search="showSearch"
       :show-notifications="showNotifications"
+      :show-theme-toggle="showThemeToggle"
       :notification-count="notificationCount"
       :apps="apps"
       @profile-action="(action: string) => emit('profile-action', action)"
-    />
+      @theme-change="(pref: string) => emit('theme-change', pref)"
+    >
+      <template v-if="$slots['toolbar-actions']" #toolbar-actions>
+        <slot name="toolbar-actions" />
+      </template>
+    </NatcaTopBar>
 
     <!-- Everything below topbar wrapped for search overlay positioning -->
     <div class="natca-shell-below-topbar">
