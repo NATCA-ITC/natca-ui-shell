@@ -34,4 +34,20 @@
   // ── VChip (replaces NatcaChip) ──
   $chip-font-weight: 600,
   $chip-font-size: 11.5px,
+
+  // ── VSelectionControl (base size shared by VCheckbox and VSwitch) ──
+  // Default 40px container → 28px at compact density. Too chunky for
+  // auth forms. 36px base → 24px at compact density is about right.
+  $selection-control-size: 36px,
+
+  // ── VSwitch (inset variant — what natcaDefaults applies) ──
+  // Vuetify's default 52×32 track with 24px thumb reads "iOS-large" and
+  // doesn't match the NATCA compact auth feel. Shrink to 36×20 with a
+  // 16px thumb on / 12px off.
+  $switch-inset-track-width: 36px,
+  $switch-inset-track-height: 20px,
+  $switch-inset-thumb-width: 16px,
+  $switch-inset-thumb-height: 16px,
+  $switch-inset-thumb-off-width: 12px,
+  $switch-inset-thumb-off-height: 12px,
 );
