@@ -51,6 +51,20 @@
   color: var(--color-border-focus, var(--color-info));
 }
 
+/* ═══ Selection-control label spacing ══════════════════════════════════
+   VSwitch ships `$switch-label-margin-inline-start: 10px` applied via
+   `.v-switch .v-label { padding-inline-start }`. VCheckbox and VRadio
+   have no equivalent SASS variable — their visual gap between the
+   control icon and label comes from the `.v-selection-control__input`
+   hit-area being wider than the rendered icon. Since we've shrunk
+   `$selection-control-size` for compact auth, that hit-area padding
+   nearly vanishes and labels end up flush against the icon. Match the
+   switch's 10px explicitly. */
+.v-checkbox .v-label,
+.v-radio .v-label {
+  padding-inline-start: 10px;
+}
+
 /* Label + placeholder use NATCA text tokens rather than Vuetify's
    on-surface + medium-emphasis-opacity composite. Same reason as above. */
 .v-field__label,
