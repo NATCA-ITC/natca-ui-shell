@@ -99,6 +99,7 @@
   /* --- Brand RGB (for alpha usage) --- */
   --natca-red-rgb:  206, 14, 45;
   --natca-blue-rgb: 0, 51, 102;
+  --natca-sky-rgb:  106, 201, 255;
 
   /* --- Shell Surfaces (light theme — hierarchy for visual depth) --- */
   --color-shell-base:     #F0F2F5;
@@ -170,6 +171,7 @@
   /* --- Brand RGB (for alpha usage) --- */
   --natca-red-rgb:  206, 14, 45;
   --natca-blue-rgb: 0, 51, 102;
+  --natca-sky-rgb:  106, 201, 255;
 
   /* --- Shell Surfaces (dark theme hierarchy) --- */
   --color-shell-base:     #0a0f1a;
