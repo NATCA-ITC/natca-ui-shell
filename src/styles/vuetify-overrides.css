@@ -66,13 +66,24 @@
 }
 
 /* Label + placeholder use NATCA text tokens rather than Vuetify's
-   on-surface + medium-emphasis-opacity composite. Same reason as above. */
+   on-surface + medium-emphasis-opacity composite. Same reason as above.
+   --color-text-body (not --color-text-muted) keeps small floating-label
+   text legible against busy form backgrounds (NAT-307).
+
+   Compound selector .v-label.v-field-label is required: Vuetify ships
+   `.v-label { color: inherit }` later in the cascade, so a single-class
+   `.v-field-label` rule loses to it (same specificity, later source).
+   With both classes the specificity is (0,2,0) which always wins.
+   Without this, the label inherits its parent's color — and since
+   .v-field__outline above sets color: var(--color-border), the floating
+   label ends up rendered as the border color (#2E3347 dark / #DDD light)
+   = invisible. */
 .v-field__label,
-.v-field-label {
-  color: var(--color-text-muted);
+.v-label.v-field-label {
+  color: var(--color-text-body);
 }
 .v-field--focused .v-field__label,
-.v-field--focused .v-field-label {
+.v-field--focused .v-label.v-field-label {
   color: var(--color-info);
 }
 .v-field__input::placeholder,

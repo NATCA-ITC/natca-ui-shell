@@ -1,6 +1,6 @@
 {
   "name": "@natca-itc/ui-shell",
-  "version": "0.4.0-beta.3",
+  "version": "0.4.0-beta.4",
   "description": "NATCA Design System — tokens, components, Vue shell, and shared styles for all NATCA web properties (BETA)",
   "license": "UNLICENSED",
   "private": false,
