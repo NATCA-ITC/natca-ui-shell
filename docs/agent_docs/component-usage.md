@@ -1,5 +1,7 @@
 # UI Shell Component Usage Guide
 
+> **Human-facing source of truth lives in Notion** under DEV / UI SHELL — see Component Catalog, Shell Variants, Theme & Tokens, SASS Customization, and Density & Defaults pages. This file is the in-repo agent reference shipped via the npm package and consumed by other apps' agent tooling.
+
 Complete pattern catalog for building pages in NATCA apps. **READ THIS before writing any UI code.**
 
 Every pattern on this page has a matching live demo in the playground at `/admin/design-standards`.

@@ -1,5 +1,7 @@
 # UI Shell Architecture
 
+> **Human-facing source of truth lives in Notion.** This file is the in-repo agent reference — it ships with the npm package and is consumed by other apps' agent tooling. For overview, component catalog, theme details, density tables, and the breaking-change protocol, see **DEV / UI SHELL** in Notion.
+
 ## Overview
 
 `@natca-itc/ui-shell` is the shared design system and component library for all NATCA web properties. It wraps Vuetify and exports a unified theme, shell layout components, and shared business components.
@@ -65,22 +67,57 @@ setTheme(localStorage.getItem('natca-theme') ?? 'dark')  // restore saved or def
 
 ## Build Pipeline
 
-- `npm run build:css` — copies `src/css/` + `src/theme.json` to `dist/`
-- `npm run build:vue` — Vite library build: `src/index.ts` → `dist/vue/natca-ui-shell.js` + `.css`
+- `npm run build:css` — copies `src/css/` + `src/theme.json` + `src/scss/settings.scss` to `dist/` (CommonJS script: `build-css.cjs`)
+- `npm run build:vue` — Vite library build: `src/index.ts` → `dist/vue/natca-ui-shell.js` + `.css` + `.d.ts`
+- `npm run build` — runs both
 - Externals: vue, vue-router, vuetify (peer deps, not bundled)
+- `prepublishOnly` automatically runs `npm run build` before `npm publish`
 
 ## Consuming App Setup
 
+Three steps are mandatory since 0.4.0. Skipping any of them produces wrong font sizes, uppercase buttons, or oversized form fields.
+
+### 1. `main.ts`
+
 ```ts
+import 'vuetify/styles'                                  // Vuetify reset + utilities — DO NOT skip
+import '@natca-itc/ui-shell/tokens'                      // NATCA CSS custom properties
+import '@mdi/font/css/materialdesignicons.css'
+
 import { createVuetify } from 'vuetify'
 import { natcaVuetifyTheme, natcaDefaults } from '@natca-itc/ui-shell'
-import '@natca-itc/ui-shell/tokens'
 
 const vuetify = createVuetify({
   theme: natcaVuetifyTheme,
   defaults: natcaDefaults,
 })
 ```
+
+### 2. `vite.config.ts`
+
+```ts
+import vuetify from 'vite-plugin-vuetify'
+import { fileURLToPath } from 'url'
+
+vuetify({
+  autoImport: true,
+  styles: {
+    configFile: fileURLToPath(
+      import.meta.resolve('@natca-itc/ui-shell/scss/settings.scss')
+    ),
+  },
+})
+```
+
+### 3. `package.json`
+
+```json
+"devDependencies": { "sass": "^1.99" }
+```
+
+`vite-plugin-vuetify` uses Sass to compile NATCA's settings file at build time. Without it, the SASS overrides silently don't apply.
+
+> **Forbidden in Vuetify apps:** `import '@natca-itc/ui-shell/components'`. That standalone CSS bundle is for WordPress / static HTML only.
 
 ## Key Files
 
