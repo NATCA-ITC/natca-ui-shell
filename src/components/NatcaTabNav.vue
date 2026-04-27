@@ -132,12 +132,19 @@ const openSwitcherTab = computed<NatcaTab | null>(() => {
 })
 
 // Items rendered inside the More dropdown — flattens any switcher's children one level
-// (overflowed switchers don't open nested menus; their children appear flat).
-const overflowFlatItems = computed<NatcaTab[]>(() => {
-  const out: NatcaTab[] = []
+// (overflowed switchers don't open nested menus; their children appear flat). Children carry
+// a flag so the dropdown can render them with an indent + left border for hierarchy.
+type OverflowFlatItem = { tab: NatcaTab; isChild: boolean; parentLabel?: string }
+const overflowFlatItems = computed<OverflowFlatItem[]>(() => {
+  const out: OverflowFlatItem[] = []
   for (const t of overflowTabs.value) {
-    if (isSwitcher(t)) out.push(...(t.children as NatcaTab[]))
-    else out.push(t)
+    if (isSwitcher(t)) {
+      for (const c of t.children as NatcaTab[]) {
+        out.push({ tab: c, isChild: true, parentLabel: t.label })
+      }
+    } else {
+      out.push({ tab: t, isChild: false })
+    }
   }
   return out
 })
@@ -406,25 +413,29 @@ watch(() => route.path, () => {
     >
       <router-link
         v-for="item in overflowFlatItems"
-        :key="item.id"
-        :to="item.to"
+        :key="item.tab.id"
+        :to="item.tab.to"
         class="natca-shell-tab-dropdown-item"
-        :class="{ 'natca-shell-tab-dropdown-item-active': isActive(item) }"
+        :class="{
+          'natca-shell-tab-dropdown-item-active': isActive(item.tab),
+          'natca-shell-tab-dropdown-item-child': item.isChild,
+        }"
+        :title="item.isChild && item.parentLabel ? `${item.parentLabel} › ${item.tab.label}` : undefined"
         @click="onOverflowLinkClick"
       >
         <v-icon
-          v-if="item.icon"
-          :icon="item.icon"
+          v-if="item.tab.icon"
+          :icon="item.tab.icon"
           size="14"
           class="natca-shell-tab-dropdown-icon"
         />
-        <span>{{ item.label }}</span>
+        <span>{{ item.tab.label }}</span>
         <span
-          v-if="item.badge != null"
+          v-if="item.tab.badge != null"
           class="natca-shell-nav-badge"
           style="font-size: 9px;"
         >
-          {{ item.badge }}
+          {{ item.tab.badge }}
         </span>
       </router-link>
     </div>

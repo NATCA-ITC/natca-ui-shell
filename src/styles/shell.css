@@ -52,7 +52,9 @@
 .natca-shell-tab.natca-shell-tab-icon-only:hover .natca-shell-tab-icon { opacity: 1; }
 
 /* ── Switcher tab (renders as <button> with chevron, opens dropdown of children) ── */
-.natca-shell-tab-switcher { cursor: pointer; border: none; background: none; font: inherit; }
+/* Don't use `font: inherit` here — the shorthand clobbers the font-family / size / weight
+   that `.natca-shell-tab` sets. Reset only what the UA <button> adds. */
+.natca-shell-tab-switcher { cursor: pointer; border: none; background: none; line-height: inherit; }
 .natca-shell-tab-chevron { opacity: 0.5; flex-shrink: 0; transition: transform 150ms, opacity 150ms; }
 .natca-shell-tab-switcher:hover .natca-shell-tab-chevron,
 .natca-shell-tab-switcher.natca-shell-tab-active .natca-shell-tab-chevron { opacity: 1; }
@@ -72,6 +74,9 @@
 .natca-shell-tab-dropdown-item.natca-shell-tab-dropdown-item-active .natca-shell-tab-dropdown-icon { color: var(--natca-red); opacity: 1; }
 .natca-shell-tab-dropdown-icon { opacity: 0.5; flex-shrink: 0; }
 .natca-shell-tab-dropdown-item:hover .natca-shell-tab-dropdown-icon { opacity: 1; }
+/* Switcher children flattened into the More menu — indent + left rail to indicate hierarchy. */
+.natca-shell-tab-dropdown-item.natca-shell-tab-dropdown-item-child { margin-left: 14px; padding-left: 12px; border-left: 2px solid var(--color-border-light); }
+.natca-shell-tab-dropdown-item.natca-shell-tab-dropdown-item-child.natca-shell-tab-dropdown-item-active { border-left-color: var(--natca-red); }
 
 /* ── Breadcrumb Row (theme-aware) ── */
 .natca-shell-breadcrumb-row { background: var(--color-shell-subtle); height: 38px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--color-sep); flex-shrink: 0; }
