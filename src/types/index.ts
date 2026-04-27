@@ -15,6 +15,10 @@ export interface NatcaTab {
   /** When true, collapse to icon-only on narrow viewports before overflowing into "More".
    *  Tabs with id 'home' auto-collapse by default (convention). Requires `icon` to be set. */
   collapseToIcon?: boolean
+  /** When set, the tab renders as a switcher button that opens a dropdown of children
+   *  instead of navigating directly. The parent label updates to reflect the active child
+   *  (longest-prefix match). Children are flat router-links — nested switchers are not supported. */
+  children?: NatcaTab[]
 }
 
 export interface NatcaNavItem {

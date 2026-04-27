@@ -15,11 +15,14 @@ const { resolved: resolvedTheme } = useNatcaTheme()
 const containerRef = ref<HTMLElement | null>(null)
 const dropdownRef = ref<HTMLElement | null>(null)
 const moreButtonRef = ref<HTMLElement | null>(null)
+const switcherButtonRefs = ref<Record<string, HTMLElement | null>>({})
+const switcherDropdownRef = ref<HTMLElement | null>(null)
 
 // ── State ──
 const overflowStartIndex = ref(Infinity)
 const collapsedSet = ref(new Set<string>())
 const moreOpen = ref(false)
+const openSwitcherId = ref<string | null>(null)
 
 // ── Helpers ──
 function shouldCollapseToIcon(tab: NatcaTab): boolean {
@@ -27,6 +30,14 @@ function shouldCollapseToIcon(tab: NatcaTab): boolean {
   if (tab.collapseToIcon) return true
   if (tab.id === 'home') return true
   return false
+}
+
+function isSwitcher(tab: NatcaTab): boolean {
+  return Array.isArray(tab.children) && tab.children.length > 0
+}
+
+function tabPath(tab: NatcaTab): string {
+  return typeof tab.to === 'string' ? tab.to : (tab.to as any).path ?? ''
 }
 
 const visibleTabs = computed(() =>
@@ -41,36 +52,94 @@ const overflowTabs = computed(() =>
 )
 const hasOverflow = computed(() => overflowTabs.value.length > 0)
 
+// Flat list of every navigable tab (top-level + every child) — used for longest-prefix
+// active detection so a child route doesn't accidentally activate its parent's `to`.
+const allLeafTabs = computed<NatcaTab[]>(() => {
+  const out: NatcaTab[] = []
+  for (const t of props.tabs) {
+    out.push(t)
+    if (isSwitcher(t)) out.push(...(t.children as NatcaTab[]))
+  }
+  return out
+})
+
 // ── Active detection (longest prefix match) ──
-function isActive(tab: NatcaTab): boolean {
-  const resolved = typeof tab.to === 'string' ? tab.to : (tab.to as any).path ?? ''
-  if (route.path === resolved) return true
-  if (!route.path.startsWith(resolved + '/')) return false
-  return !props.tabs.some(other => {
-    if (other.id === tab.id) return false
-    const otherPath = typeof other.to === 'string' ? other.to : (other.to as any).path ?? ''
-    return otherPath.length > resolved.length
-      && (route.path.startsWith(otherPath + '/') || route.path === otherPath)
+function isPathActive(path: string): boolean {
+  if (!path) return false
+  if (route.path === path) return true
+  if (!route.path.startsWith(path + '/')) return false
+  // Don't activate when a longer sibling/child path is the better match.
+  return !allLeafTabs.value.some(other => {
+    const otherPath = tabPath(other)
+    if (otherPath === path) return false
+    return otherPath.length > path.length
+      && (route.path === otherPath || route.path.startsWith(otherPath + '/'))
   })
+}
+
+function activeChild(tab: NatcaTab): NatcaTab | null {
+  if (!isSwitcher(tab)) return null
+  // Pick the longest-matching child path so deeper children win.
+  let best: NatcaTab | null = null
+  let bestLen = -1
+  for (const child of tab.children as NatcaTab[]) {
+    const p = tabPath(child)
+    if (route.path === p || route.path.startsWith(p + '/')) {
+      if (p.length > bestLen) {
+        best = child
+        bestLen = p.length
+      }
+    }
+  }
+  return best
+}
+
+function isActive(tab: NatcaTab): boolean {
+  if (isSwitcher(tab)) {
+    if (activeChild(tab)) return true
+    return isPathActive(tabPath(tab))
+  }
+  return isPathActive(tabPath(tab))
 }
 
 const overflowHasActive = computed(() => overflowTabs.value.some(t => isActive(t)))
 
-// Position the dropdown below the More button (since it's teleported to body)
-const dropdownStyle = computed(() => {
-  const btn = moreButtonRef.value
+// Position dropdowns below their button (since they're teleported to body)
+function dropdownPosition(btn: HTMLElement | null) {
   if (!btn) return {}
   const rect = btn.getBoundingClientRect()
   const viewportWidth = window.innerWidth
-  // Align right edge of dropdown with right edge of More button
   let right = viewportWidth - rect.right
-  // Ensure it doesn't go off-screen left
   if (right > viewportWidth - 200) right = 8
   return {
     position: 'fixed' as const,
     top: `${rect.bottom + 2}px`,
     right: `${right}px`,
   }
+}
+
+const moreDropdownStyle = computed(() => dropdownPosition(moreButtonRef.value))
+const switcherDropdownStyle = computed(() => {
+  const id = openSwitcherId.value
+  if (!id) return {}
+  return dropdownPosition(switcherButtonRefs.value[id] ?? null)
+})
+
+const openSwitcherTab = computed<NatcaTab | null>(() => {
+  const id = openSwitcherId.value
+  if (!id) return null
+  return props.tabs.find(t => t.id === id) ?? null
+})
+
+// Items rendered inside the More dropdown — flattens any switcher's children one level
+// (overflowed switchers don't open nested menus; their children appear flat).
+const overflowFlatItems = computed<NatcaTab[]>(() => {
+  const out: NatcaTab[] = []
+  for (const t of overflowTabs.value) {
+    if (isSwitcher(t)) out.push(...(t.children as NatcaTab[]))
+    else out.push(t)
+  }
+  return out
 })
 
 // ── Overflow detection ──
@@ -81,7 +150,6 @@ let settling = false
 let settleTimer: ReturnType<typeof setTimeout> | null = null
 
 function settle() {
-  // Debounce rapid calls (ResizeObserver can fire during our own DOM changes)
   if (settleTimer) clearTimeout(settleTimer)
   settleTimer = setTimeout(doSettle, 16)
 }
@@ -90,11 +158,9 @@ function doSettle() {
   if (settling) return
   settling = true
 
-  // Reset to show everything
   overflowStartIndex.value = Infinity
   collapsedSet.value = new Set()
 
-  // Wait for DOM update with all tabs visible
   nextTick(() => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -113,14 +179,11 @@ function doOverflowCheck() {
   const tabEls = container.querySelectorAll<HTMLElement>(':scope > .natca-shell-tab')
   if (!tabEls.length) return
 
-  // Phase 1: check if all tabs fit
   const lastTab = tabEls[tabEls.length - 1]
   if (lastTab.getBoundingClientRect().right <= containerRight) {
-    // All fit — done
     return
   }
 
-  // Phase 2: collapse icon-eligible tabs first
   const newCollapsed = new Set<string>()
   for (let i = 0; i < props.tabs.length; i++) {
     if (shouldCollapseToIcon(props.tabs[i])) {
@@ -129,7 +192,6 @@ function doOverflowCheck() {
   }
   collapsedSet.value = newCollapsed
 
-  // Wait for collapse to render, then re-check
   nextTick(() => {
     requestAnimationFrame(() => {
       doOverflowCheckPhase2()
@@ -146,15 +208,13 @@ function doOverflowCheckPhase2() {
   const containerRight = container.getBoundingClientRect().right
   const tabEls = container.querySelectorAll<HTMLElement>(':scope > .natca-shell-tab')
 
-  // Check if collapsing was enough
   if (tabEls.length > 0) {
     const lastTab = tabEls[tabEls.length - 1]
     if (lastTab.getBoundingClientRect().right <= containerRight) {
-      return // fits now
+      return
     }
   }
 
-  // Phase 3: find the cutoff — reserve space for More button
   const budget = containerRight - MORE_BUTTON_WIDTH
   let cutoff = props.tabs.length
 
@@ -171,28 +231,57 @@ function doOverflowCheckPhase2() {
 // ── Resize ──
 let resizeObserver: ResizeObserver | null = null
 
-// ── More dropdown ──
+// ── Dropdown handlers ──
 function toggleMore() {
   moreOpen.value = !moreOpen.value
+  if (moreOpen.value) openSwitcherId.value = null
+}
+
+function toggleSwitcher(id: string) {
+  openSwitcherId.value = openSwitcherId.value === id ? null : id
+  if (openSwitcherId.value) moreOpen.value = false
 }
 
 function onOverflowLinkClick() {
   moreOpen.value = false
 }
 
+function onSwitcherChildClick() {
+  openSwitcherId.value = null
+}
+
 function onClickOutside(e: MouseEvent) {
-  if (!moreOpen.value) return
   const target = e.target as Node
-  if (moreButtonRef.value?.contains(target)) return
-  if (dropdownRef.value?.contains(target)) return
-  moreOpen.value = false
+
+  if (moreOpen.value) {
+    if (!moreButtonRef.value?.contains(target) && !dropdownRef.value?.contains(target)) {
+      moreOpen.value = false
+    }
+  }
+
+  if (openSwitcherId.value) {
+    const btn = switcherButtonRefs.value[openSwitcherId.value]
+    if (!btn?.contains(target) && !switcherDropdownRef.value?.contains(target)) {
+      openSwitcherId.value = null
+    }
+  }
+}
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') {
+    moreOpen.value = false
+    openSwitcherId.value = null
+  }
+}
+
+function setSwitcherButtonRef(id: string, el: Element | any) {
+  switcherButtonRefs.value[id] = (el as HTMLElement) ?? null
 }
 
 // ── Lifecycle ──
 onMounted(() => {
   settle()
 
-  // Re-settle after fonts load
   if (document.fonts?.ready) {
     document.fonts.ready.then(() => settle())
   }
@@ -202,54 +291,100 @@ onMounted(() => {
     resizeObserver.observe(containerRef.value)
   }
   document.addEventListener('click', onClickOutside, true)
+  document.addEventListener('keydown', onKeydown)
 })
 
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
   document.removeEventListener('click', onClickOutside, true)
+  document.removeEventListener('keydown', onKeydown)
 })
 
-// Re-measure when tabs prop changes
 watch(() => props.tabs, () => settle(), { deep: true })
 
-// Close dropdown on route change
-watch(() => route.path, () => { moreOpen.value = false })
+watch(() => route.path, () => {
+  moreOpen.value = false
+  openSwitcherId.value = null
+})
 </script>
 
 <template>
   <nav ref="containerRef" class="natca-shell-tabs">
     <!-- Visible tabs -->
-    <router-link
-      v-for="tab in visibleTabs"
-      :key="tab.id"
-      :to="tab.to"
-      class="natca-shell-tab"
-      :class="{
-        'natca-shell-tab-active': isActive(tab),
-        'natca-shell-tab-icon-only': collapsedSet.has(tab.id),
-      }"
-      :title="collapsedSet.has(tab.id) ? tab.label : undefined"
-    >
-      <v-icon
-        v-if="tab.icon"
-        class="natca-shell-tab-icon"
-        :icon="tab.icon"
-        size="14"
-      />
-      <span v-if="!collapsedSet.has(tab.id)">{{ tab.label }}</span>
-      <span
-        v-if="tab.badge != null && !collapsedSet.has(tab.id)"
-        class="natca-shell-nav-badge"
-        style="font-size: 9px;"
+    <template v-for="tab in visibleTabs" :key="tab.id">
+      <!-- Switcher tab (renders as button + dropdown) -->
+      <button
+        v-if="isSwitcher(tab)"
+        :ref="(el) => setSwitcherButtonRef(tab.id, el)"
+        type="button"
+        class="natca-shell-tab natca-shell-tab-switcher"
+        :class="{
+          'natca-shell-tab-active': isActive(tab),
+          'natca-shell-tab-icon-only': collapsedSet.has(tab.id),
+          'natca-shell-tab-switcher-open': openSwitcherId === tab.id,
+        }"
+        :title="collapsedSet.has(tab.id) ? (activeChild(tab)?.label ?? tab.label) : undefined"
+        :aria-haspopup="true"
+        :aria-expanded="openSwitcherId === tab.id"
+        @click.stop="toggleSwitcher(tab.id)"
       >
-        {{ tab.badge }}
-      </span>
-    </router-link>
+        <v-icon
+          v-if="tab.icon"
+          class="natca-shell-tab-icon"
+          :icon="tab.icon"
+          size="14"
+        />
+        <span v-if="!collapsedSet.has(tab.id)">
+          {{ activeChild(tab)?.label ?? tab.label }}
+        </span>
+        <span
+          v-if="tab.badge != null && !collapsedSet.has(tab.id)"
+          class="natca-shell-nav-badge"
+          style="font-size: 9px;"
+        >
+          {{ tab.badge }}
+        </span>
+        <v-icon
+          v-if="!collapsedSet.has(tab.id)"
+          class="natca-shell-tab-chevron"
+          icon="mdi-chevron-down"
+          size="14"
+        />
+      </button>
+
+      <!-- Plain tab (router-link) -->
+      <router-link
+        v-else
+        :to="tab.to"
+        class="natca-shell-tab"
+        :class="{
+          'natca-shell-tab-active': isActive(tab),
+          'natca-shell-tab-icon-only': collapsedSet.has(tab.id),
+        }"
+        :title="collapsedSet.has(tab.id) ? tab.label : undefined"
+      >
+        <v-icon
+          v-if="tab.icon"
+          class="natca-shell-tab-icon"
+          :icon="tab.icon"
+          size="14"
+        />
+        <span v-if="!collapsedSet.has(tab.id)">{{ tab.label }}</span>
+        <span
+          v-if="tab.badge != null && !collapsedSet.has(tab.id)"
+          class="natca-shell-nav-badge"
+          style="font-size: 9px;"
+        >
+          {{ tab.badge }}
+        </span>
+      </router-link>
+    </template>
 
     <!-- More button -->
     <button
       v-if="hasOverflow"
       ref="moreButtonRef"
+      type="button"
       class="natca-shell-tab-more"
       :class="{ 'natca-shell-tab-more-active': moreOpen || overflowHasActive }"
       @click.stop="toggleMore"
@@ -260,36 +395,71 @@ watch(() => route.path, () => { moreOpen.value = false })
 
   </nav>
 
-  <!-- Dropdown rendered outside the overflow:hidden tab bar via Teleport -->
+  <!-- More dropdown — teleported so it escapes the tab bar's overflow:hidden -->
   <Teleport to="body">
     <div
       v-if="hasOverflow && moreOpen"
       ref="dropdownRef"
       class="natca-shell-tab-dropdown"
       :data-theme="resolvedTheme"
-      :style="dropdownStyle"
+      :style="moreDropdownStyle"
     >
       <router-link
-        v-for="tab in overflowTabs"
-        :key="tab.id"
-        :to="tab.to"
+        v-for="item in overflowFlatItems"
+        :key="item.id"
+        :to="item.to"
         class="natca-shell-tab-dropdown-item"
-        :class="{ 'natca-shell-tab-dropdown-item-active': isActive(tab) }"
+        :class="{ 'natca-shell-tab-dropdown-item-active': isActive(item) }"
         @click="onOverflowLinkClick"
       >
         <v-icon
-          v-if="tab.icon"
-          :icon="tab.icon"
+          v-if="item.icon"
+          :icon="item.icon"
           size="14"
           class="natca-shell-tab-dropdown-icon"
         />
-        <span>{{ tab.label }}</span>
+        <span>{{ item.label }}</span>
         <span
-          v-if="tab.badge != null"
+          v-if="item.badge != null"
           class="natca-shell-nav-badge"
           style="font-size: 9px;"
         >
-          {{ tab.badge }}
+          {{ item.badge }}
+        </span>
+      </router-link>
+    </div>
+  </Teleport>
+
+  <!-- Switcher dropdown — teleported, positioned under its parent button -->
+  <Teleport to="body">
+    <div
+      v-if="openSwitcherTab"
+      ref="switcherDropdownRef"
+      class="natca-shell-tab-dropdown"
+      :data-theme="resolvedTheme"
+      :style="switcherDropdownStyle"
+    >
+      <router-link
+        v-for="child in (openSwitcherTab.children as NatcaTab[])"
+        :key="child.id"
+        :to="child.to"
+        class="natca-shell-tab-dropdown-item"
+        :class="{ 'natca-shell-tab-dropdown-item-active': isActive(child) }"
+        @click="onSwitcherChildClick"
+      >
+        <v-icon
+          v-if="child.icon"
+          :icon="child.icon"
+          size="14"
+          class="natca-shell-tab-dropdown-icon"
+        />
+        <span>{{ child.label }}</span>
+        <span
+          v-if="child.badge != null"
+          class="natca-shell-nav-badge"
+          style="font-size: 9px;"
+        >
+          {{ child.badge }}
         </span>
       </router-link>
     </div>

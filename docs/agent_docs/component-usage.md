@@ -49,6 +49,37 @@ setTheme(localStorage.getItem('natca-theme') ?? 'dark')
 
 The shell includes a sun/moon theme toggle in the topbar by default. To disable: `:show-theme-toggle="false"`.
 
+#### Tab switcher (dropdown tab)
+
+A top-level tab can render as a switcher dropdown by setting `children`. Useful for area/region/workspace pickers that should stay inline with the other tabs.
+
+```ts
+const tabs: NatcaTab[] = [
+  { id: 'home', label: 'My Facility', icon: 'mdi-office-building', to: '/member' },
+  { id: 'lines', label: 'Lines', icon: 'mdi-format-list-bulleted', to: '/member/lines' },
+  {
+    id: 'area',
+    label: 'Area',
+    icon: 'mdi-map-marker',
+    to: '/member/area',
+    children: [
+      { id: 'south',   label: 'South',   to: '/member/area/south' },
+      { id: 'east',    label: 'East',    to: '/member/area/east' },
+      { id: 'central', label: 'Central', to: '/member/area/central' },
+    ],
+  },
+]
+```
+
+Behavior:
+- Parent renders as a button with a chevron-down (no direct navigation on click).
+- Clicking opens an inline dropdown listing the children; the children are router-links.
+- Parent label updates to the active child's label (longest-prefix match) when a child route is active.
+- Parent shows the red active underline when any child is active.
+- Click-outside, Escape, and route change all close the menu.
+- If the switcher tab itself overflows into "More," its children are flattened into the More menu (no nested overlays).
+- Nested switchers are not supported — `children` should be flat router-link tabs.
+
 ### 4. Fonts (automatic)
 
 Barlow and Public Sans are **auto-loaded** by the package — no manual `<link>` tags needed. Any app that imports from `@natca-itc/ui-shell` gets the fonts via a CSS `@import` in the bundled styles.

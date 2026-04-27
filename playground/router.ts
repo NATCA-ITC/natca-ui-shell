@@ -162,6 +162,23 @@ export const router = createRouter({
       meta: { title: 'Schedule', breadcrumbs: [{ label: 'BID', to: '/member' }, { label: 'Schedule' }] },
     },
     {
+      path: '/member/area',
+      component: PlaceholderPage,
+      meta: { title: 'Area', breadcrumbs: [{ label: 'BID', to: '/member' }, { label: 'Area' }] },
+    },
+    {
+      path: '/member/area/:area',
+      component: PlaceholderPage,
+      meta: {
+        title: 'Area Detail',
+        breadcrumbs: [
+          { label: 'BID', to: '/member' },
+          { label: 'Area', to: '/member/area' },
+          { label: ':area' },
+        ],
+      },
+    },
+    {
       path: '/member/training',
       component: PlaceholderPage,
       meta: { title: 'Training', breadcrumbs: [{ label: 'BID', to: '/member' }, { label: 'Training' }] },

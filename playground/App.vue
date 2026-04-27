@@ -69,6 +69,19 @@ const memberTabs: NatcaTab[] = [
   { id: 'leave', label: 'Leave', icon: 'mdi-calendar', to: '/member/leave' },
   { id: 'summary', label: 'Bid Summary', icon: 'mdi-clipboard-check', to: '/member/summary' },
   { id: 'schedule', label: 'Schedule', icon: 'mdi-clock-outline', to: '/member/schedule' },
+  {
+    id: 'area',
+    label: 'Area',
+    icon: 'mdi-map-marker',
+    to: '/member/area',
+    children: [
+      { id: 'area-south', label: 'South', icon: 'mdi-compass', to: '/member/area/south' },
+      { id: 'area-east', label: 'East', icon: 'mdi-compass', to: '/member/area/east' },
+      { id: 'area-central', label: 'Central', icon: 'mdi-compass', to: '/member/area/central' },
+      { id: 'area-western', label: 'Western', icon: 'mdi-compass', to: '/member/area/western' },
+      { id: 'area-northwest', label: 'Northwest Mountain', icon: 'mdi-compass', to: '/member/area/northwest' },
+    ],
+  },
   { id: 'training', label: 'Training', icon: 'mdi-school', to: '/member/training' },
   { id: 'grievances', label: 'Grievances', icon: 'mdi-gavel', to: '/member/grievances' },
 ]

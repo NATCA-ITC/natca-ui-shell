@@ -51,6 +51,14 @@
 .natca-shell-tab.natca-shell-tab-icon-only .natca-shell-tab-icon { opacity: 0.7; }
 .natca-shell-tab.natca-shell-tab-icon-only:hover .natca-shell-tab-icon { opacity: 1; }
 
+/* ── Switcher tab (renders as <button> with chevron, opens dropdown of children) ── */
+.natca-shell-tab-switcher { cursor: pointer; border: none; background: none; font: inherit; }
+.natca-shell-tab-chevron { opacity: 0.5; flex-shrink: 0; transition: transform 150ms, opacity 150ms; }
+.natca-shell-tab-switcher:hover .natca-shell-tab-chevron,
+.natca-shell-tab-switcher.natca-shell-tab-active .natca-shell-tab-chevron { opacity: 1; }
+.natca-shell-tab-switcher.natca-shell-tab-switcher-open .natca-shell-tab-chevron { transform: rotate(180deg); opacity: 1; }
+.natca-shell-tab-switcher.natca-shell-tab-switcher-open { color: var(--color-text-primary); }
+
 /* ── More button ── */
 .natca-shell-tab-more { display: flex; align-items: center; gap: 4px; padding: 0 14px; font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--color-text-faint); cursor: pointer; white-space: nowrap; border: none; background: none; border-bottom: 2px solid transparent; transition: color 150ms; flex-shrink: 0; margin-left: auto; }
 .natca-shell-tab-more:hover { color: var(--color-text-hover); }
