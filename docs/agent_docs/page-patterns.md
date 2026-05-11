@@ -152,7 +152,7 @@ to a small number of feature callouts.
 |---|---|---|
 | `NatcaCard` (default) | Wrapping a form, list, table, or any sectioned content. This is the workhorse. | — |
 | `NatcaCard accent="info\|success\|warning\|danger"` | Single page-level callout / call-to-action with a brand color. One per page max. | As the default style for all cards on the page. |
-| `NatcaHeaderCard` | Hero feature card on a member-facing landing page (e.g. "My Email Account" hero on `/email`). Navy strip + icon + title. | Wrapping every section. Wrapping forms. Wrapping data lists. |
+| `NatcaHeaderCard` | Hero feature card on a member-facing landing page (e.g. "My Email Account" hero on `/email`). 4px brand top border + single-line header (icon · title · subtitle · right slot). | Wrapping every section. Wrapping forms. Wrapping data lists. |
 | `NatcaStatCard` (in `NatcaStatGrid`) | KPI tiles on a dashboard. | Anywhere actionable — they have no body slot. |
 
 ### Dashboard layouts
@@ -197,6 +197,26 @@ chip.
 `NatcaCard` already renders `title` at 17px / 700 weight Barlow with a
 14px top padding. Don't override it from the consumer. If you need a
 larger title, the section title above the card is the right place.
+
+### NatcaHeaderCard accent / icon contrast
+
+The accent colors are intentionally locked to two brand tones, and the
+icon color is auto-derived as the *opposite* brand color so the icon
+square never disappears into the top border:
+
+| `accent` | Top border | Icon color (light) | Icon color (dark) |
+|---|---|---|---|
+| `"navy"` (default) | `--natca-navy` | red | red |
+| `"red"`  | `--natca-red`  | navy | sky-blue (lifted for dark contrast) |
+
+Don't try to override the icon color from the consumer — the contrast is
+the visual anchor. If you need a third accent (e.g. warning yellow for a
+critical callout), reach for `<NatcaCard accent="warning">` instead;
+that's what accent-cards are for.
+
+For buttons inside the `#header-right` slot, prefer `NatcaButton
+variant="link"` or `variant="ghost"` — `variant="primary"` will render in
+the same brand color as the top accent and read as a clash.
 
 ## 4. Data tables
 

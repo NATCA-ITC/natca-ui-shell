@@ -297,19 +297,43 @@ const members: MemberCardData[] = [
 
       <p class="eyebrow" style="margin-top: 20px;">Hero header card — feature landing</p>
       <p class="ds-body">
-        Reserved for member-facing feature landing pages. Use it once, at the top of a feature
-        section. <em>Not</em> a default content wrapper.
+        Reserved for member-facing feature landing pages. Single-line header strip with a
+        4px brand top border. The icon color auto-contrasts to the opposite brand color so
+        nothing ever clashes with the accent — pass <code>accent="navy"</code> (default) or
+        <code>accent="red"</code>.
       </p>
-      <NatcaHeaderCard icon="mdi-email-outline" title="My Email Account" subtitle="jason.doss@natca.net · ZJX">
+      <NatcaHeaderCard
+        accent="navy"
+        icon="mdi-email-outline"
+        title="My Email Account"
+        subtitle="jason.doss@natca.net · ZJX · Mailcow"
+      >
+        <template #header-right>
+          <VChip color="success" variant="tonal">Active</VChip>
+        </template>
         <div class="ds-field-grid">
-          <div><span class="ds-field-label">Provider</span><br><span class="ds-field-value">Mailcow</span></div>
           <div><span class="ds-field-label">Storage</span><br><span class="ds-field-value">2.1 / 5 GB</span></div>
-          <div><span class="ds-field-label">Status</span><br><VChip color="success" variant="tonal">Active</VChip></div>
+          <div><span class="ds-field-label">Quota</span><br><span class="ds-field-value">5 GB</span></div>
+          <div><span class="ds-field-label">Last sign-in</span><br><span class="ds-field-value">2h ago</span></div>
         </div>
         <template #actions>
           <NatcaButton variant="ghost" size="md">Settings</NatcaButton>
           <NatcaButton variant="primary" size="md">Manage account</NatcaButton>
         </template>
+      </NatcaHeaderCard>
+
+      <div style="height: 12px;"></div>
+      <NatcaHeaderCard
+        accent="red"
+        icon="mdi-shield-alert-outline"
+        title="Access review required"
+        subtitle="3 admin grants pending review"
+      >
+        <template #header-right>
+          <NatcaButton variant="link">View all</NatcaButton>
+        </template>
+        <p style="margin: 0;">Review the pending grant requests before the next compliance window
+          on June 30. Each grant requires sign-off from the area chair.</p>
       </NatcaHeaderCard>
     </section>
 
