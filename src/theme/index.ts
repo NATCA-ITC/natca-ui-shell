@@ -142,13 +142,19 @@ export const natcaDefaults = {
     density: 'compact' as const,
   },
   // ── Buttons ──
+  // Always use NatcaButton for design-system buttons. VBtn defaults exist only
+  // for cases where Vuetify components render their own internal VBtn (menus,
+  // dialogs, picker chrome). We force `default` density + size so internal
+  // VBtns can never collapse to the 16-20px "compact + x-small" combo that
+  // Claude-built pages keep producing. If you're tempted to set size="small"
+  // or density="compact" on a button, you should be using NatcaButton (size
+  // "sm" = 28px toolbar tier; "md" = 36px action tier).
   VBtn: {
     variant: 'flat' as const,
     rounded: 'md',
-    density: 'compact' as const,
-    size: 'small',
+    density: 'default' as const,
+    size: 'default' as const,
   },
-  // NAT-281: Action buttons in card/dialog footers get proper sizing
   VCardActions: {
     VBtn: {
       size: 'default' as const,

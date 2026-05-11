@@ -1,4 +1,4 @@
-import { ref, computed, readonly } from 'vue'
+import { ref, computed, readonly, watch } from 'vue'
 
 interface NatcaThemeOptions {
   systemLight?: string
@@ -35,6 +35,13 @@ export function useNatcaTheme(options?: NatcaThemeOptions) {
       const mql = window.matchMedia('(prefers-color-scheme: dark)')
       _osDark.value = mql.matches
       mql.addEventListener('change', e => { _osDark.value = e.matches })
+
+      // Mirror data-theme onto <html> so teleported overlays (VDialog,
+      // VMenu, VSnackbar, VTooltip) — which mount outside NatcaShell —
+      // still resolve our --color-bg-surface / --color-text-* tokens.
+      watch(resolvedTheme, t => {
+        document.documentElement.setAttribute('data-theme', t)
+      }, { immediate: true })
     }
   }
 

@@ -18,8 +18,13 @@
 
 /* ── Top Bar (always navy — white-alpha overlays are intentional here) ── */
 /* overflow-x: clip lets the user-menu dropdown escape the topbar's vertical
-   boundary while still clipping any horizontal flex overflow on narrow screens. */
-.natca-shell-topbar { background: var(--natca-navy); height: 52px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; border-bottom: 1px solid var(--color-border); max-width: 100%; overflow-x: clip; overflow-y: visible; }
+   boundary while still clipping any horizontal flex overflow on narrow screens.
+   position: relative + z-index puts the topbar (and any descendants like the
+   user-menu dropdown that uses position:absolute relative to the avatar) into
+   a stacking context that paints on top of .natca-shell-below-topbar — without
+   this, the dropdown rendered "below" the breadcrumb row because below-topbar
+   is `position: relative` and comes later in DOM order. */
+.natca-shell-topbar { background: var(--natca-navy); height: 52px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; border-bottom: 1px solid var(--color-border); max-width: 100%; overflow-x: clip; overflow-y: visible; position: relative; z-index: 60; }
 .natca-shell-logo-zone { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
 .natca-shell-logo-zone img { height: 28px; width: auto; }
 .natca-shell-app-chip { display: inline-flex; align-items: center; gap: 5px; margin-left: 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 4px 10px; font-family: var(--font-display); font-size: 12px; font-weight: 700; color: #FFFFFF; cursor: pointer; transition: all 150ms; white-space: nowrap; }
