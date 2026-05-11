@@ -62,16 +62,26 @@ defineSlots<{
 </template>
 
 <style scoped>
+/* NatcaHeaderCard — branded feature card.
+ *   • Top border: 4px navy (matches accent-card pattern, stamps the brand)
+ *   • Header zone: a tinted strip — slightly darker than the card body in
+ *     dark theme, slightly lighter in light theme. Reads as a banded
+ *     "header" without screaming navy through the whole strip.
+ *   • Icon: navy-tinted square so the brand color still anchors the card.
+ *   • Title/subtitle: theme-aware text (no more white-on-navy).
+ */
 .natca-header-card {
   background: var(--color-bg-surface);
   border: 1px solid var(--color-border);
+  border-top: 4px solid var(--natca-navy);
   border-radius: var(--radius-lg);
   overflow: hidden;
   font-family: var(--font-body);
 }
 
 .natca-header-card__header {
-  background: var(--natca-navy);
+  background: var(--overlay-subtle);
+  border-bottom: 1px solid var(--overlay-border);
   padding: 14px 16px;
   display: flex;
   align-items: center;
@@ -81,14 +91,21 @@ defineSlots<{
 .natca-header-card__icon {
   width: 36px;
   height: 36px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(var(--natca-blue-rgb), 0.10);
+  border: 1px solid rgba(var(--natca-blue-rgb), 0.18);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--natca-navy);
   flex-shrink: 0;
+}
+
+[data-theme="dark"] .natca-header-card__icon,
+.v-theme--natcaDark .natca-header-card__icon {
+  background: rgba(var(--natca-red-rgb), 0.14);
+  border-color: rgba(var(--natca-red-rgb), 0.30);
+  color: var(--natca-red);
 }
 
 .natca-header-card__text {
@@ -98,18 +115,18 @@ defineSlots<{
 
 .natca-header-card__title {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
-  color: #FFFFFF;
+  color: var(--color-text-primary);
   line-height: 1.2;
   margin: 0;
 }
 
 .natca-header-card__subtitle {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-text-muted);
   margin: 2px 0 0;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
 .natca-header-card__header-right {
@@ -117,7 +134,7 @@ defineSlots<{
 }
 
 .natca-header-card__body {
-  padding: 12px 16px;
+  padding: 14px 16px;
   font-size: var(--text-sm);
   color: var(--color-text-body);
 }
@@ -127,7 +144,7 @@ defineSlots<{
 }
 
 .natca-header-card__actions {
-  padding: 8px 16px 12px;
+  padding: 10px 16px 14px;
   display: flex;
   gap: var(--space-2);
   justify-content: flex-end;
