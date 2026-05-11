@@ -58,7 +58,10 @@ in `mynatca/hub`, `mynatca/bid`, `mynatca/dms`, `mynatca/pay`,
 
 ### Section title styling
 
-Every section title uses the same red-underline pattern:
+Every section title uses the same red-underline pattern. The
+`.section-title` and `.section-body` classes are **global** — shipped
+from `@natca-itc/ui-shell/shell-styles` (already imported by
+`NatcaShell`). Just use them; don't paste the CSS into every page.
 
 ```vue
 <h3 class="section-title">Members</h3>
@@ -71,30 +74,10 @@ Every section title uses the same red-underline pattern:
 </NatcaCard>
 ```
 
-```css
-.section-title {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin: 0 0 8px;
-  padding-bottom: 6px;
-  border-bottom: 3px solid var(--natca-red);
-  display: inline-block;
-}
-.section-body {
-  font-size: 14px;
-  color: var(--color-text-body);
-  line-height: 1.55;
-  margin: 0 0 14px;
-  max-width: 760px;
-}
-```
-
-These two classes are part of the rhythm — don't reinvent them per app.
-If they're not yet hoisted into a shared stylesheet for your app, paste
-them as scoped page styles for now and file an issue on `natca-ui-shell`
-to promote them to a global helper.
+Don't redefine `.section-title` or `.section-body` in a `<style scoped>`
+block — the global versions already match page-patterns. If you need a
+page-specific tweak (rare), use a more specific class name; don't shadow
+the global helpers.
 
 ## 2. Buttons — the 16px problem and how to never have it
 
@@ -108,11 +91,13 @@ never use a bare `v-btn` for an app action.**
 
 - For any user-visible action (Save, Create, Delete, Cancel, Filter,
   View, Open, Export, …) use **`NatcaButton`**, never `v-btn`.
-- `NatcaButton` has exactly two sizes: **`sm`** (28px, default — for
-  toolbars and table actions) and **`md`** (36px — for card / dialog /
-  form footers). There is no smaller size by design.
-- If you find yourself writing a `<v-btn>`, stop and replace it with the
-  matching NatcaButton variant.
+- For icon-only actions (delete row, edit, copy, share, dialog close X)
+  use **`NatcaIconButton`**, never `<v-btn icon>`.
+- Both have exactly two sizes: **`sm`** (28px / 28×28 square — toolbars
+  and table-row actions) and **`md`** (36px / 36×36 square — card /
+  dialog / form footers). There is no smaller size by design.
+- If you find yourself writing a `<v-btn>` or `<v-btn icon>`, stop and
+  replace it with the matching `NatcaButton` or `NatcaIconButton`.
 
 ### When you have to render a Vuetify-internal button
 
@@ -130,9 +115,13 @@ and don't override them. If a third-party component needs a custom
 | Toolbar / table action / filter / page-header right slot | `NatcaButton variant="…"` | `size="sm"` (default) |
 | Card footer / dialog footer / form submit row | `NatcaButton variant="…"` | `size="md"` |
 | Inline navigation in body text | `NatcaButton variant="link"` | `size="sm"` |
+| Icon-only row action (edit / delete / copy / share) | `NatcaIconButton variant="…" icon="…" aria-label="…"` | `size="sm"` |
+| Icon-only form-footer / dialog-toolbar | `NatcaIconButton variant="…" icon="…" aria-label="…"` | `size="md"` |
 | Vuetify-internal | leave it to Vuetify | — |
 
 ### Variant decision
+
+Both `NatcaButton` and `NatcaIconButton` use the same five variants:
 
 | Variant | Use for |
 |---|---|
@@ -141,6 +130,12 @@ and don't override them. If a third-party component needs a custom
 | `danger` | Destructive — Delete, Remove, Revoke. Always confirm. |
 | `ghost` | Tertiary or dismissive — Cancel, Close, Skip |
 | `link` | Inline navigation — View details, Open report |
+
+### Icon button accessibility
+
+`NatcaIconButton` makes `aria-label` a required prop — TypeScript
+enforces it; runtime warns if empty. Always describe the *action*, not
+the icon: `aria-label="Delete member"`, not `aria-label="trash icon"`.
 
 ## 3. Cards — three components, one decision
 
@@ -394,6 +389,16 @@ page-level callout that needs an action button, reach for
 
 ## 10. Dialogs (`NatcaDialog`)
 
+Three layouts:
+
+| Variant | Use for |
+|---|---|
+| `default` (no prop) | Confirm dialogs, forms — navy header strip + icon + title + subtitle |
+| `danger` | Destructive confirmation — red header strip + alert icon |
+| `bare` | Lightboxes, image previews, chromeless single-content overlays — no header, body is the entire dialog |
+
+### Default / danger
+
 ```vue
 <NatcaDialog v-model="show" title="Confirm migration"
              subtitle="Batch #12 · 34 accounts"
@@ -408,6 +413,32 @@ page-level callout that needs an action button, reach for
 
 For destructive confirmation use `variant="danger"` on the dialog (red
 header) and `variant="danger"` on the confirm button.
+
+### Bare (lightbox / image preview)
+
+```vue
+<NatcaDialog v-model="show" variant="bare" :max-width="900">
+  <img :src="logo.url" alt="Logo preview" style="width:100%; display:block;" />
+</NatcaDialog>
+```
+
+The bare variant auto-renders a ghost close button in the top-right
+corner with a translucent backdrop so it stays visible on dark images.
+Override it with the `#close` slot if you need styled differently:
+
+```vue
+<NatcaDialog v-model="show" variant="bare" :max-width="900">
+  <template #close="{ close }">
+    <NatcaIconButton variant="danger" size="sm" icon="mdi-close"
+                     aria-label="Close preview" @click="close" />
+  </template>
+  <img :src="logo.url" alt="Logo preview" style="width:100%; display:block;" />
+</NatcaDialog>
+```
+
+The slot receives a `close` function — call it to dismiss the dialog.
+Don't try to dismiss by directly mutating `v-model`; the slot's `close`
+fn keeps the contract clean.
 
 ## 11. Annotations (`NatcaAnnotation`)
 
@@ -486,9 +517,18 @@ correctness.
 - ❌ Wrapping every section in a `NatcaHeaderCard` "for visual
   separation" — use the section title.
 - ❌ Bare `<v-btn>` for app actions — always `NatcaButton`.
+- ❌ Bare `<v-btn icon>` for icon-only actions — always
+  `NatcaIconButton` (28×28 or 36×36, never the 16-20px Vuetify chip).
 - ❌ `<v-btn size="small">` or `<v-btn density="compact" size="small">`
   — both produce ~16-20px chips. There is no design-system size below
   `NatcaButton size="sm"` (28px).
+- ❌ Pasting `.section-title` / `.section-body` CSS into a scoped block
+  — they're global helpers from `/shell-styles` now. Just use the class.
+- ❌ Raw `<v-dialog><v-card>` for lightboxes — use `NatcaDialog
+  variant="bare"`.
+- ❌ `NatcaIconButton` without `aria-label` — TypeScript enforces it;
+  always describe the *action*, not the icon ("Delete member", not
+  "trash icon").
 - ❌ Filters / search / tabs in the page header row — they belong in a
   section toolbar inside a card.
 - ❌ Hardcoded hex (`#CE0E2D`), font name, or pixel spacing — always a
@@ -540,23 +580,9 @@ import {
 </template>
 
 <style scoped>
+/* .section-title and .section-body are global helpers shipped from
+   @natca-itc/ui-shell/shell-styles — no scoped definition needed. */
 .page         { padding: 0 24px 48px; max-width: 1080px; }
 .page-section { padding: 24px 0; }
-.section-title {
-  font-family: var(--font-display);
-  font-size: 20px; font-weight: 700;
-  color: var(--color-text-primary);
-  margin: 0 0 8px;
-  padding-bottom: 6px;
-  border-bottom: 3px solid var(--natca-red);
-  display: inline-block;
-}
-.section-body {
-  font-size: 14px;
-  color: var(--color-text-body);
-  line-height: 1.55;
-  margin: 0 0 14px;
-  max-width: 760px;
-}
 </style>
 ```

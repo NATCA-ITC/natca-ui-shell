@@ -11,6 +11,7 @@ import {
   NatcaAnnotation,
   NatcaMemberCard,
   NatcaButton,
+  NatcaIconButton,
   NatcaAlert,
   NatcaPillNav,
   NatcaDialog,
@@ -73,6 +74,7 @@ function statusChipColor(status: string): string | undefined {
 // ── Dialog demo ──
 const showConfirmDialog = ref(false)
 const showDangerDialog = ref(false)
+const showBareDialog = ref(false)
 
 // ── Form demo ──
 const formProvider = ref('Mailcow')
@@ -124,11 +126,30 @@ const members: MemberCardData[] = [
         inside the section's content area — never in the page header.
       </p>
 
-      <NatcaAnnotation type="warning" style="margin-top: 12px;">
+      <p class="eyebrow">Section helpers — now global</p>
+      <p class="ds-body">
+        The <code>.section-title</code> and <code>.section-body</code> classes are shipped from
+        <code>@natca-itc/ui-shell/shell-styles</code> (already imported by <code>NatcaShell</code>).
+        Apps used to paste this CSS into every page; that's no longer needed. The card below
+        uses the global classes directly — no scoped overrides:
+      </p>
+
+      <NatcaCard>
+        <h3 class="section-title">Members</h3>
+        <p class="section-body">
+          All bargaining-unit members assigned to this facility, including pending and suspended accounts.
+          Renders here with zero scoped CSS — only the global <code>section-title</code> /
+          <code>section-body</code> classes.
+        </p>
+      </NatcaCard>
+
+      <NatcaAnnotation type="warning" style="margin-top: 16px;">
         <strong>Anti-patterns to avoid:</strong> wrapping every section in a NatcaHeaderCard
         (the navy strip is for hero callouts only); using bare <code>v-btn</code> anywhere
-        (always <code>NatcaButton</code>); dropping a search input in the page header row;
-        rendering buttons at 16-20px (always <code>size="sm"</code> or <code>size="md"</code>).
+        (always <code>NatcaButton</code> or <code>NatcaIconButton</code>); dropping a search
+        input in the page header row; rendering buttons at 16-20px (always <code>size="sm"</code>
+        or <code>size="md"</code>); pasting <code>.section-title</code>/<code>.section-body</code>
+        CSS into a page — they're global helpers now.
       </NatcaAnnotation>
     </section>
 
@@ -202,6 +223,56 @@ const members: MemberCardData[] = [
           </tr>
         </tbody>
       </table>
+    </section>
+
+    <!-- ═══════════ ICON BUTTONS ═══════════ -->
+    <section class="ds-section">
+      <h3 class="ds-section-title">Icon buttons</h3>
+      <p class="ds-body">
+        <code>NatcaIconButton</code> is the icon-only companion to <code>NatcaButton</code> —
+        same five variants, two square sizes (28×28 and 36×36). Use this anywhere you'd
+        otherwise reach for <code>&lt;v-btn icon&gt;</code> — dialog close X, table row actions,
+        lightbox toolbars, expand/collapse, copy-to-clipboard. <strong>Required
+        <code>aria-label</code></strong> (TS enforces it; runtime warns if empty).
+      </p>
+
+      <table class="ds-props-table">
+        <thead><tr><th>Example</th><th>Size</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="ds-btn-row">
+                <NatcaIconButton variant="ghost"     size="sm" icon="mdi-pencil"   aria-label="Edit" />
+                <NatcaIconButton variant="ghost"     size="sm" icon="mdi-content-copy" aria-label="Copy" />
+                <NatcaIconButton variant="ghost"     size="sm" icon="mdi-share-variant" aria-label="Share" />
+                <NatcaIconButton variant="danger"    size="sm" icon="mdi-delete"   aria-label="Delete" />
+                <NatcaIconButton variant="link"      size="sm" icon="mdi-open-in-new" aria-label="Open in new tab" />
+                <NatcaIconButton variant="secondary" size="sm" icon="mdi-dots-horizontal" aria-label="More actions" />
+              </div>
+            </td>
+            <td><code>size="sm"</code> (28×28)</td>
+            <td>Table-row actions, dense list affordances, dialog close X, toolbar.</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="ds-btn-row">
+                <NatcaIconButton variant="primary"   size="md" icon="mdi-download"      aria-label="Download" />
+                <NatcaIconButton variant="secondary" size="md" icon="mdi-printer"       aria-label="Print" />
+                <NatcaIconButton variant="danger"    size="md" icon="mdi-trash-can"     aria-label="Delete record" />
+                <NatcaIconButton variant="ghost"     size="md" icon="mdi-refresh"       aria-label="Refresh" />
+              </div>
+            </td>
+            <td><code>size="md"</code> (36×36)</td>
+            <td>Form-footer / dialog-footer rows when paired with <code>NatcaButton size="md"</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <NatcaAnnotation type="warning" style="margin-top: 8px; max-width: 760px;">
+        <strong>Don't use <code>&lt;v-btn icon size="small"&gt;</code>.</strong> It collapses to a
+        16-20px chip under <code>natcaDefaults</code> — the exact bug page-patterns §2 forbids.
+        <code>NatcaIconButton</code> is the only correct primitive for icon-only actions.
+      </NatcaAnnotation>
     </section>
 
     <!-- ═══════════ CARDS ═══════════ -->
@@ -559,13 +630,16 @@ const members: MemberCardData[] = [
     <section class="ds-section">
       <h3 class="ds-section-title">Dialogs</h3>
       <p class="ds-body">
-        <code>NatcaDialog</code> wraps VDialog with a navy (default) or red (danger) header
-        strip + icon + title + subtitle. Use the danger variant for confirm-before-destruction.
+        <code>NatcaDialog</code> wraps VDialog with three layouts:
+        <strong>default</strong> (navy header strip + icon + title + subtitle — confirm dialogs, forms),
+        <strong>danger</strong> (red header strip — destructive confirmation),
+        and <strong>bare</strong> (chromeless — image preview / lightbox / single-content overlay).
       </p>
 
       <div class="ds-btn-row">
         <NatcaButton variant="primary" @click="showConfirmDialog = true">Open confirm dialog</NatcaButton>
         <NatcaButton variant="danger" @click="showDangerDialog = true">Open danger dialog</NatcaButton>
+        <NatcaButton variant="secondary" @click="showBareDialog = true">Open bare dialog</NatcaButton>
       </div>
 
       <NatcaDialog
@@ -593,6 +667,12 @@ const members: MemberCardData[] = [
           <NatcaButton variant="ghost" size="md" @click="showDangerDialog = false">Cancel</NatcaButton>
           <NatcaButton variant="danger" size="md" @click="showDangerDialog = false">Delete account</NatcaButton>
         </template>
+      </NatcaDialog>
+
+      <NatcaDialog v-model="showBareDialog" variant="bare" :max-width="720">
+        <div style="background: linear-gradient(135deg, #003366 0%, #6AC9FF 100%); aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-family: var(--font-display); font-size: 32px; font-weight: 700; letter-spacing: 1px;">
+          Bare dialog content
+        </div>
       </NatcaDialog>
     </section>
 

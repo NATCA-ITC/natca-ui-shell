@@ -159,3 +159,43 @@
   .natca-shell-tab-more { padding: 0 10px; }
   .natca-shell-breadcrumb-row { padding: 0 12px; }
 }
+
+/* ────────────────────────────────────────────────────────────────────────
+ * Section rhythm helpers — hoisted from page-patterns §1 so every NATCA
+ * Vue 3 app uses the same selectors instead of pasting the same scoped
+ * CSS into every page. Apply on any <h3> + <p> pair within a routed
+ * content area.
+ *
+ *   <h3 class="section-title">Members</h3>
+ *   <p class="section-body">All bargaining-unit members assigned to this facility.</p>
+ *
+ * Names are intentionally short — these are global helpers consumed by
+ * every app, not internal shell parts. Don't prefix with .natca-.
+ * ──────────────────────────────────────────────────────────────────── */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 3px solid var(--natca-red);
+  display: inline-block;
+}
+
+.section-body {
+  font-size: 14px;
+  color: var(--color-text-body);
+  line-height: 1.55;
+  margin: 0 0 14px;
+  max-width: 760px;
+}
+
+.section-body code {
+  font-size: 12px;
+  background: var(--overlay-hover);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  color: var(--color-text-primary);
+}
