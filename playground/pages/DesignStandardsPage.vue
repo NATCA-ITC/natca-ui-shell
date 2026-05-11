@@ -19,22 +19,31 @@ import type { NatcaTabItem } from '@/components/NatcaTabs.vue'
 import type { MemberCardData } from '@/components/NatcaMemberCard.vue'
 import {
   VSpacer, VTextField, VSelect, VAutocomplete,
-  VDataTable, VDivider, VChip, VProgressLinear,
-  VSwitch, VCheckbox,
+  VDataTable, VChip, VProgressLinear,
+  VSwitch, VCheckbox, VIcon,
 } from 'vuetify/components'
 
 // ── Tabs demo ──
 const localTab = ref('details')
 const localTabItems: NatcaTabItem[] = [
   { id: 'details', label: 'Details', icon: 'mdi-information-outline' },
-  { id: 'members', label: 'Members', badge: 198 },
-  { id: 'history', label: 'History' },
+  { id: 'members', label: 'Members', icon: 'mdi-account-group-outline', badge: 198 },
+  { id: 'history', label: 'History', icon: 'mdi-history' },
+]
+
+const standaloneTab = ref('overview')
+const standaloneItems: NatcaTabItem[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'roster', label: 'Roster', badge: 42 },
+  { id: 'documents', label: 'Documents' },
+  { id: 'audit', label: 'Audit log' },
 ]
 
 // ── Pill nav demo ──
 const timeRange = ref('30d')
 const viewMode = ref('list')
 const filterStatus = ref('all')
+const dashScope = ref('me')
 
 // ── Data table demo ──
 const tableHeaders = [
@@ -50,6 +59,8 @@ const tableItems = [
   { name: 'Sarah Mitchell', facility: 'ZDC', email: 's.mitchell@natca.net', provider: 'O365', status: 'Active' },
   { name: 'Marcus Chen', facility: 'ZLA', email: 'm.chen@natca.net', provider: 'Mailcow', status: 'Pending' },
   { name: 'Emily Rodriguez', facility: 'ZAU', email: 'e.rodriguez@natca.net', provider: 'Mailcow', status: 'Disabled' },
+  { name: 'Mike Thompson', facility: 'ZOB', email: 'm.thompson@natca.net', provider: 'O365', status: 'Active' },
+  { name: 'Anita Patel', facility: 'ZBW', email: 'a.patel@natca.net', provider: 'Mailcow', status: 'Active' },
 ]
 
 function statusChipColor(status: string): string | undefined {
@@ -78,167 +89,256 @@ const members: MemberCardData[] = [
 
 <template>
   <div class="ds-page">
-    <NatcaPageHeader title="Design Standards" subtitle="Every component from @natca-itc/ui-shell, rendered live">
+    <NatcaPageHeader
+      title="Design Standards"
+      subtitle="The single source of truth for layout, components, and color in any NATCA app."
+    >
       <template #actions>
-        <NatcaButton variant="link" href="/natca-design-system.html" target="_blank">
-          Open Static Reference
-        </NatcaButton>
+        <NatcaPillNav
+          v-model="dashScope"
+          :items="[
+            { value: 'me', label: 'For me' },
+            { value: 'all', label: 'All' },
+          ]"
+        />
+        <NatcaButton variant="ghost">Export</NatcaButton>
+        <NatcaButton variant="primary">New section</NatcaButton>
       </template>
     </NatcaPageHeader>
 
     <NatcaAnnotation>
-      <strong>This page uses the real package components.</strong>
-      Toggle light/dark with the sun/moon button in the topbar. Every pattern below should match the static design system reference exactly.
+      <strong>Read this before building any page.</strong>
+      Every pattern below is a hard requirement — when you build a page in any consuming app
+      (Hub, BID, Pay, DMS, GATS, Email), it should look exactly like the matching section here.
+      Toggle light / dark with the sun-moon button in the topbar.
     </NatcaAnnotation>
+
+    <!-- ═══════════ PAGE ANATOMY ═══════════ -->
+    <section class="ds-section">
+      <h3 class="ds-section-title">Page anatomy</h3>
+      <p class="ds-body">
+        Every page opens with <code>NatcaPageHeader</code> — title on the left, subtitle below it,
+        action buttons / pills / chips on the right. Below the header, content is organized into
+        sections with a red-underlined section title; descriptive body text sits directly under the
+        title; the actual content (card, table, form, grid) follows. Filters, search, and tabs live
+        inside the section's content area — never in the page header.
+      </p>
+
+      <NatcaAnnotation type="warning" style="margin-top: 12px;">
+        <strong>Anti-patterns to avoid:</strong> wrapping every section in a NatcaHeaderCard
+        (the navy strip is for hero callouts only); using bare <code>v-btn</code> anywhere
+        (always <code>NatcaButton</code>); dropping a search input in the page header row;
+        rendering buttons at 16-20px (always <code>size="sm"</code> or <code>size="md"</code>).
+      </NatcaAnnotation>
+    </section>
 
     <!-- ═══════════ BUTTONS ═══════════ -->
     <section class="ds-section">
-      <h3 class="ds-section-title">Button Tiers</h3>
+      <h3 class="ds-section-title">Button tiers</h3>
+      <p class="ds-body">
+        <code>NatcaButton</code> has 5 variants and 2 sizes. Primary is filled navy in light /
+        filled red in dark. Secondary is a subtle filled neutral. Danger is outlined red. Ghost
+        is transparent muted text. Link is blue text. <strong>Never use a bare v-btn for app
+        actions</strong> — under <code>natcaDefaults</code> Vuetify buttons render at the wrong
+        scale.
+      </p>
 
-      <p class="eyebrow">Button Variants</p>
-      <NatcaAnnotation style="margin-bottom: 16px; max-width: 600px;">
-        <strong>NatcaButton</strong> has 5 variants and 2 sizes. Primary = filled navy (light) / filled red (dark). Secondary = subtle fill. Danger = outlined red. Ghost = transparent muted. Link = blue text.
-      </NatcaAnnotation>
-
+      <p class="eyebrow">Variants</p>
       <table class="ds-props-table">
-        <thead><tr><th>Variant</th><th>Usage</th><th>When to Use</th></tr></thead>
+        <thead><tr><th>Example</th><th>Code</th><th>When to use</th></tr></thead>
         <tbody>
           <tr>
             <td><NatcaButton variant="primary">Primary</NatcaButton></td>
-            <td><code>&lt;NatcaButton variant="primary"&gt;</code></td>
-            <td>Main action (save, submit, confirm)</td>
+            <td><code>variant="primary"</code></td>
+            <td>The single main action of the section (Save, Submit, Confirm).</td>
           </tr>
           <tr>
             <td><NatcaButton variant="secondary">Secondary</NatcaButton></td>
-            <td><code>&lt;NatcaButton variant="secondary"&gt;</code></td>
-            <td>Secondary actions (export, edit)</td>
+            <td><code>variant="secondary"</code></td>
+            <td>Equally weighted secondary action (Export, Edit, Filter).</td>
           </tr>
           <tr>
             <td><NatcaButton variant="danger">Danger</NatcaButton></td>
-            <td><code>&lt;NatcaButton variant="danger"&gt;</code></td>
-            <td>Destructive (delete, remove)</td>
+            <td><code>variant="danger"</code></td>
+            <td>Destructive — Delete, Remove, Revoke. Always confirm.</td>
           </tr>
           <tr>
             <td><NatcaButton variant="ghost">Ghost</NatcaButton></td>
-            <td><code>&lt;NatcaButton variant="ghost"&gt;</code></td>
-            <td>Cancel, dismiss, tertiary</td>
+            <td><code>variant="ghost"</code></td>
+            <td>Tertiary or dismissive — Cancel, Close, Skip.</td>
           </tr>
           <tr>
             <td><NatcaButton variant="link">Link</NatcaButton></td>
-            <td><code>&lt;NatcaButton variant="link"&gt;</code></td>
-            <td>Inline navigation (view details)</td>
+            <td><code>variant="link"</code></td>
+            <td>Inline navigation — View details, Open report.</td>
           </tr>
         </tbody>
       </table>
 
-      <div class="ds-row" style="margin-top: 16px;">
-        <div>
-          <p class="eyebrow">Toolbar Tier (size="sm" — default)</p>
-          <p class="ds-hint">Filters, table actions, toolbars. 28px height, 12px font.</p>
-          <div class="ds-btn-row">
-            <NatcaButton variant="primary">Save</NatcaButton>
-            <NatcaButton variant="secondary">Export</NatcaButton>
-            <NatcaButton variant="danger">Delete</NatcaButton>
-            <NatcaButton variant="ghost">Cancel</NatcaButton>
-            <NatcaButton variant="link">View Details</NatcaButton>
-          </div>
-        </div>
-        <div>
-          <p class="eyebrow">Action Tier (size="md")</p>
-          <p class="ds-hint">Card actions, dialog footers. 36px height, 13px font.</p>
-          <NatcaCard>
-            <template #actions>
-              <NatcaButton variant="ghost" size="md">Cancel</NatcaButton>
-              <NatcaButton variant="primary" size="md">Submit Request</NatcaButton>
-            </template>
-          </NatcaCard>
-        </div>
-      </div>
+      <p class="eyebrow" style="margin-top: 16px;">Sizes — pick one of these two, never smaller</p>
+      <table class="ds-props-table">
+        <thead><tr><th>Example</th><th>Size</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="ds-btn-row">
+                <NatcaButton variant="primary">Save</NatcaButton>
+                <NatcaButton variant="secondary">Export</NatcaButton>
+                <NatcaButton variant="ghost">Cancel</NatcaButton>
+              </div>
+            </td>
+            <td><code>size="sm"</code> (default — 28px)</td>
+            <td>Toolbars, table actions, page-header right slot, filter rows.</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="ds-btn-row">
+                <NatcaButton variant="primary" size="md">Submit Request</NatcaButton>
+                <NatcaButton variant="ghost" size="md">Cancel</NatcaButton>
+              </div>
+            </td>
+            <td><code>size="md"</code> (36px)</td>
+            <td>Card / dialog footers, form submit rows, anywhere primary CTAs live.</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
-
-    <VDivider />
 
     <!-- ═══════════ CARDS ═══════════ -->
     <section class="ds-section">
       <h3 class="ds-section-title">Cards</h3>
+      <p class="ds-body">
+        Three card components, each for a specific job. Use the decision matrix to choose —
+        don't reach for <code>NatcaHeaderCard</code> by default; the navy strip is loud and
+        belongs to a small number of feature callouts only.
+      </p>
 
-      <p class="eyebrow">Header Card</p>
-      <p class="ds-hint">Navy header with icon + title. Use for profile sections, account details, feature cards.</p>
-      <div class="ds-row">
-        <div style="flex: 1;">
-          <NatcaHeaderCard icon="mdi-account" title="My Email Account" subtitle="jason.doss@natca.net · ZJX">
-            <div class="ds-field-grid">
-              <div><span class="ds-field-label">Provider</span><br><span class="ds-field-value">Mailcow</span></div>
-              <div><span class="ds-field-label">Storage</span><br><span class="ds-field-value">2.1 / 5 GB</span></div>
-              <div><span class="ds-field-label">Status</span><br><VChip color="success" variant="tonal">Active</VChip></div>
-            </div>
-            <template #actions>
-              <NatcaButton variant="ghost" size="md">Settings</NatcaButton>
-              <NatcaButton variant="primary" size="md">Manage Account</NatcaButton>
-            </template>
-          </NatcaHeaderCard>
+      <table class="ds-props-table">
+        <thead><tr><th>Component</th><th>When to use</th><th>When NOT to use</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>NatcaCard</code></td>
+            <td>Default — forms, lists, dashboard tiles, sectioned content.</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><code>NatcaCard accent="…"</code></td>
+            <td>Single callout / call-to-action with brand color (info / success / warning / danger).
+              One per page max.</td>
+            <td>Don't use as the default card style — it's loud.</td>
+          </tr>
+          <tr>
+            <td><code>NatcaHeaderCard</code></td>
+            <td>Hero feature card with navy strip — e.g. "My Email Account" hero on the
+              member-facing email landing page.</td>
+            <td>Don't wrap every section in one. Don't use for forms or lists.</td>
+          </tr>
+          <tr>
+            <td><code>NatcaStatCard</code> / <code>NatcaStatGrid</code></td>
+            <td>KPI tiles in a dashboard grid (Total accounts, Active, Pending …).</td>
+            <td>Don't use for actionable content — they have no body.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="eyebrow" style="margin-top: 20px;">Default card with title, body, and actions</p>
+      <NatcaCard title="Email Account" subtitle="jason@natca.net · Active">
+        <div class="ds-field-grid">
+          <div><span class="ds-field-label">Provider</span><br><span class="ds-field-value">Mailcow</span></div>
+          <div><span class="ds-field-label">Quota</span><br><span class="ds-field-value">2.1 / 5 GB</span></div>
+          <div><span class="ds-field-label">Status</span><br><VChip color="success" variant="tonal">Active</VChip></div>
         </div>
-        <div style="flex: 1;">
-          <NatcaHeaderCard icon="mdi-briefcase" title="Migration Status" subtitle="Batch #12 · 34 accounts">
-            <VProgressLinear :model-value="65" color="primary" rounded height="4" style="margin-bottom: 8px;" />
-            <div style="display: flex; justify-content: space-between; font-size: 11px;">
-              <span style="color: var(--color-text-muted);">22 of 34 migrated</span>
-              <span style="color: var(--color-success); font-weight: 600;">65%</span>
-            </div>
-          </NatcaHeaderCard>
-        </div>
+        <template #actions>
+          <NatcaButton variant="ghost" size="md">Cancel</NatcaButton>
+          <NatcaButton variant="primary" size="md">Save changes</NatcaButton>
+        </template>
+      </NatcaCard>
+
+      <p class="eyebrow" style="margin-top: 20px;">Accent card — call-to-action</p>
+      <NatcaCard
+        accent="warning"
+        title="Migrate your @natca.net account"
+        subtitle="Action required by June 1, 2026"
+      >
+        Your email account is on the legacy mail platform. Migrate now to keep sending /
+        receiving after the cutover. Migration takes about 5 minutes and is fully reversible
+        for 30 days.
+        <template #actions>
+          <NatcaButton variant="ghost" size="md">Remind me later</NatcaButton>
+          <NatcaButton variant="primary" size="md">Start migration</NatcaButton>
+        </template>
+      </NatcaCard>
+
+      <p class="eyebrow" style="margin-top: 20px;">Dashboard layout — mixed cards + stat grid</p>
+      <p class="ds-body">
+        Variable-size dashboard tiles using a CSS grid. Cards span columns based on the data
+        density they need — left-side member detail spans 2 columns, the four right-side cards
+        each span 1.
+      </p>
+      <div class="ds-dashboard-grid">
+        <NatcaCard title="Jason T Doss" subtitle="Member 40162 · ZJX · Current Member" style="grid-column: span 2; grid-row: span 2;">
+          <template #title-actions>
+            <NatcaButton variant="link">View profile</NatcaButton>
+          </template>
+          <div class="ds-field-grid ds-field-grid--2col">
+            <div><span class="ds-field-label">Member type</span><br><span class="ds-field-value">Current Member</span></div>
+            <div><span class="ds-field-label">Bargaining unit</span><br><VChip color="success" variant="tonal">Active</VChip></div>
+            <div><span class="ds-field-label">Facility</span><br><span class="ds-field-value">ZJX · Southern</span></div>
+            <div><span class="ds-field-label">Career level</span><br><span class="ds-field-value">CPC</span></div>
+            <div><span class="ds-field-label">Email</span><br><span class="ds-field-value">jason.doss@natca.net</span></div>
+            <div><span class="ds-field-label">Phone</span><br><span class="ds-field-value">(859) 757-9223</span></div>
+          </div>
+        </NatcaCard>
+        <NatcaStatCard label="Membership status" value="Active" change="Since 07/22/2008" change-color="info" />
+        <NatcaStatCard label="Career level" value="CPC" change="EOD 01/14/2008" change-color="info" />
+        <NatcaStatCard label="PAC contributions" value="$•••" change="+$25 this month" />
+        <NatcaStatCard label="Pay grade" value="KH" change="Yearly $•••" change-color="info" />
       </div>
 
-      <p class="eyebrow" style="margin-top: 20px;">Card with Actions</p>
-      <div class="ds-row">
-        <div style="flex: 1;">
-          <NatcaCard title="Email Account" subtitle="jason@natca.net · Active">
-            <div class="ds-field-grid">
-              <div><span class="ds-field-label">Provider</span><br><span class="ds-field-value">Mailcow</span></div>
-              <div><span class="ds-field-label">Quota</span><br><span class="ds-field-value">2.1 / 5 GB</span></div>
-              <div><span class="ds-field-label">Status</span><br><VChip color="success" variant="tonal">Active</VChip></div>
-            </div>
-            <template #actions>
-              <NatcaButton variant="ghost" size="md">Cancel</NatcaButton>
-              <NatcaButton variant="primary" size="md">Save Changes</NatcaButton>
-            </template>
-          </NatcaCard>
+      <p class="eyebrow" style="margin-top: 20px;">Hero header card — feature landing</p>
+      <p class="ds-body">
+        Reserved for member-facing feature landing pages. Use it once, at the top of a feature
+        section. <em>Not</em> a default content wrapper.
+      </p>
+      <NatcaHeaderCard icon="mdi-email-outline" title="My Email Account" subtitle="jason.doss@natca.net · ZJX">
+        <div class="ds-field-grid">
+          <div><span class="ds-field-label">Provider</span><br><span class="ds-field-value">Mailcow</span></div>
+          <div><span class="ds-field-label">Storage</span><br><span class="ds-field-value">2.1 / 5 GB</span></div>
+          <div><span class="ds-field-label">Status</span><br><VChip color="success" variant="tonal">Active</VChip></div>
         </div>
-        <div style="flex: 1;">
-          <p class="eyebrow">Stat Cards</p>
-          <NatcaStatGrid :cols="2">
-            <NatcaStatCard label="Total Accounts" value="1,247" change="+12 this week" />
-            <NatcaStatCard label="Active" value="1,198" />
-            <NatcaStatCard label="Pending Migration" value="34" />
-            <NatcaStatCard label="Disabled" value="15" />
-          </NatcaStatGrid>
-        </div>
-      </div>
+        <template #actions>
+          <NatcaButton variant="ghost" size="md">Settings</NatcaButton>
+          <NatcaButton variant="primary" size="md">Manage account</NatcaButton>
+        </template>
+      </NatcaHeaderCard>
     </section>
-
-    <VDivider />
 
     <!-- ═══════════ DATA TABLE ═══════════ -->
     <section class="ds-section">
-      <h3 class="ds-section-title">Data Table</h3>
-      <p class="ds-hint">Compact density with hover. Uses <code>&lt;v-data-table&gt;</code> with natcaDefaults.</p>
-
-      <div class="d-flex align-center" style="margin-bottom: 12px; gap: 12px;">
-        <NatcaPillNav
-          v-model="filterStatus"
-          :items="[
-            { value: 'all', label: 'All' },
-            { value: 'active', label: 'Active' },
-            { value: 'pending', label: 'Pending' },
-            { value: 'disabled', label: 'Disabled' },
-          ]"
-        />
-        <VSpacer />
-        <VTextField placeholder="Search accounts..." style="max-width: 200px;" hide-details />
-      </div>
+      <h3 class="ds-section-title">Data table</h3>
+      <p class="ds-body">
+        Tables sit inside a <code>NatcaCard no-body-padding</code> so the rounded corners and
+        outer border stand alone from the page background. The toolbar row at the top holds
+        filter pills and a search input; the footer row holds pagination and items-per-page —
+        both tinted to read as distinct from the data rows.
+      </p>
 
       <NatcaCard no-body-padding>
-        <VDataTable :headers="tableHeaders" :items="tableItems" :items-per-page="-1" hide-default-footer>
+        <div class="ds-table-toolbar">
+          <NatcaPillNav
+            v-model="filterStatus"
+            :items="[
+              { value: 'all', label: 'All' },
+              { value: 'active', label: 'Active' },
+              { value: 'pending', label: 'Pending' },
+              { value: 'disabled', label: 'Disabled' },
+            ]"
+          />
+          <VSpacer />
+          <VTextField placeholder="Search accounts…" prepend-inner-icon="mdi-magnify" hide-details density="compact" style="max-width: 240px;" />
+          <NatcaButton variant="primary">New account</NatcaButton>
+        </div>
+        <VDataTable :headers="tableHeaders" :items="tableItems" :items-per-page="5">
           <template #item.status="{ item }">
             <VChip :color="statusChipColor(item.status)" variant="tonal">{{ item.status }}</VChip>
           </template>
@@ -249,18 +349,21 @@ const members: MemberCardData[] = [
       </NatcaCard>
     </section>
 
-    <VDivider />
-
     <!-- ═══════════ FORMS ═══════════ -->
     <section class="ds-section">
       <h3 class="ds-section-title">Forms</h3>
-      <p class="ds-hint">Vuetify form fields with natcaDefaults (outlined, compact, primary focus).</p>
+      <p class="ds-body">
+        Vuetify form fields with <code>natcaDefaults</code>. All fields render outlined,
+        compact, with primary-color focus. The card title ("Create email account") is the
+        form heading — give it real weight at the top. Submit / cancel buttons go in
+        <code>#actions</code> at <code>size="md"</code>.
+      </p>
 
       <div class="ds-row">
-        <div style="flex: 1;">
-          <NatcaCard title="Create Email Account">
-            <VAutocomplete label="Member" placeholder="Search members..." :items="['Jason Doss', 'Sarah Mitchell']" />
-            <VTextField label="Email Address" placeholder="first.last@natca.net" />
+        <div style="flex: 1; min-width: 320px;">
+          <NatcaCard title="Create email account" subtitle="Members only — must already exist in the public schema">
+            <VAutocomplete label="Member" placeholder="Search members…" :items="['Jason Doss', 'Sarah Mitchell']" />
+            <VTextField label="Email address" placeholder="first.last@natca.net" />
             <div class="d-flex ga-3">
               <VSelect label="Provider" :items="['Mailcow', 'O365']" v-model="formProvider" style="flex: 1;" />
               <VTextField label="Quota (GB)" type="number" v-model="formQuota" style="flex: 1;" />
@@ -271,35 +374,35 @@ const members: MemberCardData[] = [
             </div>
             <template #actions>
               <NatcaButton variant="ghost" size="md">Cancel</NatcaButton>
-              <NatcaButton variant="primary" size="md">Create Account</NatcaButton>
+              <NatcaButton variant="primary" size="md">Create account</NatcaButton>
             </template>
           </NatcaCard>
         </div>
-        <div style="flex: 1;">
+        <div style="flex: 1; min-width: 280px;">
           <NatcaAnnotation style="margin-bottom: 12px;">
-            <strong>natcaDefaults handles:</strong><br>
-            <code>VTextField</code> → outlined, compact, primary focus<br>
-            <code>VSelect</code> → outlined, compact, primary focus<br>
-            <code>VAutocomplete</code> → outlined, compact, primary focus<br>
-            <code>VCheckbox</code> → compact, primary, hideDetails auto<br>
-            <code>VSwitch</code> → compact, primary, inset, hideDetails auto
+            <strong>natcaDefaults handles for you:</strong><br>
+            <code>VTextField</code> · <code>VSelect</code> · <code>VAutocomplete</code> · <code>VTextarea</code> all render outlined / compact / primary focus.<br>
+            <code>VCheckbox</code> · <code>VSwitch</code> · <code>VRadio</code> render at compact density with primary color and hideDetails="auto".
           </NatcaAnnotation>
           <NatcaAnnotation type="warning">
-            <strong>Buttons: use NatcaButton, not v-btn.</strong><br>
-            NatcaButton matches the design system exactly (no uppercase, correct fonts, proper fill colors).
+            <strong>Use NatcaButton for the submit row.</strong>
+            VBtn defaults to size "default" — fine for Vuetify-internal buttons (menus, dialogs)
+            but you almost never want it as your form submit. Always reach for
+            <code>NatcaButton size="md"</code>.
           </NatcaAnnotation>
         </div>
       </div>
     </section>
 
-    <VDivider />
-
     <!-- ═══════════ ALERTS ═══════════ -->
     <section class="ds-section">
       <h3 class="ds-section-title">Alerts</h3>
-      <p class="ds-hint">NatcaAlert — no icons, just colored strong + border-start + tonal background.</p>
+      <p class="ds-body">
+        <code>NatcaAlert</code> — colored strong text + border-start + tonal background.
+        No icons (Vuetify's VAlert forces them; we don't want that here).
+      </p>
 
-      <div style="max-width: 600px; display: flex; flex-direction: column; gap: 8px;">
+      <div style="max-width: 640px; display: flex; flex-direction: column; gap: 8px;">
         <NatcaAlert type="info"><div><strong>Info:</strong> Migration batch #12 is scheduled for tonight at 0200 ET.</div></NatcaAlert>
         <NatcaAlert type="success"><div><strong>Success:</strong> 47 accounts migrated successfully to Mailcow.</div></NatcaAlert>
         <NatcaAlert type="warning"><div><strong>Warning:</strong> 3 accounts have exceeded their quota limit.</div></NatcaAlert>
@@ -307,12 +410,14 @@ const members: MemberCardData[] = [
       </div>
     </section>
 
-    <VDivider />
-
     <!-- ═══════════ CHIPS ═══════════ -->
     <section class="ds-section">
-      <h3 class="ds-section-title">Chips &amp; Status Badges</h3>
-      <p class="ds-hint">VChip with variant="tonal" + theme color. NATCA SASS settings handle the pill shape, weight, and 11.5px size.</p>
+      <h3 class="ds-section-title">Chips &amp; status badges</h3>
+      <p class="ds-body">
+        <code>VChip color="…" variant="tonal"</code>. NATCA SASS handles the pill shape, weight,
+        and 11.5px size; <code>vuetify-overrides.css</code> bumps the tonal background opacity
+        in dark mode so neutral chips stay legible.
+      </p>
 
       <div class="d-flex ga-2 flex-wrap" style="margin-bottom: 12px;">
         <VChip color="success" variant="tonal">Active</VChip>
@@ -320,96 +425,141 @@ const members: MemberCardData[] = [
         <VChip color="error" variant="tonal">Disabled</VChip>
         <VChip color="info" variant="tonal">Migrating</VChip>
         <VChip variant="tonal">Archived</VChip>
+        <VChip variant="tonal">Draft</VChip>
       </div>
 
-      <NatcaAnnotation style="max-width: 600px;">
-        <strong>Usage:</strong> <code>&lt;VChip color="success" variant="tonal"&gt;Active&lt;/VChip&gt;</code><br>
-        Color maps: <code>success</code> | <code>warning</code> | <code>error</code> | <code>info</code> | (none → default).
+      <NatcaAnnotation style="max-width: 640px;">
+        <strong>Color map:</strong> <code>success</code> · <code>warning</code> ·
+        <code>error</code> · <code>info</code> · default. Default (no <code>color</code> prop)
+        is the neutral pill — use it for low-emphasis labels like "Archived" or "Draft".
       </NatcaAnnotation>
     </section>
-
-    <VDivider />
 
     <!-- ═══════════ TABS ═══════════ -->
     <section class="ds-section">
       <h3 class="ds-section-title">Tabs</h3>
+      <p class="ds-body">
+        Two layouts: <strong>standalone</strong> (tabs sit on the page background, panels render
+        inline) and <strong>inside a card</strong> (tabs become the card's header). Both use
+        <code>NatcaTabs</code> — same component, different parent. The active tab gets primary
+        accent (navy in light, red in dark) and a 2px slider. Icons are optional.
+      </p>
 
-      <div class="ds-row">
-        <div style="flex: 1;">
-          <p class="eyebrow">Underline (Default) — NatcaTabs</p>
-          <NatcaCard no-body-padding>
-            <NatcaTabs v-model="localTab" :items="localTabItems">
-              <template #panel-details>
-                <p style="font-size: 12px; color: var(--color-text-muted);">Tab panel content. Compact 36px height, Barlow font, red slider for active state.</p>
-              </template>
-              <template #panel-members>
-                <p style="font-size: 12px; color: var(--color-text-muted);">198 members assigned.</p>
-              </template>
-              <template #panel-history>
-                <p style="font-size: 12px; color: var(--color-text-muted);">Audit log and change history.</p>
-              </template>
-            </NatcaTabs>
-          </NatcaCard>
+      <p class="eyebrow">Standalone — sits on the page background</p>
+      <div style="margin-bottom: 24px;">
+        <NatcaTabs v-model="standaloneTab" :items="standaloneItems">
+          <template #panel-overview>
+            <p>Page-level tabs sit directly on the content background. Use this when the tabbed
+              region <em>is</em> the page (e.g. a member-detail screen with Overview / Roster /
+              Documents / Audit log).</p>
+          </template>
+          <template #panel-roster>
+            <p>42 members assigned to this section.</p>
+          </template>
+          <template #panel-documents>
+            <p>Documents tab content.</p>
+          </template>
+          <template #panel-audit>
+            <p>Audit log tab content.</p>
+          </template>
+        </NatcaTabs>
+      </div>
+
+      <p class="eyebrow">Inside a card — tabs as card header</p>
+      <NatcaCard no-body-padding>
+        <NatcaTabs v-model="localTab" :items="localTabItems">
+          <template #panel-details>
+            <p>Use this layout when the tabs scope a sub-section of the page rather than the
+              whole page. The card's outer border separates it from neighboring content.
+              Icons are supported but optional — drop them when labels alone are clear.</p>
+          </template>
+          <template #panel-members>
+            <p>198 members assigned.</p>
+          </template>
+          <template #panel-history>
+            <p>Audit log and change history.</p>
+          </template>
+        </NatcaTabs>
+      </NatcaCard>
+    </section>
+
+    <!-- ═══════════ PILLS ═══════════ -->
+    <section class="ds-section">
+      <h3 class="ds-section-title">Pills</h3>
+      <p class="ds-body">
+        <code>NatcaPillNav</code> — segmented filter / view-toggle. Active pill is solid navy
+        in light theme, solid red in dark theme. Use for binary or 3-5 way filters; reach for
+        tabs once you cross 5 options or need icons + counts.
+      </p>
+
+      <div class="ds-row" style="gap: 28px;">
+        <div>
+          <p class="eyebrow">Status filter</p>
+          <NatcaPillNav
+            v-model="filterStatus"
+            :items="[
+              { value: 'all', label: 'All' },
+              { value: 'active', label: 'Active' },
+              { value: 'pending', label: 'Pending' },
+              { value: 'disabled', label: 'Disabled' },
+            ]"
+          />
         </div>
-        <div style="flex: 1;">
-          <p class="eyebrow">Pills (Inline Toggle) — NatcaPillNav</p>
-          <div style="display: flex; flex-direction: column; gap: 12px;">
-            <div>
-              <span class="ds-field-label" style="margin-bottom: 4px; display: block;">Time Range</span>
-              <NatcaPillNav
-                v-model="timeRange"
-                :items="[
-                  { value: '7d', label: '7d' },
-                  { value: '30d', label: '30d' },
-                  { value: '90d', label: '90d' },
-                  { value: '1y', label: '1y' },
-                ]"
-              />
-            </div>
-            <div>
-              <span class="ds-field-label" style="margin-bottom: 4px; display: block;">View</span>
-              <NatcaPillNav
-                v-model="viewMode"
-                :items="[
-                  { value: 'list', label: 'List' },
-                  { value: 'grid', label: 'Grid' },
-                  { value: 'map', label: 'Map' },
-                ]"
-              />
-            </div>
-          </div>
+        <div>
+          <p class="eyebrow">View</p>
+          <NatcaPillNav
+            v-model="viewMode"
+            :items="[
+              { value: 'list', label: 'List' },
+              { value: 'grid', label: 'Grid' },
+              { value: 'map', label: 'Map' },
+            ]"
+          />
+        </div>
+        <div>
+          <p class="eyebrow">Time range</p>
+          <NatcaPillNav
+            v-model="timeRange"
+            :items="[
+              { value: '7d', label: '7d' },
+              { value: '30d', label: '30d' },
+              { value: '90d', label: '90d' },
+              { value: '1y', label: '1y' },
+            ]"
+          />
         </div>
       </div>
     </section>
 
-    <VDivider />
-
     <!-- ═══════════ DIALOGS ═══════════ -->
     <section class="ds-section">
       <h3 class="ds-section-title">Dialogs</h3>
-      <p class="ds-hint">NatcaDialog wraps VDialog for positioning/focus/escape. Has a distinct navy (default) or red (danger) header with icon + title + subtitle.</p>
+      <p class="ds-body">
+        <code>NatcaDialog</code> wraps VDialog with a navy (default) or red (danger) header
+        strip + icon + title + subtitle. Use the danger variant for confirm-before-destruction.
+      </p>
 
       <div class="ds-btn-row">
-        <NatcaButton variant="primary" @click="showConfirmDialog = true">Open Confirm Dialog</NatcaButton>
-        <NatcaButton variant="danger" @click="showDangerDialog = true">Open Danger Dialog</NatcaButton>
+        <NatcaButton variant="primary" @click="showConfirmDialog = true">Open confirm dialog</NatcaButton>
+        <NatcaButton variant="danger" @click="showDangerDialog = true">Open danger dialog</NatcaButton>
       </div>
 
       <NatcaDialog
         v-model="showConfirmDialog"
-        title="Confirm Migration"
+        title="Confirm migration"
         subtitle="Batch #12 · 34 accounts"
         icon="mdi-swap-horizontal-circle"
       >
         Are you sure you want to migrate <strong>34 accounts</strong> from O365 to Mailcow? This action cannot be undone.
         <template #actions>
           <NatcaButton variant="ghost" size="md" @click="showConfirmDialog = false">Cancel</NatcaButton>
-          <NatcaButton variant="primary" size="md" @click="showConfirmDialog = false">Migrate Now</NatcaButton>
+          <NatcaButton variant="primary" size="md" @click="showConfirmDialog = false">Migrate now</NatcaButton>
         </template>
       </NatcaDialog>
 
       <NatcaDialog
         v-model="showDangerDialog"
-        title="Delete Account"
+        title="Delete account"
         subtitle="This action cannot be undone"
         variant="danger"
         icon="mdi-trash-can"
@@ -417,45 +567,47 @@ const members: MemberCardData[] = [
         This will permanently delete <strong>jason.doss@natca.net</strong> and all associated data.
         <template #actions>
           <NatcaButton variant="ghost" size="md" @click="showDangerDialog = false">Cancel</NatcaButton>
-          <NatcaButton variant="danger" size="md" @click="showDangerDialog = false">Delete Account</NatcaButton>
+          <NatcaButton variant="danger" size="md" @click="showDangerDialog = false">Delete account</NatcaButton>
         </template>
       </NatcaDialog>
     </section>
 
-    <VDivider />
-
     <!-- ═══════════ STATES ═══════════ -->
     <section class="ds-section">
       <h3 class="ds-section-title">States</h3>
+      <p class="ds-body">
+        Loading, empty, and error states. Each is a card-shaped container so the page layout
+        stays predictable while data arrives or recovers.
+      </p>
 
       <div class="ds-row">
-        <div style="flex: 1;">
+        <div style="flex: 1; min-width: 280px;">
           <p class="eyebrow">Loading</p>
           <NatcaCard>
             <VProgressLinear :model-value="65" color="primary" rounded height="4" style="margin-bottom: 8px;" />
-            <span style="font-size: 11px; color: var(--color-text-faint);">Migrating accounts... 22 of 34</span>
+            <span style="font-size: 12px; color: var(--color-text-faint);">Migrating accounts… 22 of 34</span>
           </NatcaCard>
         </div>
-        <div style="flex: 1;">
-          <p class="eyebrow">Empty State</p>
+        <div style="flex: 1; min-width: 280px;">
+          <p class="eyebrow">Empty</p>
           <NatcaCard no-body-padding>
             <NatcaEmptyState
               icon="mdi-file-document-outline"
               title="No accounts found"
-              description="No email accounts match your current filters. Try adjusting the search or filter criteria."
-              action-label="Reset Filters"
+              description="No email accounts match your current filters."
+              action-label="Reset filters"
             />
           </NatcaCard>
         </div>
       </div>
 
-      <div style="max-width: 50%; margin-top: 16px;">
-        <p class="eyebrow">Error State (Inline)</p>
+      <div style="margin-top: 16px; max-width: 640px;">
+        <p class="eyebrow">Error</p>
         <NatcaAlert type="danger">
           <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
             <div style="flex: 1;">
               <strong>Failed to load accounts</strong>
-              <div style="margin-top: 2px; font-size: 11px; color: var(--color-text-muted);">The Mailcow API returned an error.</div>
+              <div style="margin-top: 2px; font-size: 12px; color: var(--color-text-muted);">The Mailcow API returned an error.</div>
             </div>
             <NatcaButton variant="danger">Retry</NatcaButton>
           </div>
@@ -463,19 +615,23 @@ const members: MemberCardData[] = [
       </div>
     </section>
 
-    <VDivider />
-
-    <!-- ═══════════ ANNOTATION ═══════════ -->
+    <!-- ═══════════ ANNOTATIONS ═══════════ -->
     <section class="ds-section">
       <h3 class="ds-section-title">Annotations</h3>
-      <p class="ds-hint">Info callout boxes for guidance and contextual help.</p>
+      <p class="ds-body">
+        Inline guidance callouts. Three variants — <code>info</code>, <code>tip</code>,
+        <code>warning</code>. Use sparingly within page content; for one-off page-level
+        callouts reach for <code>NatcaCard accent="…"</code> instead.
+      </p>
 
-      <div style="display: flex; flex-direction: column; gap: 8px; max-width: 600px;">
+      <div style="display: flex; flex-direction: column; gap: 8px; max-width: 640px;">
         <NatcaAnnotation>
-          <strong>Info:</strong> Use annotations to explain how a feature works or provide guidance to users.
+          <strong>Info:</strong> Use annotations to explain how a feature works or provide
+          guidance to users.
         </NatcaAnnotation>
         <NatcaAnnotation type="tip">
-          <strong>Tip:</strong> You can use <code>NatcaAnnotation</code> with type <code>"tip"</code> for positive guidance.
+          <strong>Tip:</strong> You can use <code>NatcaAnnotation type="tip"</code> for positive
+          guidance.
         </NatcaAnnotation>
         <NatcaAnnotation type="warning">
           <strong>Warning:</strong> Breaking changes should always use the warning variant.
@@ -483,24 +639,26 @@ const members: MemberCardData[] = [
       </div>
     </section>
 
-    <VDivider />
-
     <!-- ═══════════ MEMBER CARD ═══════════ -->
     <section class="ds-section">
-      <h3 class="ds-section-title">Member Card</h3>
+      <h3 class="ds-section-title">Member card</h3>
+      <p class="ds-body">
+        Domain-specific component for displaying a NATCA member. Two layouts — default (compact
+        row) and detailed (with optional accent border + actions).
+      </p>
 
       <div class="ds-row">
-        <div style="flex: 1;">
-          <p class="eyebrow">Default</p>
+        <div style="flex: 1; min-width: 280px;">
+          <p class="eyebrow">Default — compact</p>
           <div style="display: flex; flex-direction: column; gap: 6px;">
             <NatcaMemberCard v-for="m in members" :key="m.memberNumber" :member="m" clickable />
           </div>
         </div>
-        <div style="flex: 1;">
-          <p class="eyebrow">Detailed + Actions</p>
+        <div style="flex: 1; min-width: 280px;">
+          <p class="eyebrow">Detailed + actions</p>
           <NatcaMemberCard :member="members[0]" variant="detailed" accent-border>
             <template #actions>
-              <NatcaButton variant="link">View Profile</NatcaButton>
+              <NatcaButton variant="link">View profile</NatcaButton>
               <NatcaButton variant="ghost">Message</NatcaButton>
             </template>
           </NatcaMemberCard>
@@ -512,45 +670,50 @@ const members: MemberCardData[] = [
 
 <style scoped>
 .ds-page {
-  padding: 0 20px 40px;
-  max-width: 960px;
+  padding: 0 24px 48px;
+  max-width: 1080px;
 }
 
 .ds-section {
-  padding: 20px 0;
+  padding: 24px 0;
 }
 
 .ds-section-title {
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--color-text-primary);
-  margin-bottom: 4px;
-  padding-bottom: 4px;
+  margin: 0 0 8px;
+  padding-bottom: 6px;
   border-bottom: 3px solid var(--natca-red);
   display: inline-block;
 }
 
+.ds-body {
+  font-size: 14px;
+  color: var(--color-text-body);
+  line-height: 1.55;
+  margin: 0 0 14px;
+  max-width: 760px;
+}
+
+.ds-body code {
+  font-size: 12px;
+  background: var(--overlay-hover);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  color: var(--color-text-primary);
+}
+
 .eyebrow {
-  font-size: 10px;
+  font-family: var(--font-display);
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--color-text-faint);
-  margin-bottom: 6px;
-}
-
-.ds-hint {
-  font-size: 12px;
+  letter-spacing: 0.8px;
   color: var(--color-text-muted);
-  margin-bottom: 12px;
-}
-
-.ds-hint code {
-  font-size: 11px;
-  background: var(--overlay-hover);
-  padding: 1px 4px;
-  border-radius: 3px;
+  margin: 0 0 8px;
 }
 
 .ds-row {
@@ -572,48 +735,99 @@ const members: MemberCardData[] = [
   gap: 16px;
 }
 
+.ds-field-grid--2col {
+  grid-template-columns: 1fr 1fr;
+}
+
 .ds-field-label {
   font-size: 10px;
   color: var(--color-text-faint);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   font-weight: 700;
 }
 
 .ds-field-value {
   font-weight: 600;
-  font-size: 13px;
+  font-size: 13.5px;
+  color: var(--color-text-primary);
 }
 
+/* Dashboard grid — 4 columns of equal width, cards span columns/rows */
+.ds-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .ds-dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Table toolbar inside a card-wrapped data table */
+.ds-table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--overlay-subtle);
+  border-bottom: 1px solid var(--overlay-border);
+}
+
+.ds-table-toolbar :deep(.v-input) {
+  font-size: 12px;
+}
+
+/* Props tables — Light: visible row dividers + dark header text.
+   Dark: dark header background, lifted body text, no disappearing rows. */
 .ds-props-table {
   width: 100%;
-  max-width: 700px;
-  border-collapse: collapse;
-  font-size: 13px;
-  margin-bottom: 16px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13.5px;
+  margin-bottom: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 
-.ds-props-table th {
+.ds-props-table thead th {
   background: var(--color-bg-subtle);
-  padding: 6px 12px;
+  padding: 10px 14px;
   text-align: left;
-  font-size: 10px;
+  font-family: var(--font-display);
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--color-text-muted);
+  letter-spacing: 0.8px;
+  color: var(--color-text-primary);
+  font-weight: 700;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.ds-props-table td {
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--color-border-light);
+.ds-props-table tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border);
   vertical-align: middle;
+  color: var(--color-text-body);
+}
+
+.ds-props-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ds-props-table tbody tr:nth-child(even) td {
+  background: var(--overlay-subtle);
 }
 
 .ds-props-table code {
-  font-size: 11px;
-  background: var(--overlay-subtle);
-  padding: 1px 4px;
+  font-size: 12px;
+  background: var(--overlay-hover);
+  padding: 2px 6px;
   border-radius: 3px;
   font-family: var(--font-mono);
+  color: var(--color-text-primary);
 }
 </style>

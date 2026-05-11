@@ -55,16 +55,17 @@ function select(value: string | number) {
 .natca-pills {
   display: inline-flex;
   gap: 2px;
-  background: var(--overlay-subtle);
+  background: var(--overlay-hover);
+  border: 1px solid var(--overlay-border);
   border-radius: var(--radius-full);
-  padding: 2px;
+  padding: 3px;
 }
 
 .natca-pill {
   display: flex;
   align-items: center;
-  padding: 3px 12px;
-  font-size: 11px;
+  padding: 4px 14px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--color-text-muted);
   border-radius: var(--radius-full);
@@ -78,11 +79,22 @@ function select(value: string | number) {
 
 .natca-pill:hover {
   color: var(--color-text-primary);
+  background: var(--overlay-subtle);
 }
 
-.natca-pill--active {
-  background: var(--color-bg-surface);
-  color: var(--color-text-primary);
+/* Active pill — navy in light theme, red in dark theme. Always white text. */
+.natca-pill--active,
+.natca-pill--active:hover {
+  background: var(--natca-navy);
+  color: #FFFFFF;
   box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .natca-pill--active,
+[data-theme="dark"] .natca-pill--active:hover,
+.v-theme--natcaDark .natca-pill--active,
+.v-theme--natcaDark .natca-pill--active:hover {
+  background: var(--natca-red);
+  color: #FFFFFF;
 }
 </style>

@@ -91,3 +91,66 @@
 .v-field textarea::placeholder {
   color: var(--color-text-faint);
 }
+
+/* ═══ VChip tonal backgrounds — readability in dark mode ═════════════
+   Vuetify computes tonal chip backgrounds from the theme color at a
+   fixed alpha that's tuned for light surfaces. On our dark surfaces
+   the result is essentially invisible (e.g. `Archived` chip blends in
+   with the row). Bump the chip background opacity in dark mode and
+   raise the default-chip text color so neutral chips stay readable. */
+.v-theme--natcaDark .v-chip.v-chip--variant-tonal {
+  --v-theme-overlay-multiplier: 1;
+}
+.v-theme--natcaDark .v-chip.v-chip--variant-tonal .v-chip__underlay {
+  opacity: 0.22;
+}
+/* Default (no-color) chip — Vuetify uses on-surface which is too dim
+   in dark mode for our subtle neutral pills. Lift it. */
+.v-theme--natcaDark .v-chip.v-chip--variant-tonal:not([class*="text-"]):not([class*="bg-"]) {
+  background: var(--overlay-active);
+  color: var(--color-text-primary);
+}
+
+/* ═══ VDataTable — toolbar header strip + pagination polish ══════════
+   Tables that live inside a NatcaCard get a tinted header strip
+   (matches the cell-header zone) so the filter/search row reads as a
+   distinct toolbar above the data. Pagination row is styled to match
+   compact density rather than Vuetify's marketing-site defaults. */
+
+.v-data-table .v-data-table__th,
+.v-data-table .v-data-table-header__content {
+  background: var(--overlay-subtle);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-text-muted);
+}
+
+.v-data-table-footer {
+  border-top: 1px solid var(--overlay-border);
+  padding: 6px 12px;
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  gap: 12px;
+}
+.v-data-table-footer .v-data-table-footer__items-per-page {
+  gap: 6px;
+}
+.v-data-table-footer .v-data-table-footer__items-per-page > .v-select {
+  min-width: 76px;
+  max-width: 88px;
+}
+.v-data-table-footer .v-data-table-footer__items-per-page .v-field {
+  --v-input-control-height: 28px;
+  font-size: 11.5px;
+}
+.v-data-table-footer .v-data-table-footer__pagination .v-btn {
+  --v-btn-height: 28px;
+  width: 28px;
+  min-width: 28px;
+}
+.v-data-table-footer .v-data-table-footer__info {
+  font-variant-numeric: tabular-nums;
+}

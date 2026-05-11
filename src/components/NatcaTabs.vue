@@ -94,7 +94,7 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
       v-model="activeTab"
       :grow="grow"
       density="compact"
-      :height="32"
+      :height="40"
       :color="color"
       :slider-color="variant === 'pills' ? 'transparent' : sliderColor"
       :class="['natca-tabs', { 'natca-tabs--pills': variant === 'pills' }]"
@@ -150,34 +150,37 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
   position: relative;
 }
 
-/* Slider must sit at the very bottom edge of the container */
+/* Slider sits flush with the bottom border, slightly thicker for visibility */
 .natca-tabs :deep(.v-tabs-slider),
 .natca-tabs :deep(.v-tab__slider) {
   bottom: 0;
+  height: 2px;
 }
 
 /* Override Vuetify's CSS variable height so container matches actual button height */
 .natca-tabs {
-  --v-tabs-height: 32px !important;
+  --v-tabs-height: 40px !important;
 }
 
-/* Force Barlow display font, compact sizing, kill Vuetify bloat */
+/* Sentence-case Barlow at a comfortable 13.5px — readable, on-brand,
+   matches PrimeVue underline-tab feel rather than the older uppercase chrome. */
 .natca-tabs :deep(.v-tab) {
   min-width: 0;
-  padding: 0 12px;
+  padding: 0 16px;
   font-family: var(--font-display, 'Barlow', sans-serif);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 600;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  min-height: 32px;
-  height: 32px;
+  letter-spacing: 0.1px;
+  text-transform: none;
+  min-height: 40px;
+  height: 40px;
   color: var(--color-text-muted);
 }
 
-/* Active tab gets full primary color from Vuetify — inactive needs readable contrast */
+/* Active tab uses primary token: navy in light theme, red in dark theme */
 .natca-tabs :deep(.v-tab--selected) {
   color: rgb(var(--v-theme-primary));
+  font-weight: 700;
 }
 
 /* Ensure slide-group content aligns flush — no gap below buttons */
@@ -186,8 +189,8 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
 }
 
 .natca-tabs :deep(.v-tab .v-icon) {
-  font-size: 13px;
-  margin-inline-end: 4px;
+  font-size: 16px;
+  margin-inline-end: 6px;
 }
 
 /* Remove Vuetify's default button padding/margin on tab internals */
@@ -205,22 +208,29 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 16px;
-  height: 14px;
-  padding: 0 4px;
-  margin-left: 5px;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 5px;
+  margin-left: 6px;
   background: var(--overlay-active);
   color: var(--color-text-primary);
-  border-radius: 7px;
+  border-radius: 8px;
   font-family: var(--font-body, 'Public Sans', sans-serif);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   line-height: 1;
 }
 
-/* Panel below tabs */
+.natca-tabs :deep(.v-tab--selected) .natca-tab-badge {
+  background: rgb(var(--v-theme-primary));
+  color: #FFFFFF;
+}
+
+/* Panel below tabs — comfortable 14px padding, slight body color */
 .natca-tab-panel {
-  padding: 10px 12px;
+  padding: 14px 16px;
+  font-size: var(--text-sm);
+  color: var(--color-text-body);
 }
 
 /* ── Pills variant ── */
