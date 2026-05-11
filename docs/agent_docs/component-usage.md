@@ -101,9 +101,11 @@ Since 0.4.0 the ui-shell configures Vuetify's SASS variables through `@natca-itc
 | Use this | Instead of | Why |
 |----------|-----------|-----|
 | `<NatcaButton variant="primary">` | `<v-btn color="primary">` | NatcaButton has 5 brand-specific variants (primary/secondary/danger/ghost/link) with auto light/dark color switching |
+| `<NatcaIconButton variant="…" icon="…" aria-label="…">` | `<v-btn icon size="small">` | Icon-only square button at 28×28 or 36×36. Vuetify's icon button collapses to a 16-20px chip — never use it. |
 | `<NatcaAlert type="info">` | `<v-alert type="info">` | Vuetify forces icons and different padding; NatcaAlert is just border-start + tonal |
 | `<NatcaPillNav v-model>` | `<v-btn-toggle>` | Correct pill container + raised active state |
-| `<NatcaDialog>` | `<v-dialog>` | Distinct navy (default) or red (danger) header pattern with icon + title + subtitle |
+| `<NatcaDialog>` | `<v-dialog>` | Three layouts: default (navy header), danger (red header), bare (chromeless lightbox) |
+| `<NatcaDialog variant="bare">` | `<v-dialog><v-card>` | Use for image previews and chromeless overlays. Auto-renders close button; override via `#close` slot. |
 | `<NatcaCard>` | `<v-card>` | Composite pattern (title + subtitle + body + actions slots) |
 
 **Use Vuetify directly — SASS settings match them to NATCA:**
@@ -129,6 +131,55 @@ Since 0.4.0 the ui-shell configures Vuetify's SASS variables through `@natca-itc
 ```
 
 Primary auto-switches: navy in light, red in dark. No theme prop needed.
+
+### NatcaIconButton — icon-only actions
+
+Use anywhere you'd otherwise reach for `<v-btn icon>`: dialog close X, table-row delete/edit/copy/share, lightbox toolbar, expand/collapse.
+
+```vue
+<NatcaIconButton variant="ghost"   size="sm" icon="mdi-pencil" aria-label="Edit member" @click="edit" />
+<NatcaIconButton variant="danger"  size="sm" icon="mdi-delete" aria-label="Remove member" @click="remove" />
+<NatcaIconButton variant="primary" size="md" icon="mdi-download" aria-label="Download report" />
+```
+
+Same five variants as `NatcaButton`. Two sizes — `sm` = 28×28 (toolbar / row-action tier), `md` = 36×36 (form-footer / dialog-footer tier). **`aria-label` is required** (TypeScript enforces it). Describe the *action*, not the icon ("Delete member", not "trash icon").
+
+### NatcaDialog — three variants
+
+```vue
+<!-- Default: navy header + icon + title + subtitle (confirms, forms) -->
+<NatcaDialog v-model="show" title="Confirm migration"
+             subtitle="Batch #12 · 34 accounts"
+             icon="mdi-swap-horizontal-circle">
+  Are you sure?
+  <template #actions>
+    <NatcaButton variant="ghost"   size="md" @click="show=false">Cancel</NatcaButton>
+    <NatcaButton variant="primary" size="md" @click="confirm">Migrate now</NatcaButton>
+  </template>
+</NatcaDialog>
+
+<!-- Danger: red header (destructive confirmation) -->
+<NatcaDialog v-model="show" variant="danger" title="Delete account" icon="mdi-trash-can">…</NatcaDialog>
+
+<!-- Bare: chromeless (lightbox / image preview / single-content overlay) -->
+<NatcaDialog v-model="show" variant="bare" :max-width="900">
+  <img :src="logo.url" alt="Logo preview" style="width:100%; display:block;" />
+</NatcaDialog>
+```
+
+Bare auto-renders a close button in the top-right with a translucent backdrop so it stays visible on dark images. Override via `#close="{ close }"` slot for custom styling.
+
+### Section helpers — global classes
+
+```vue
+<h3 class="section-title">Members</h3>
+<p class="section-body">All bargaining-unit members assigned to this facility.</p>
+<NatcaCard no-body-padding>
+  <!-- content -->
+</NatcaCard>
+```
+
+`.section-title` (red-underlined 20px Barlow) and `.section-body` (14px body paragraph) are global helpers shipped from `@natca-itc/ui-shell/shell-styles` (already imported by `NatcaShell`). Don't paste the CSS into your scoped block — just use the classes.
 
 ### NatcaAlert — no icons, just colored strong + border
 
@@ -475,6 +526,8 @@ Wrap in a `<v-card>` if you want a bordered container.
 | I want... | Use |
 |-----------|-----|
 | Button (any variant) | `<NatcaButton variant="...">` — 5 variants, 2 sizes |
+| Icon-only button (delete row, edit, copy, share, dialog close) | `<NatcaIconButton variant="..." icon="..." aria-label="...">` — 28×28 or 36×36 |
+| Section title + body paragraph | `<h3 class="section-title">` + `<p class="section-body">` (global classes from /shell-styles) |
 | Card with title + subtitle + actions | `<NatcaCard title="..." subtitle="...">` |
 | Card with navy header and icon | `<NatcaHeaderCard icon="..." title="...">` |
 | Card wrapping a table or tabs | `<NatcaCard no-body-padding>` |
@@ -488,7 +541,8 @@ Wrap in a `<v-card>` if you want a bordered container.
 | "No results" placeholder | `<NatcaEmptyState>` |
 | Info/tip/warning callout box | `<NatcaAnnotation>` |
 | Member display card | `<NatcaMemberCard>` |
-| Confirmation modal | `<v-dialog>` + `<NatcaCard>` + `<NatcaButton>` |
+| Confirmation modal | `<NatcaDialog title="...">` (navy header) or `variant="danger"` (red header) |
+| Lightbox / image preview | `<NatcaDialog variant="bare">` |
 | Data table with filters | `<NatcaPillNav>` + `<v-data-table>` |
 | Form inputs | `<v-text-field>`, `<v-select>`, `<v-switch>`, etc. (styled by ui-shell overrides) |
 | Light/dark toggle | Built into topbar via `NatcaShell` (automatic) |

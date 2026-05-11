@@ -21,6 +21,7 @@ import NatcaMemberCard from './components/NatcaMemberCard.vue'
 // directly; the SASS settings at src/scss/settings.scss match them to the
 // design system. They used to have Natca* wrappers which were removed in 0.4.0.
 import NatcaButton from './components/NatcaButton.vue'
+import NatcaIconButton from './components/NatcaIconButton.vue'
 import NatcaAlert from './components/NatcaAlert.vue'
 import NatcaPillNav from './components/NatcaPillNav.vue'
 import NatcaDialog from './components/NatcaDialog.vue'
@@ -57,6 +58,7 @@ export {
 // Native primitives
 export {
   NatcaButton,
+  NatcaIconButton,
   NatcaAlert,
   NatcaPillNav,
   NatcaDialog,
@@ -112,6 +114,7 @@ export const NatcaUiShell = {
     app.component('NatcaMemberCard', NatcaMemberCard)
     // Native primitives
     app.component('NatcaButton', NatcaButton)
+    app.component('NatcaIconButton', NatcaIconButton)
     app.component('NatcaAlert', NatcaAlert)
     app.component('NatcaPillNav', NatcaPillNav)
     app.component('NatcaDialog', NatcaDialog)
