@@ -3,6 +3,8 @@ dist/
 TEMP/
 test-results/
 .superpowers/
+.idea/
+.vscode/
 .claude/commands/daily-standup.md
 .claude/commands/finish-task.md
 .claude/commands/implement-issue.md

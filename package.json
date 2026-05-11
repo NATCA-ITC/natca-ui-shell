@@ -9,7 +9,8 @@
   "module": "dist/vue/natca-ui-shell.js",
   "files": [
     "dist/",
-    "assets/"
+    "assets/",
+    "docs/agent_docs/"
   ],
   "exports": {
     ".": {
