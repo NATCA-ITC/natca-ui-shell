@@ -31,6 +31,8 @@ export default defineConfig({
         'vuetify',
         /^vuetify\//,
         '@mdi/font',
+        'pdfjs-dist',
+        /^pdfjs-dist\//,
       ],
       output: {
         dir: 'dist/vue',

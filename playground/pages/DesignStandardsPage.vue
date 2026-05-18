@@ -15,6 +15,7 @@ import {
   NatcaAlert,
   NatcaPillNav,
   NatcaDialog,
+  NatcaDocumentViewer,
 } from '@/index'
 import type { NatcaTabItem } from '@/components/NatcaTabs.vue'
 import type { MemberCardData } from '@/components/NatcaMemberCard.vue'
@@ -75,6 +76,22 @@ function statusChipColor(status: string): string | undefined {
 const showConfirmDialog = ref(false)
 const showDangerDialog = ref(false)
 const showBareDialog = ref(false)
+
+// ── Document viewer demo ──
+// Mozilla's reference PDF — public, stable, has a few pages and a clear layout.
+const demoPdfUrl = 'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf'
+const showViewerLightbox = ref(false)
+const demoChapters = [
+  { id: 'c1', index: 'I',   name: 'Introduction', sections: [] },
+  { id: 'c2', index: 'II',  name: 'Method',       sections: [] },
+  { id: 'c3', index: 'III', name: 'Results',      sections: [] },
+  { id: 'c4', index: 'IV',  name: 'Discussion',   sections: [] },
+]
+const demoChapterAnchor = ref<string | null>('c1')
+const demoVersions = [
+  { id: 'v1', label: 'v1 — 2024 edition', isCurrent: false },
+  { id: 'v2', label: 'v2 — 2025 edition (current)', isCurrent: true },
+]
 
 // ── Form demo ──
 const formProvider = ref('Mailcow')
@@ -674,6 +691,55 @@ const members: MemberCardData[] = [
           Bare dialog content
         </div>
       </NatcaDialog>
+    </section>
+
+    <!-- ═══════════ DOCUMENT VIEWER ═══════════ -->
+    <section class="ds-section">
+      <h3 class="ds-section-title">Document viewer</h3>
+      <p class="ds-body">
+        <code>NatcaDocumentViewer</code> renders PDFs inline via <code>pdf.js</code>, images
+        directly, and falls back to a download CTA for unsupported types. Two modes:
+        <strong>inline</strong> (this card) for a doc detail page, and <strong>lightbox</strong>
+        (the button below) for browse / search results. The component knows nothing about DMS
+        — pass it a URL + metadata and listen for <code>view</code>, <code>download</code>,
+        <code>version-change</code>, and <code>chapter-change</code> events. App-level wrappers
+        like <code>@natca-itc/dms-client</code>'s <code>DmsViewer</code> add the API plumbing.
+      </p>
+
+      <p class="eyebrow">Inline — with chapter TOC and version selector</p>
+      <NatcaDocumentViewer
+        :document-url="demoPdfUrl"
+        :metadata="{
+          title: 'Trace-based Just-in-Time Type Specialization',
+          summary: 'Demo PDF — paper from Mozilla\'s pdf.js test corpus.',
+          period: 'FY2009',
+          version: 'v2',
+          lastUpdated: '2024-09-15',
+        }"
+        :versions="demoVersions"
+        :chapters="demoChapters"
+        :anchor="demoChapterAnchor"
+        @chapter-change="demoChapterAnchor = $event"
+      />
+
+      <p class="eyebrow" style="margin-top: 24px;">Lightbox — full-screen preview</p>
+      <div class="ds-btn-row">
+        <NatcaButton variant="primary" @click="showViewerLightbox = true">
+          Open in lightbox
+        </NatcaButton>
+      </div>
+      <NatcaDocumentViewer
+        v-model:open="showViewerLightbox"
+        mode="lightbox"
+        :document-url="demoPdfUrl"
+        :metadata="{ title: 'Lightbox preview', version: 'v2' }"
+      />
+
+      <NatcaAnnotation style="margin-top: 16px; max-width: 760px;">
+        <strong>pdf.js is an optional peer dep.</strong> Install <code>pdfjs-dist</code> in the
+        consuming app to enable PDF rendering; image and download-CTA paths work without it.
+        The worker URL is auto-resolved via <code>import.meta.url</code>.
+      </NatcaAnnotation>
     </section>
 
     <!-- ═══════════ STATES ═══════════ -->
