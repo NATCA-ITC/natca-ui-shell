@@ -204,20 +204,19 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside, true
         </Transition>
       </div>
 
-      <!-- Unauthenticated: sign-in icon button -->
+      <!-- Unauthenticated: primary sign-in CTA — deliberately stands out from the ghost toolbar icons -->
       <button
         v-else
-        class="natca-shell-top-icon"
+        class="natca-shell-signin"
         type="button"
-        aria-label="Sign in"
-        title="Sign in"
         @click="handleUserAction('signin')"
       >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
           <polyline points="10 17 15 12 10 7" />
           <line x1="15" y1="12" x2="3" y2="12" />
         </svg>
+        <span>Sign in</span>
       </button>
     </div>
   </div>
@@ -314,5 +313,40 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside, true
 .natca-user-menu-leave-to {
   opacity: 0;
   transform: translateY(-4px);
+}
+
+/* Sign-in CTA — deliberately distinct from the ghost toolbar icons.
+   Filled NATCA red pill with icon + label; primary action for unauthenticated users. */
+.natca-shell-signin {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px 0 10px;
+  border-radius: 999px;
+  border: none;
+  background: var(--natca-red);
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background 150ms ease, transform 100ms ease, box-shadow 150ms ease;
+  flex-shrink: 0;
+}
+
+.natca-shell-signin:hover {
+  background: var(--natca-red-dark);
+  box-shadow: 0 2px 6px rgba(var(--natca-red-rgb), 0.35);
+}
+
+.natca-shell-signin:active {
+  transform: translateY(1px);
+}
+
+.natca-shell-signin:focus-visible {
+  outline: 2px solid var(--natca-sky);
+  outline-offset: 2px;
 }
 </style>
