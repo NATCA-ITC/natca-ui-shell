@@ -45,7 +45,7 @@ const { resolved: resolvedTheme } = useNatcaTheme()
 watch(
   resolvedTheme,
   (theme) => {
-    vuetifyTheme.global.name.value = `natca${theme.charAt(0).toUpperCase()}${theme.slice(1)}`
+    vuetifyTheme.change(`natca${theme.charAt(0).toUpperCase()}${theme.slice(1)}`)
   },
   { immediate: true }
 )
@@ -56,7 +56,7 @@ const hasBreadcrumbs = computed(() => !!props.breadcrumbs && props.breadcrumbs.l
 // Apply Vuetify theme class to shell root so --v-theme-* CSS variables propagate
 // to all Vuetify components inside the shell (same role as <v-app> but without
 // its layout/background interference).
-const vuetifyThemeClass = computed(() => vuetifyTheme.global.name.value ? `v-theme--${vuetifyTheme.global.name.value}` : '')
+const vuetifyThemeClass = computed(() => vuetifyTheme.name.value ? `v-theme--${vuetifyTheme.name.value}` : '')
 
 const shellClasses = computed(() => ({
   'natca-shell': true,
