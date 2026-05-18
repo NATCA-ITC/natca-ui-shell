@@ -62,7 +62,10 @@ export interface NatcaShellProps {
   appId: string
   appName: string
   tabs: NatcaTab[]
-  user: NatcaUser
+  /** Required when `authenticated` is true (default). Omit when unauthenticated. */
+  user?: NatcaUser
+  /** Defaults to `true`. When `false`, the profile dropdown is replaced with a sign-in icon button that emits `profile-action: 'signin'`. */
+  authenticated?: boolean
   facility?: string
   sidebarSections?: NatcaNavSection[]
   breadcrumbs?: NatcaBreadcrumb[]

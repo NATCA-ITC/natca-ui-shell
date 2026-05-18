@@ -12,6 +12,7 @@ import NatcaSearchDrawer from './NatcaSearchDrawer.vue'
 import NatcaAppSwitcher from './NatcaAppSwitcher.vue'
 
 const props = withDefaults(defineProps<NatcaShellProps>(), {
+  authenticated: true,
   showSearch: true,
   showNotifications: false,
   showThemeToggle: true,
@@ -101,6 +102,7 @@ function handleShellClick(e: MouseEvent) {
       :app-name="appName"
       :facility="facility"
       :user="user"
+      :authenticated="authenticated"
       :show-search="showSearch"
       :show-notifications="showNotifications"
       :show-theme-toggle="showThemeToggle"

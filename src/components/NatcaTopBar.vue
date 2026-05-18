@@ -8,13 +8,17 @@ import type { NatcaUser, NatcaApp } from '../types'
 const props = withDefaults(defineProps<{
   appName: string
   facility?: string
-  user: NatcaUser
+  /** Required when `authenticated` is true. */
+  user?: NatcaUser
+  /** Defaults to `true`. When `false`, the profile dropdown is swapped for a sign-in icon button that emits `profile-action: 'signin'`. */
+  authenticated?: boolean
   showSearch?: boolean
   showNotifications?: boolean
   showThemeToggle?: boolean
   notificationCount?: number
   apps?: NatcaApp[]
 }>(), {
+  authenticated: true,
   showSearch: true,
   showNotifications: false,
   showThemeToggle: true,
@@ -167,8 +171,8 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside, true
         </svg>
       </button>
 
-      <!-- User avatar + dropdown -->
-      <div class="natca-shell-user-menu-wrap">
+      <!-- Authenticated: user avatar + dropdown -->
+      <div v-if="authenticated && user" class="natca-shell-user-menu-wrap">
         <div class="natca-shell-avatar" :title="user.name" @click="toggleUserMenu">
           <img
             v-if="user.avatarUrl"
@@ -199,6 +203,22 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside, true
           </div>
         </Transition>
       </div>
+
+      <!-- Unauthenticated: sign-in icon button -->
+      <button
+        v-else
+        class="natca-shell-top-icon"
+        type="button"
+        aria-label="Sign in"
+        title="Sign in"
+        @click="handleUserAction('signin')"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+          <polyline points="10 17 15 12 10 7" />
+          <line x1="15" y1="12" x2="3" y2="12" />
+        </svg>
+      </button>
     </div>
   </div>
 </template>
