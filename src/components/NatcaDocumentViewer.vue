@@ -110,11 +110,10 @@ async function loadPdf() {
   try {
     const pdfjs = await import(/* @vite-ignore */ 'pdfjs-dist')
     if (pdfjs.GlobalWorkerOptions && !pdfjs.GlobalWorkerOptions.workerSrc) {
-      const workerUrl = new URL(
-        /* @vite-ignore */ 'pdfjs-dist/build/pdf.worker.mjs',
-        import.meta.url,
-      ).toString()
-      pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
+      const workerMod = await import(
+        /* @vite-ignore */ 'pdfjs-dist/build/pdf.worker.mjs?url'
+      )
+      pdfjs.GlobalWorkerOptions.workerSrc = workerMod.default
     }
     const task = pdfjs.getDocument({ url: props.documentUrl })
     const doc = await task.promise
