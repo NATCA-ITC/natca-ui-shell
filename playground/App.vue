@@ -116,6 +116,14 @@ const shellConfig = computed(() => {
   }
 })
 
+// Append ?guest=1 to any URL to preview the unauthenticated topbar (sign-in icon button).
+const isGuest = computed(() => route.query.guest !== undefined && route.query.guest !== 'false')
+
+function onProfileAction(action: string) {
+  // eslint-disable-next-line no-console
+  console.log('[playground] profile-action:', action)
+}
+
 const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
   const meta = route.meta as { breadcrumbs?: NatcaBreadcrumb[] }
   if (!meta.breadcrumbs || meta.breadcrumbs.length === 0) return undefined
@@ -137,7 +145,8 @@ const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
     :app-id="shellConfig.appId"
     :app-name="shellConfig.appName"
     :tabs="shellConfig.tabs"
-    :user="user"
+    :authenticated="!isGuest"
+    :user="isGuest ? undefined : user"
     :facility="facility"
     :sidebar-sections="shellConfig.sidebarSections"
     :breadcrumbs="breadcrumbs"
@@ -145,6 +154,7 @@ const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
     :show-search="true"
     :show-notifications="true"
     :notification-count="3"
+    @profile-action="onProfileAction"
     @theme-change="pref => localStorage.setItem('natca-theme', pref)"
   >
     <router-view />
