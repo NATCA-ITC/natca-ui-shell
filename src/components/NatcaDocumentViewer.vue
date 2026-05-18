@@ -108,10 +108,10 @@ async function loadPdf() {
   pdfError.value = null
   const token = ++renderToken
   try {
-    const pdfjs = await import(/* @vite-ignore */ 'pdfjs-dist')
+    const pdfjs = await import(/* @vite-ignore */ 'pdfjs-dist/legacy/build/pdf.mjs')
     if (pdfjs.GlobalWorkerOptions && !pdfjs.GlobalWorkerOptions.workerSrc) {
       const workerMod = await import(
-        /* @vite-ignore */ 'pdfjs-dist/build/pdf.worker.mjs?url'
+        /* @vite-ignore */ 'pdfjs-dist/legacy/build/pdf.worker.mjs?url'
       )
       pdfjs.GlobalWorkerOptions.workerSrc = workerMod.default
     }
