@@ -74,6 +74,34 @@ export interface NatcaShellProps {
 }
 
 /**
+ * NatcaDocumentViewer types — viewer takes URLs and metadata, emits events.
+ * Zero DMS knowledge; consumers (like @natca-itc/dms-client) wrap this.
+ */
+export interface DocumentViewerMetadata {
+  title?: string
+  summary?: string
+  period?: string
+  version?: string
+  lastUpdated?: string | Date | null
+}
+
+export interface DocumentViewerVersionRef {
+  id: string
+  label: string
+  isCurrent?: boolean
+  publishedAt?: string | null
+}
+
+export interface DocumentViewerChapterRef {
+  id: string
+  /** Index marker, e.g. "Article III" or "1.2". */
+  index: string
+  name: string
+  /** Optional sub-sections rendered nested under the chapter. */
+  sections?: Array<{ id: string; index: string; name?: string | null }>
+}
+
+/**
  * Re-export component-level types for convenience.
  * Canonical definitions live in each component file.
  */
