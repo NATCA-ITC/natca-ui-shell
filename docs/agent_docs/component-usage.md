@@ -617,3 +617,79 @@ After configuring, a VTextField rendered in your app should show:
 - `getComputedStyle(btn).textTransform === 'none'` on plain VBtn instances (tabs may be uppercase — that's by design)
 
 If you see 16px field text or uppercase VBtn, the `configFile` path is probably wrong or `vuetify/styles` import is missing from main.ts.
+
+---
+
+## NatcaDocumentViewer (PDF / image preview)
+
+Renders an inline PDF (via pdf.js), image, or download-CTA depending on mime-type.
+
+### Install peer dep
+
+```bash
+npm install pdfjs-dist@^5.0.0
+```
+
+pdf.js is an **optional** peer dependency. Apps that never preview PDFs don't pay the bundle cost — `NatcaDocumentViewer` lazy-imports it on first use.
+
+### Wire it up
+
+```vue
+<NatcaDocumentViewer
+  :document-url="signedUrl"
+  :mime-type="doc.mimeType"
+  :metadata="{ title: doc.title, period: 'FY2025', version: 'v3' }"
+  @download="logDownload"
+/>
+```
+
+That's it. No Vite config changes. No `optimizeDeps.exclude`. No bundler workarounds.
+
+### Worker source — default and override
+
+pdf.js needs a Web Worker to parse PDFs. As of `0.4.0-beta.16`, `NatcaDocumentViewer` resolves the worker at runtime — **no bundler-specific import syntax (`?url`, `?worker`) is used inside the library**. This means:
+
+- ✅ The consuming app doesn't need `optimizeDeps.exclude: ['@natca-itc/ui-shell']`
+- ✅ The consuming app doesn't need a special install path for `pdfjs-dist` to make the worker file reachable
+- ✅ The library and worker are always version-matched (worker URL is built from `pdfjs.version` of the just-loaded library)
+
+**Default behavior:** The worker is fetched at runtime from `cdn.jsdelivr.net`:
+
+```
+https://cdn.jsdelivr.net/npm/pdfjs-dist@<loaded-version>/legacy/build/pdf.worker.min.mjs
+```
+
+**When to override:** strict CSP that blocks third-party CDN, fully offline deployments, or air-gapped environments. Two override paths, in priority order:
+
+```vue
+<!-- Per-instance prop -->
+<NatcaDocumentViewer
+  :document-url="signedUrl"
+  worker-src="/static/pdf.worker.min.mjs"
+/>
+```
+
+```ts
+// Global (set once in main.ts before any viewer mounts)
+import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs'
+pdfjs.GlobalWorkerOptions.workerSrc = '/static/pdf.worker.min.mjs'
+```
+
+For the self-hosted case, your build step copies `node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs` into the app's `public/` (or equivalent static dir) so the URL above resolves to the deployed asset.
+
+### CSP allow-list
+
+If you're keeping the default CDN behavior, add these directives:
+
+```
+script-src  'self' https://cdn.jsdelivr.net;
+worker-src  'self' blob: https://cdn.jsdelivr.net;
+```
+
+(`blob:` is needed because pdf.js may construct workers from blob URLs internally.)
+
+### Don't do this
+
+- ❌ `optimizeDeps.exclude: ['@natca-itc/ui-shell']` — not needed since beta.16, and it slows your dev startup
+- ❌ Manually copying `pdf.worker.mjs` into your `public/` for no reason — only do this when you're overriding via `workerSrc`
+- ❌ Setting `workerSrc` to a path that doesn't include the version (e.g. just `/pdf.worker.mjs`) — pdf.js requires worker and library versions to match exactly, so version-pin the path you ship
