@@ -1,49 +1,72 @@
-# NATCA Favicons (NAT-507)
+# NATCA Favicons
 
-Drop favicon files in this directory. Each consuming app (`email`, `mn`, `bid`, `dms`, `pay`, `gats`) will pull from these canonical paths at build time so we maintain one set, not six.
+Canonical favicon set for all NATCA web properties. Consuming apps (`email`, `mn`, `bid`, `dms`, `pay`, `gats`) reference these paths so we maintain one set, not six.
+
+## Chosen design
+
+**Navy "N" monogram with red accent underbar.**
+
+- Rounded-square plate, NATCA navy (`#003366`)
+- Bold sans "N" letterform in white, ~12% inner padding so it stays legible at 16×16
+- Red (`#CE0E2D`) underbar — nods to the radar/scope element in the full brand mark while staying simple enough to survive small sizes
+
+Master vector: [`favicon.svg`](./favicon.svg). All raster outputs are generated from it.
 
 ## File list
 
 | File | Size | Purpose |
 |---|---|---|
+| `favicon.svg` | vector | Modern browsers; master source of truth |
 | `favicon-32.png` | 32×32 | Standard browser tab |
 | `favicon-64.png` | 64×64 | Retina browser tab |
 | `favicon-192.png` | 192×192 | Android home screen / PWA |
 | `favicon-512.png` | 512×512 | High-DPI / PWA install |
 | `apple-touch-icon.png` | 180×180 | iOS Safari home screen |
-| `favicon.svg` | vector | Modern browsers, scales for theme-aware dark/light |
-| `favicon.ico` | 16+32+48 multi-res | Legacy fallback |
+| `favicon.ico` | 16+32+48 multi-res | Legacy fallback (IE, embedded browsers) |
 
-## Design constraints
+## Regenerating
 
-Favicons need to be legible at **16×16**. The full NATCA wordmark renders as mush at that size — use either:
-
-- The **"N" monogram** from the brand mark, padded a few px from the edges
-- A **simplified radar/scope motif** from the logo
-
-Once you commit the chosen design, document it here (which symbol, source SVG path) so future regenerations stay consistent.
-
-## Source SVG
-
-Keep the master source SVG in this directory too (`favicon.svg`). PNG/ICO outputs can be regenerated from it via:
+After editing `favicon.svg`:
 
 ```bash
-# Each PNG size
-for size in 32 64 192 512; do
-  rsvg-convert -w $size -h $size favicon.svg -o favicon-${size}.png
-done
-# Apple touch (180×180)
-rsvg-convert -w 180 -h 180 favicon.svg -o apple-touch-icon.png
-# Multi-res ICO
-convert favicon-16.png favicon-32.png favicon-48.png favicon.ico
+npm run favicons
 ```
 
-(`rsvg-convert` is part of librsvg; `convert` is ImageMagick.)
+This runs `scripts/build-favicons.mjs`, which uses `sharp` to render the SVG at every required size and `png-to-ico` to bundle the multi-resolution ICO. All outputs are overwritten in this directory.
+
+## Consumer wire-up
+
+Each app copies these into its own `public/` at build time so the browser sees them at canonical paths (`/favicon.svg`, `/favicon-32.png`, etc.). Typical pattern in a Vite-based app:
+
+```ts
+// vite.config.ts
+import { viteStaticCopy } from 'vite-plugin-static-copy'
+
+plugins: [
+  viteStaticCopy({
+    targets: [
+      {
+        src: 'node_modules/@natca-itc/ui-shell/assets/favicons/*',
+        dest: '.',
+      },
+    ],
+  }),
+]
+```
+
+Then in `index.html`:
+
+```html
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="alternate icon" href="/favicon.ico">
+```
 
 ## Status
 
-- [ ] SVG mark designed
-- [ ] PNG set generated
-- [ ] ICO generated
-- [ ] README updated with chosen design
+- [x] SVG mark designed (navy plate, white "N", red underbar)
+- [x] PNG set generated (32, 64, 180, 192, 512)
+- [x] ICO generated (16+32+48 multi-res)
+- [x] README updated with chosen design
 - [ ] Released in next ui-shell version
