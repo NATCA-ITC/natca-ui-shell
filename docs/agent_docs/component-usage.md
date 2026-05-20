@@ -221,6 +221,49 @@ Bare auto-renders a close button in the top-right with a translucent backdrop so
 />
 ```
 
+### NatcaSlugLabel — friendly name + monospace slug
+
+Use anywhere admins see a machine identifier — document type slugs, grant slugs, permission keys, role identifiers. The slug renders in `--font-mono` (JetBrains Mono); an optional `description` populates an ⓘ tooltip on hover/focus.
+
+**Consuming apps must load JetBrains Mono** themselves — see the README's "Fonts — consumer loading" section. Without it the slug falls back to the system mono stack (`ui-monospace`, `SF Mono`, …) — still readable, just off-brand.
+
+**Variants:** `default` (name + ⓘ + slug, default), `compact` (name + ⓘ, no slug), `slug-only` (slug alone — for chips and dense lists).
+
+**Sizes:** `sm` (10/12px), `md` (11/13px — default), `lg` (12/14px).
+
+**Render:** `text` (inline mono span, default) or `chip` (wraps output in a tonal `VChip`).
+
+**Clickable:** opt-in. Adds focus ring, hover affordance, keyboard activation (Enter / Space), emits `click`.
+
+```vue
+<!-- DMS: document-type detail with full description -->
+<NatcaSlugLabel
+  name="Facility Constitution"
+  slug="facility-constitution"
+  description="The governing document for facility-level union operations."
+/>
+
+<!-- MN v2: permission feature key (slug only, inline) -->
+<NatcaSlugLabel variant="slug-only" :slug="feature.key" />
+
+<!-- DMS browse: clickable chip that filters the table -->
+<NatcaSlugLabel
+  variant="slug-only"
+  render="chip"
+  :slug="doc.document_type_id"
+  clickable
+  @click="filterByType(doc.document_type_id)"
+/>
+
+<!-- Compact mode for tight chip contexts -->
+<NatcaSlugLabel
+  variant="compact"
+  name="Bylaws"
+  slug="facility-bylaws"
+  description="Document type — facility-level bylaws."
+/>
+```
+
 ## What natcaDefaults Handles (DO NOT set these props manually)
 
 | Component | Auto-set Props |

@@ -61,6 +61,48 @@ vuetify({
 
 > **Forbidden in Vuetify apps:** `import '@natca-itc/ui-shell/components'` (standalone CSS, WordPress only) and `optimizeDeps.include` for `vuetify/components/*` paths (esbuild bypasses `vite-plugin-vuetify`'s SASS injection).
 
+## Fonts — consumer loading
+
+UI Shell does not ship webfonts. Consuming apps load the three brand families themselves so the package stays lightweight and CSP-friendly.
+
+Three families back the tokens:
+
+| Token | Family | Weights | Used for |
+|-------|--------|---------|----------|
+| `--font-body` | Public Sans | 300, 400, 500, 600, 700 | Body text |
+| `--font-display` | Barlow | 400, 500, 600, 700 | Headings, eyebrows |
+| `--font-mono` | JetBrains Mono | 400, 500, 600 | Slugs, identifiers, code (e.g. `NatcaSlugLabel`) |
+
+The mono stack falls back to the system monospace stack (`ui-monospace`, `SF Mono`, `Menlo`, `Consolas`) when JetBrains Mono isn't loaded — text still renders, just without the brand mono face.
+
+### With `unplugin-fonts` (recommended)
+
+```ts
+// vite.config.ts
+import unfonts from 'unplugin-fonts/vite'
+
+unfonts({
+  google: {
+    families: [
+      { name: 'Public Sans', styles: 'wght@300;400;500;600;700' },
+      { name: 'Barlow', styles: 'wght@400;500;600;700' },
+      { name: 'JetBrains Mono', styles: 'wght@400;500;600' },
+    ],
+  },
+})
+```
+
+### With a `<link>` tag
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Public+Sans:wght@300;400;500;600;700&display=swap"
+>
+```
+
 ## Wrap your app
 
 ```vue

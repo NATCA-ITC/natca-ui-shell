@@ -34,6 +34,7 @@ import NatcaStatGrid from './components/NatcaStatGrid.vue'
 import NatcaEmptyState from './components/NatcaEmptyState.vue'
 import NatcaPageHeader from './components/NatcaPageHeader.vue'
 import NatcaAnnotation from './components/NatcaAnnotation.vue'
+import NatcaSlugLabel from './components/NatcaSlugLabel.vue'
 
 // Document viewer (DMS Phase 2 — URL + metadata in, events out; zero DMS knowledge)
 import NatcaDocumentViewer from './components/NatcaDocumentViewer.vue'
@@ -76,6 +77,7 @@ export {
   NatcaEmptyState,
   NatcaPageHeader,
   NatcaAnnotation,
+  NatcaSlugLabel,
 }
 
 // Document viewer
@@ -132,6 +134,7 @@ export const NatcaUiShell = {
     app.component('NatcaEmptyState', NatcaEmptyState)
     app.component('NatcaPageHeader', NatcaPageHeader)
     app.component('NatcaAnnotation', NatcaAnnotation)
+    app.component('NatcaSlugLabel', NatcaSlugLabel)
     // Document viewer
     app.component('NatcaDocumentViewer', NatcaDocumentViewer)
     // Theme
