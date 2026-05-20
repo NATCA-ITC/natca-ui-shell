@@ -119,6 +119,30 @@ vuetify({
 
 > **Forbidden in Vuetify apps:** `import '@natca-itc/ui-shell/components'`. That standalone CSS bundle is for WordPress / static HTML only.
 
+### 4. Load brand fonts
+
+UI Shell does not ship webfonts — consuming apps load them. Three families back the tokens:
+
+| Token | Family | Weights | Used for |
+|-------|--------|---------|----------|
+| `--font-body` | Public Sans | 300, 400, 500, 600, 700 | Body text |
+| `--font-display` | Barlow | 400, 500, 600, 700 | Headings, eyebrows |
+| `--font-mono` | JetBrains Mono | 400, 500, 600 | Slugs, identifiers, `NatcaSlugLabel` |
+
+With `unplugin-fonts`:
+
+```ts
+google: {
+  families: [
+    { name: 'Public Sans', styles: 'wght@300;400;500;600;700' },
+    { name: 'Barlow', styles: 'wght@400;500;600;700' },
+    { name: 'JetBrains Mono', styles: 'wght@400;500;600' },
+  ],
+}
+```
+
+Each font has a system-stack fallback so missing fonts don't break rendering — they just lose brand fidelity. The mono fallback is `ui-monospace, 'SF Mono', Menlo, Consolas, monospace`.
+
 ## Key Files
 
 | Path | Purpose |

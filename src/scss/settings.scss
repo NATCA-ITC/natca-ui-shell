@@ -17,6 +17,10 @@
 
 @forward 'vuetify/settings' with (
   // ── Global typography ─────────────────────────────────────────────
+  // Note: Vuetify doesn't expose a $mono-font-family SASS var because none of
+  // its components consume one — code-mono use cases are app-level. Components
+  // that want the mono stack (e.g. NatcaSlugLabel) read --font-mono from the
+  // CSS token directly.
   $body-font-family: ('Public Sans', sans-serif),
   $heading-font-family: ('Barlow', sans-serif),
 

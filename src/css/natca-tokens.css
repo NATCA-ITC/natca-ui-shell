@@ -53,7 +53,7 @@
   --font-display: 'Barlow', sans-serif;
   --font-display-weight: 600;
   --font-body:    'Public Sans', sans-serif;
-  --font-mono:    'Courier New', monospace;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   /* --- Type Scale --- */
   --text-xs:   12px;

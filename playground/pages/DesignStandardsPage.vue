@@ -16,6 +16,7 @@ import {
   NatcaPillNav,
   NatcaDialog,
   NatcaDocumentViewer,
+  NatcaSlugLabel,
 } from '@/index'
 import type { NatcaTabItem } from '@/components/NatcaTabs.vue'
 import type { MemberCardData } from '@/components/NatcaMemberCard.vue'
@@ -98,6 +99,12 @@ const formProvider = ref('Mailcow')
 const formQuota = ref(5)
 const formWelcome = ref(true)
 const formForward = ref(false)
+
+// ── Slug label demo ──
+const lastSlugClick = ref<string | null>(null)
+function onSlugClick(kind: string) {
+  lastSlugClick.value = `${kind} render clicked at ${new Date().toLocaleTimeString()}`
+}
 
 // ── Member card demo ──
 const members: MemberCardData[] = [
@@ -809,6 +816,107 @@ const members: MemberCardData[] = [
       </div>
     </section>
 
+    <!-- ═══════════ SLUG LABELS ═══════════ -->
+    <section class="ds-section">
+      <h3 class="ds-section-title">Slug labels</h3>
+      <p class="ds-body">
+        <code>NatcaSlugLabel</code> pairs a friendly human label with a machine identifier
+        in the brand mono stack. Use whenever admins see slugs — document type IDs, grant
+        slugs, permission keys, role identifiers. Five props compose: <code>name</code>,
+        <code>slug</code>, optional <code>description</code> (drives the
+        <strong>ⓘ</strong> info tooltip), <code>variant</code>, <code>size</code>,
+        plus <code>render</code> (<code>text</code> | <code>chip</code>) and
+        <code>clickable</code>.
+      </p>
+
+      <NatcaAnnotation type="tip" style="margin-bottom: 16px; max-width: 760px;">
+        <strong>Mono font:</strong> the slug renders in <code>--font-mono</code> →
+        JetBrains Mono with a system-mono fallback. Consuming apps load the webfont
+        themselves (see the README's <em>Fonts — consumer loading</em> section). The
+        playground does load it, so what you see here matches production output.
+      </NatcaAnnotation>
+
+      <!-- Variants × sizes (text render) -->
+      <p class="eyebrow">Variants × sizes — text render</p>
+      <div class="ds-slug-matrix">
+        <div class="ds-slug-matrix__head"></div>
+        <div class="ds-slug-matrix__head">sm</div>
+        <div class="ds-slug-matrix__head">md (default)</div>
+        <div class="ds-slug-matrix__head">lg</div>
+
+        <div class="ds-slug-matrix__label"><code>default</code><br /><span>name + ⓘ + slug</span></div>
+        <div class="ds-slug-matrix__cell">
+          <NatcaSlugLabel size="sm" name="Facility Constitution" slug="facility-constitution"
+            description="The governing document for facility-level union operations." />
+        </div>
+        <div class="ds-slug-matrix__cell">
+          <NatcaSlugLabel size="md" name="Facility Constitution" slug="facility-constitution"
+            description="The governing document for facility-level union operations." />
+        </div>
+        <div class="ds-slug-matrix__cell">
+          <NatcaSlugLabel size="lg" name="Facility Constitution" slug="facility-constitution"
+            description="The governing document for facility-level union operations." />
+        </div>
+
+        <div class="ds-slug-matrix__label"><code>compact</code><br /><span>name + ⓘ only</span></div>
+        <div class="ds-slug-matrix__cell">
+          <NatcaSlugLabel variant="compact" size="sm" name="Facility Constitution" slug="facility-constitution"
+            description="Used when space is tight — slug hidden." />
+        </div>
+        <div class="ds-slug-matrix__cell">
+          <NatcaSlugLabel variant="compact" size="md" name="Facility Constitution" slug="facility-constitution"
+            description="Used when space is tight — slug hidden." />
+        </div>
+        <div class="ds-slug-matrix__cell">
+          <NatcaSlugLabel variant="compact" size="lg" name="Facility Constitution" slug="facility-constitution"
+            description="Used when space is tight — slug hidden." />
+        </div>
+
+        <div class="ds-slug-matrix__label"><code>slug-only</code><br /><span>slug only</span></div>
+        <div class="ds-slug-matrix__cell">
+          <NatcaSlugLabel variant="slug-only" size="sm" slug="mn.officer_admin:ZLA" />
+        </div>
+        <div class="ds-slug-matrix__cell">
+          <NatcaSlugLabel variant="slug-only" size="md" slug="mn.officer_admin:ZLA" />
+        </div>
+        <div class="ds-slug-matrix__cell">
+          <NatcaSlugLabel variant="slug-only" size="lg" slug="mn.officer_admin:ZLA" />
+        </div>
+      </div>
+
+      <!-- Chip render -->
+      <p class="eyebrow" style="margin-top: 24px;">Chip render — for browse / filter chips</p>
+      <div class="ds-row" style="gap: 12px; align-items: center;">
+        <NatcaSlugLabel render="chip" variant="slug-only" size="sm" slug="facility-constitution" />
+        <NatcaSlugLabel render="chip" variant="slug-only" slug="facility-bylaws" />
+        <NatcaSlugLabel render="chip" variant="slug-only" size="lg" slug="facility-990" />
+        <NatcaSlugLabel render="chip" name="Bylaws" slug="facility-bylaws"
+          description="Facility-level bylaws document." />
+      </div>
+
+      <!-- Clickable -->
+      <p class="eyebrow" style="margin-top: 24px;">Clickable — focusable + emits <code>click</code></p>
+      <div class="ds-row" style="gap: 16px; align-items: center;">
+        <NatcaSlugLabel
+          name="Facility Constitution"
+          slug="facility-constitution"
+          description="Click to filter by this type."
+          clickable
+          @click="onSlugClick('text')"
+        />
+        <NatcaSlugLabel
+          render="chip"
+          variant="slug-only"
+          slug="facility-constitution"
+          clickable
+          @click="onSlugClick('chip')"
+        />
+      </div>
+      <p v-if="lastSlugClick" class="ds-body" style="margin-top: 8px;">
+        Last click: <code>{{ lastSlugClick }}</code> (Enter/Space also work via keyboard).
+      </p>
+    </section>
+
     <!-- ═══════════ MEMBER CARD ═══════════ -->
     <section class="ds-section">
       <h3 class="ds-section-title">Member card</h3>
@@ -999,5 +1107,47 @@ const members: MemberCardData[] = [
   border-radius: 3px;
   font-family: var(--font-mono);
   color: var(--color-text-primary);
+}
+
+/* Slug-label demo matrix — 4 cols: row label + 3 sizes */
+.ds-slug-matrix {
+  display: grid;
+  grid-template-columns: 140px repeat(3, 1fr);
+  gap: 10px 18px;
+  align-items: center;
+  max-width: 880px;
+  margin-bottom: 8px;
+}
+
+.ds-slug-matrix__head {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-text-muted);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-sep);
+}
+
+.ds-slug-matrix__label {
+  font-size: 12px;
+  color: var(--color-text-body);
+  line-height: 1.35;
+}
+
+.ds-slug-matrix__label code {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--color-text-primary);
+}
+
+.ds-slug-matrix__label span {
+  font-size: 10.5px;
+  color: var(--color-text-faint);
+}
+
+.ds-slug-matrix__cell {
+  padding: 6px 0;
 }
 </style>
