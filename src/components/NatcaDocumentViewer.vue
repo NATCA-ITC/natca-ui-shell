@@ -54,6 +54,13 @@ const props = withDefaults(defineProps<{
   open?: boolean
   /** Maximum render scale; default 1.5 (Retina-friendly without ballooning memory). */
   maxScale?: number
+  /**
+   * Override for pdf.js worker URL. Default fetches the version-matched worker
+   * from jsdelivr. Set this to a self-hosted absolute URL for CSP-strict or
+   * offline deployments. Has no effect if `pdfjs.GlobalWorkerOptions.workerSrc`
+   * is already set elsewhere in the app.
+   */
+  workerSrc?: string
 }>(), {
   mode: 'inline',
   open: false,
@@ -110,10 +117,14 @@ async function loadPdf() {
   try {
     const pdfjs = await import(/* @vite-ignore */ 'pdfjs-dist/legacy/build/pdf.mjs')
     if (pdfjs.GlobalWorkerOptions && !pdfjs.GlobalWorkerOptions.workerSrc) {
-      const workerMod = await import(
-        /* @vite-ignore */ 'pdfjs-dist/legacy/build/pdf.worker.mjs?url'
-      )
-      pdfjs.GlobalWorkerOptions.workerSrc = workerMod.default
+      // Resolve a worker source without using a bundler-specific `?url` import,
+      // so consuming apps don't need `optimizeDeps.exclude: ['@natca-itc/ui-shell']`.
+      // Default: version-matched worker from jsdelivr.
+      // Override via the `workerSrc` prop or by setting GlobalWorkerOptions.workerSrc
+      // before this component mounts (e.g., in main.ts).
+      pdfjs.GlobalWorkerOptions.workerSrc =
+        props.workerSrc ??
+        `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`
     }
     const task = pdfjs.getDocument({ url: props.documentUrl })
     const doc = await task.promise
