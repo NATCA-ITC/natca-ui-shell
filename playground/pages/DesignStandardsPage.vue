@@ -247,6 +247,35 @@ const members: MemberCardData[] = [
           </tr>
         </tbody>
       </table>
+
+      <p class="eyebrow" style="margin-top: 16px;">Buttons as links — <code>:to</code> and <code>href</code></p>
+      <p class="ds-body">
+        Pass <code>:to</code> for internal SPA navigation (renders as
+        <code>&lt;router-link&gt;</code>, supports Cmd/Ctrl+click and middle-click) or
+        <code>href</code> for external URLs. The native button branch (no
+        <code>to</code>/<code>href</code>) is unchanged. Keyboard activation works in all three:
+        <code>Enter</code>/<code>Space</code> navigates.
+      </p>
+      <table class="ds-props-table">
+        <thead><tr><th>Example</th><th>Code</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><NatcaButton variant="primary" :to="{ path: '/admin/components' }">Internal route</NatcaButton></td>
+            <td><code>:to="{ path: '/admin/components' }"</code></td>
+            <td>Renders as <code>&lt;a&gt;</code> via <code>&lt;router-link&gt;</code>. Modifier-click opens in new tab.</td>
+          </tr>
+          <tr>
+            <td><NatcaButton variant="secondary" href="https://design.natca.org" target="_blank" rel="noopener">External URL</NatcaButton></td>
+            <td><code>href="…" target="_blank"</code></td>
+            <td>Plain anchor — for off-app destinations, downloads, mailto.</td>
+          </tr>
+          <tr>
+            <td><NatcaButton variant="ghost" :to="{ path: '/admin/components' }" disabled>Disabled link</NatcaButton></td>
+            <td><code>:to="…" disabled</code></td>
+            <td><code>aria-disabled</code>, <code>tabindex="-1"</code>, no navigation.</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
 
     <!-- ═══════════ ICON BUTTONS ═══════════ -->
