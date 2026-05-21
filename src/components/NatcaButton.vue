@@ -15,6 +15,13 @@
  * <NatcaButton variant="primary" size="md">Submit Request</NatcaButton>
  */
 import { computed } from 'vue'
+import {
+  RouterLink,
+  type NavigationFailure,
+  type RouteLocationRaw,
+} from 'vue-router'
+
+type RouterNavigate = (e?: MouseEvent) => Promise<void | NavigationFailure>
 
 const props = withDefaults(defineProps<{
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'link'
@@ -22,7 +29,10 @@ const props = withDefaults(defineProps<{
   type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
   block?: boolean
+  /** External link target — renders as `<a href>`. */
   href?: string
+  /** Internal route — renders as `<router-link>`. Takes precedence over `href`. */
+  to?: RouteLocationRaw
 }>(), {
   variant: 'primary',
   size: 'sm',
@@ -49,11 +59,54 @@ function handleClick(e: MouseEvent) {
   }
   emit('click', e)
 }
+
+// RouterLink click handler — forwards to router-link's navigate() unless
+// disabled or the user used a modifier (Cmd/Ctrl/Shift/middle-click) which
+// the browser handles natively (open in new tab/window).
+function handleRouterClick(e: MouseEvent, navigate: RouterNavigate) {
+  if (props.disabled) {
+    e.preventDefault()
+    return
+  }
+  emit('click', e)
+  if (e.defaultPrevented) return
+  // Let router-link decide whether to call router.push or fall through to the
+  // browser (modifier-key + middle-click are passed through automatically).
+  void navigate(e)
+}
+
+// Space-bar activation for anchor-rendered buttons (mirrors native <button>).
+function handleRouterKeydown(e: KeyboardEvent, navigate: RouterNavigate) {
+  if (e.key !== ' ') return
+  if (props.disabled) {
+    e.preventDefault()
+    return
+  }
+  e.preventDefault()
+  void navigate()
+}
 </script>
 
 <template>
+  <RouterLink
+    v-if="to"
+    :to="to"
+    custom
+    v-slot="{ href: rlHref, navigate }"
+  >
+    <a
+      :href="rlHref"
+      :class="classes"
+      :aria-disabled="disabled"
+      :tabindex="disabled ? -1 : 0"
+      @click="(e) => handleRouterClick(e, navigate)"
+      @keydown="(e) => handleRouterKeydown(e, navigate)"
+    >
+      <slot />
+    </a>
+  </RouterLink>
   <a
-    v-if="href"
+    v-else-if="href"
     :href="href"
     :class="classes"
     :aria-disabled="disabled"

@@ -61,6 +61,15 @@ const props = withDefaults(defineProps<{
    * is already set elsewhere in the app.
    */
   workerSrc?: string
+  /**
+   * Override for pdf.js wasm directory URL (must end in `/`). pdfjs-dist ≥ 5.x
+   * lazy-loads JBig2 / OpenJPEG / QCMS / QuickJS decoders via WebAssembly and
+   * requires this option — without it, JBig2-compressed images render blank
+   * and the console logs `Ensure that the wasmUrl API parameter is provided`.
+   * Default fetches the version-matched wasm dir from jsdelivr. Override for
+   * CSP-strict / offline deployments.
+   */
+  wasmUrl?: string
 }>(), {
   mode: 'inline',
   open: false,
@@ -126,7 +135,10 @@ async function loadPdf() {
         props.workerSrc ??
         `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`
     }
-    const task = pdfjs.getDocument({ url: props.documentUrl })
+    const wasmUrl =
+      props.wasmUrl ??
+      `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/wasm/`
+    const task = pdfjs.getDocument({ url: props.documentUrl, wasmUrl })
     const doc = await task.promise
     if (token !== renderToken) return
     pdfDoc.value = doc
