@@ -125,6 +125,13 @@ defineSlots<{
   overflow: hidden;
   font-family: var(--font-body);
   box-shadow: var(--shadow-lg);
+  /* NAT-561: cap at viewport and lay out as a column so the body becomes
+     the scrollable region while header + actions stay pinned. Without
+     this, tall content (data tables, long forms) clipped the actions
+     footer on standard laptop heights. */
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
 }
 
 .natca-dialog__header {
@@ -183,6 +190,13 @@ defineSlots<{
   font-size: 13px;
   color: var(--color-text-body);
   line-height: 1.5;
+  /* NAT-561: body owns the overflow. min-height:0 lets the flex item
+     shrink below its content size; overscroll-behavior keeps scroll
+     chaining from leaking to the page underneath. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .natca-dialog__body :deep(strong) {
