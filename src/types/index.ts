@@ -41,6 +41,9 @@ export interface NatcaApp {
   icon?: string
   url: string
   description?: string
+  /** When true, the app is omitted from the switcher. Used for apps that exist
+   *  in the canonical registry but aren't launched yet (e.g. DMS). */
+  hidden?: boolean
 }
 
 export interface NatcaUser {

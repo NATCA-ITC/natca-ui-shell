@@ -93,6 +93,10 @@ export * from './types'
 export type { NatcaTabItem } from './components/NatcaTabs.vue'
 export type { MemberCardData } from './components/NatcaMemberCard.vue'
 
+// Canonical app registry — default apps list for the switcher (production URLs
+// baked in so consuming apps don't hardcode their own; see NAT-833 / NAT-825)
+export { natcaApps } from './data/natcaApps'
+
 // Composables
 export { useShellState } from './composables/useShellState'
 export { useNatcaTheme } from './composables/useNatcaTheme'

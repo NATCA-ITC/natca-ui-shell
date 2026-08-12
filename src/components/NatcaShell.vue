@@ -4,6 +4,7 @@ import { useTheme } from 'vuetify'
 import { useShellState } from '../composables/useShellState'
 import { useNatcaTheme } from '../composables/useNatcaTheme'
 import type { NatcaShellProps } from '../types'
+import { natcaApps } from '../data/natcaApps'
 import NatcaTopBar from './NatcaTopBar.vue'
 import NatcaTabNav from './NatcaTabNav.vue'
 import NatcaBreadcrumbRow from './NatcaBreadcrumbRow.vue'
@@ -17,6 +18,8 @@ const props = withDefaults(defineProps<NatcaShellProps>(), {
   showNotifications: false,
   showThemeToggle: true,
   notificationCount: 0,
+  // Consuming apps that omit `apps` get the canonical NATCA registry for free.
+  apps: () => natcaApps,
 })
 
 const emit = defineEmits<{
@@ -52,6 +55,9 @@ watch(
 
 const hasSidebar = computed(() => !!props.sidebarSections && props.sidebarSections.length > 0)
 const hasBreadcrumbs = computed(() => !!props.breadcrumbs && props.breadcrumbs.length > 0)
+
+// Apps shown in the switcher — drop any flagged `hidden` (e.g. DMS pre-launch).
+const visibleApps = computed(() => (props.apps ?? []).filter((app) => !app.hidden))
 
 // Apply Vuetify theme class to shell root so --v-theme-* CSS variables propagate
 // to all Vuetify components inside the shell (same role as <v-app> but without
@@ -156,8 +162,8 @@ function handleShellClick(e: MouseEvent) {
     </div>
 
     <NatcaAppSwitcher
-      v-if="state.appSwitcherOpen && apps?.length"
-      :apps="apps!"
+      v-if="state.appSwitcherOpen && visibleApps.length"
+      :apps="visibleApps"
       :current-app-id="appId"
       @select="handleAppSelect"
     />
