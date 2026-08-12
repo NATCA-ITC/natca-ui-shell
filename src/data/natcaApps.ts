@@ -20,6 +20,6 @@ export const natcaApps: NatcaApp[] = [
   { id: 'mn',   name: 'MyNATCA', icon: 'mdi-account-group',   url: 'https://my.natca.org',   description: 'Member Portal' },
   { id: 'bid',  name: 'BID',     icon: 'mdi-swap-horizontal', url: 'https://bid.natca.org',  description: 'Facility Bids' },
   { id: 'pay',  name: 'Pay',     icon: 'mdi-currency-usd',    url: 'https://pay.natca.org',  description: 'Pay Calculator' },
-  { id: 'gats', name: 'GATS',    icon: 'mdi-gavel',           url: 'https://gats.natca.org', description: 'LR Tracking' },
-  { id: 'dms',  name: 'DMS',     icon: 'mdi-file-document',   url: 'https://dms.natca.org',  description: 'Document Management', hidden: true },
+  { id: 'gats', name: 'GATS',    icon: 'mdi-gavel',           url: 'https://gats.natca.org', description: 'LR Tracker' },
+  { id: 'dms',  name: 'DMS',     icon: 'mdi-file-document',   url: 'https://dms.natca.org',  description: 'Document Manager', hidden: true },
 ]
