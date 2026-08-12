@@ -11,6 +11,7 @@ import NatcaBreadcrumbRow from './components/NatcaBreadcrumbRow.vue'
 import NatcaSidebar from './components/NatcaSidebar.vue'
 import NatcaSearchDrawer from './components/NatcaSearchDrawer.vue'
 import NatcaAppSwitcher from './components/NatcaAppSwitcher.vue'
+import NatcaAuthLayout from './components/NatcaAuthLayout.vue'
 
 // Shared Vuetify-wrapped components
 import NatcaTabs from './components/NatcaTabs.vue'
@@ -51,6 +52,7 @@ export {
   NatcaSidebar,
   NatcaSearchDrawer,
   NatcaAppSwitcher,
+  NatcaAuthLayout,
 }
 
 // Shared components
@@ -121,6 +123,7 @@ export const NatcaUiShell = {
     app.component('NatcaSidebar', NatcaSidebar)
     app.component('NatcaSearchDrawer', NatcaSearchDrawer)
     app.component('NatcaAppSwitcher', NatcaAppSwitcher)
+    app.component('NatcaAuthLayout', NatcaAuthLayout)
     // Shared components
     app.component('NatcaTabs', NatcaTabs)
     app.component('NatcaMemberCard', NatcaMemberCard)
