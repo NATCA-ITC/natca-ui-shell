@@ -104,17 +104,24 @@ function isActive(tab: NatcaTab): boolean {
 
 const overflowHasActive = computed(() => overflowTabs.value.some(t => isActive(t)))
 
-// Position dropdowns below their button (since they're teleported to body)
+// Position a teleported dropdown under its trigger button. Left-align the menu
+// with the trigger; if that would overflow the viewport's right edge, shift it
+// left just enough to stay fully on-screen. (Previous logic anchored by the
+// right edge, which flung a left-side trigger's menu to the far right.)
 function dropdownPosition(btn: HTMLElement | null) {
   if (!btn) return {}
   const rect = btn.getBoundingClientRect()
+  const margin = 8
+  const estWidth = 220 // >= dropdown min-width (180px); used only for the right-edge clamp
   const viewportWidth = window.innerWidth
-  let right = viewportWidth - rect.right
-  if (right > viewportWidth - 200) right = 8
+  let left = rect.left
+  if (left + estWidth > viewportWidth - margin) {
+    left = Math.max(margin, viewportWidth - margin - estWidth)
+  }
   return {
     position: 'fixed' as const,
     top: `${rect.bottom + 2}px`,
-    right: `${right}px`,
+    left: `${left}px`,
   }
 }
 
@@ -329,6 +336,8 @@ watch(() => route.path, () => {
           'natca-shell-tab-active': isActive(tab),
           'natca-shell-tab-icon-only': collapsedSet.has(tab.id),
           'natca-shell-tab-switcher-open': openSwitcherId === tab.id,
+          'natca-shell-tab-button': tab.variant === 'button',
+          'natca-shell-tab-end': tab.align === 'end',
         }"
         :title="collapsedSet.has(tab.id) ? (activeChild(tab)?.label ?? tab.label) : undefined"
         :aria-haspopup="true"
@@ -367,6 +376,8 @@ watch(() => route.path, () => {
         :class="{
           'natca-shell-tab-active': isActive(tab),
           'natca-shell-tab-icon-only': collapsedSet.has(tab.id),
+          'natca-shell-tab-button': tab.variant === 'button',
+          'natca-shell-tab-end': tab.align === 'end',
         }"
         :title="collapsedSet.has(tab.id) ? tab.label : undefined"
       >
@@ -385,6 +396,14 @@ watch(() => route.path, () => {
           {{ tab.badge }}
         </span>
       </router-link>
+
+      <!-- Optional divider ("pipe") after a leading control. aria-hidden and
+           not a .natca-shell-tab, so the overflow measurer ignores it. -->
+      <span
+        v-if="tab.dividerAfter"
+        class="natca-shell-tab-sep"
+        aria-hidden="true"
+      />
     </template>
 
     <!-- More button -->
