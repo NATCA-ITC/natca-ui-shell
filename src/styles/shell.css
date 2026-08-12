@@ -68,6 +68,43 @@
 .natca-shell-tab-switcher.natca-shell-tab-switcher-open .natca-shell-tab-chevron { transform: rotate(180deg); opacity: 1; }
 .natca-shell-tab-switcher.natca-shell-tab-switcher-open { color: var(--color-text-primary); }
 
+/* ── Button-variant tab (chip) ──
+   For leading controls (Home / area switcher) and trailing actions (Admin).
+   Renders as a bordered pill centred in the bar instead of a full-height
+   underline tab; the active state fills + tints the border rather than
+   underlining. Two-class selectors keep these above the base .natca-shell-tab
+   (incl. the switcher's `border: none`). */
+.natca-shell-tab.natca-shell-tab-button {
+  align-self: center;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+.natca-shell-tab.natca-shell-tab-button:hover { border-color: var(--color-text-faint); }
+.natca-shell-tab.natca-shell-tab-button.natca-shell-tab-active {
+  color: var(--natca-red);
+  border-color: var(--natca-red);
+  border-bottom-color: var(--natca-red); /* override base active underline colour */
+  background: var(--overlay-hover);
+}
+.natca-shell-tab.natca-shell-tab-button.natca-shell-tab-active .natca-shell-tab-icon { opacity: 1; }
+.natca-shell-tab.natca-shell-tab-button.natca-shell-tab-icon-only { padding: 0 10px; }
+
+/* Vertical divider ("pipe") after a leading control. Not a .natca-shell-tab,
+   so the overflow measurer skips it. */
+.natca-shell-tab-sep {
+  align-self: center;
+  width: 1px;
+  height: 20px;
+  margin: 0 10px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+/* Trailing-edge alignment — same mechanism as the More button. */
+.natca-shell-tab.natca-shell-tab-end { margin-left: auto; }
+
 /* ── More button ── */
 .natca-shell-tab-more { display: flex; align-items: center; gap: 4px; padding: 0 14px; font-family: var(--font-display); font-size: 12px; font-weight: 600; color: var(--color-text-faint); cursor: pointer; white-space: nowrap; border: none; background: none; border-bottom: 2px solid transparent; transition: color 150ms; flex-shrink: 0; margin-left: auto; }
 .natca-shell-tab-more:hover { color: var(--color-text-hover); }

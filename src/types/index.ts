@@ -19,6 +19,16 @@ export interface NatcaTab {
    *  instead of navigating directly. The parent label updates to reflect the active child
    *  (longest-prefix match). Children are flat router-links — nested switchers are not supported. */
   children?: NatcaTab[]
+  /** Render this tab as a bordered "chip" button instead of an underline tab.
+   *  Intended for leading controls (Home / area switcher) and trailing actions
+   *  (Admin). The active state fills instead of underlining. Default: 'tab'. */
+  variant?: 'tab' | 'button'
+  /** Push this tab — and any tabs after it — to the trailing (right) edge of
+   *  the bar (via margin-left: auto, same mechanism as the "More" button). */
+  align?: 'start' | 'end'
+  /** Render a thin vertical divider ("pipe") immediately after this tab, e.g.
+   *  to separate a leading control from the content tabs. */
+  dividerAfter?: boolean
 }
 
 export interface NatcaNavItem {
