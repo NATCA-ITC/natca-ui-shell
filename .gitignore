@@ -13,3 +13,12 @@ test-results/
 .claude/commands/sync-to-notion.md
 .claude/commands/validate-setup.md
 .claude/rules/shared
+
+# Machine-local Claude Code runtime artifacts (dev-server lifecycle, worktree ports, chrome)
+.claude/dev-server-logs/
+.claude/dev-server.pids
+.claude/dev-server-*.log
+.claude/worktrees/
+.claude/chrome-profiles/
+.claude/chrome-logs/
+.claude/chrome.pid

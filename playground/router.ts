@@ -4,6 +4,7 @@ import MembersPage from './pages/MembersPage.vue'
 import PlaceholderPage from './pages/PlaceholderPage.vue'
 import ComponentsPage from './pages/ComponentsPage.vue'
 import DesignStandardsPage from './pages/DesignStandardsPage.vue'
+import AuthLandingPage from './pages/AuthLandingPage.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -11,6 +12,13 @@ export const router = createRouter({
     {
       path: '/',
       redirect: '/admin',
+    },
+
+    // ── Standalone (no shell): pre-login landing (NatcaAuthLayout) ──
+    {
+      path: '/auth',
+      component: AuthLandingPage,
+      meta: { title: 'Auth Landing', standalone: true },
     },
 
     // ── Hub Admin (Variant 1: sidebar + breadcrumbs) ──

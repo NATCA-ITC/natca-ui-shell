@@ -41,6 +41,33 @@ export interface NatcaApp {
   icon?: string
   url: string
   description?: string
+  /** When true, the app is omitted from the switcher. Used for apps that exist
+   *  in the canonical registry but aren't launched yet (e.g. DMS). */
+  hidden?: boolean
+}
+
+/** A capability tile shown on the NatcaAuthLayout identity panel. */
+export interface NatcaCapability {
+  icon: string   // MDI icon name, e.g. 'mdi-lightning-bolt'
+  title: string
+  text: string
+}
+
+export interface NatcaAuthLayoutProps {
+  /** App name shown as "NATCA {appName}" and in the switcher trigger. */
+  appName: string
+  /** This app's id, used to mark the current app in the switcher. */
+  appId?: string
+  tagline?: string
+  logoSrc?: string
+  /** Switcher list. Defaults to the built-in `natcaApps` registry (hidden apps filtered). */
+  apps?: NatcaApp[]
+  eyebrow?: string
+  /** Sign-in card heading. Defaults to "Welcome back" (rendered uppercase). */
+  heading?: string
+  subheading?: string
+  /** Identity-panel capability tiles. Omit to hide them. */
+  capabilities?: NatcaCapability[]
 }
 
 export interface NatcaUser {

@@ -11,6 +11,7 @@ import NatcaBreadcrumbRow from './components/NatcaBreadcrumbRow.vue'
 import NatcaSidebar from './components/NatcaSidebar.vue'
 import NatcaSearchDrawer from './components/NatcaSearchDrawer.vue'
 import NatcaAppSwitcher from './components/NatcaAppSwitcher.vue'
+import NatcaAuthLayout from './components/NatcaAuthLayout.vue'
 
 // Shared Vuetify-wrapped components
 import NatcaTabs from './components/NatcaTabs.vue'
@@ -51,6 +52,7 @@ export {
   NatcaSidebar,
   NatcaSearchDrawer,
   NatcaAppSwitcher,
+  NatcaAuthLayout,
 }
 
 // Shared components
@@ -93,6 +95,10 @@ export * from './types'
 export type { NatcaTabItem } from './components/NatcaTabs.vue'
 export type { MemberCardData } from './components/NatcaMemberCard.vue'
 
+// Canonical app registry — default apps list for the switcher (production URLs
+// baked in so consuming apps don't hardcode their own; see NAT-833 / NAT-825)
+export { natcaApps } from './data/natcaApps'
+
 // Composables
 export { useShellState } from './composables/useShellState'
 export { useNatcaTheme } from './composables/useNatcaTheme'
@@ -117,6 +123,7 @@ export const NatcaUiShell = {
     app.component('NatcaSidebar', NatcaSidebar)
     app.component('NatcaSearchDrawer', NatcaSearchDrawer)
     app.component('NatcaAppSwitcher', NatcaAppSwitcher)
+    app.component('NatcaAuthLayout', NatcaAuthLayout)
     // Shared components
     app.component('NatcaTabs', NatcaTabs)
     app.component('NatcaMemberCard', NatcaMemberCard)

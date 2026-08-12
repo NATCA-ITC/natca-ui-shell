@@ -57,6 +57,7 @@ const adminSidebar: NatcaNavSection[] = [
       { id: 'config', label: 'Config', icon: 'mdi-cog', to: '/admin/config' },
       { id: 'components', label: 'Components', icon: 'mdi-puzzle', to: '/admin/components' },
       { id: 'design-standards', label: 'Design Standards', icon: 'mdi-palette', to: '/admin/design-standards' },
+      { id: 'auth-landing', label: 'Auth Landing (demo)', icon: 'mdi-login', to: '/auth' },
     ],
   },
 ]
@@ -119,6 +120,9 @@ const shellConfig = computed(() => {
 // Append ?guest=1 to any URL to preview the unauthenticated topbar (sign-in icon button).
 const isGuest = computed(() => route.query.guest !== undefined && route.query.guest !== 'false')
 
+// Standalone routes (e.g. the pre-login NatcaAuthLayout) render full-page, no shell.
+const isStandalone = computed(() => route.meta.standalone === true)
+
 function onProfileAction(action: string) {
   // eslint-disable-next-line no-console
   console.log('[playground] profile-action:', action)
@@ -141,7 +145,11 @@ const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
 </script>
 
 <template>
+  <!-- Standalone (no shell): pre-login landing, full-page -->
+  <router-view v-if="isStandalone" />
+
   <NatcaShell
+    v-else
     :app-id="shellConfig.appId"
     :app-name="shellConfig.appName"
     :tabs="shellConfig.tabs"

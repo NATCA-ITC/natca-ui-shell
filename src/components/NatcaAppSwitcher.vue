@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NatcaApp } from '../types'
 
-defineProps<{
+const props = defineProps<{
   apps: NatcaApp[]
   currentAppId: string
 }>()
@@ -10,8 +10,15 @@ const emit = defineEmits<{
   select: [app: NatcaApp]
 }>()
 
-function handleSelect(app: NatcaApp) {
+function handleSelect(app: NatcaApp, e: MouseEvent) {
   emit('select', app)
+  // Current app: no-op — don't reload the page you're already on.
+  // Other apps: let the anchor's href navigate natively to the absolute URL, so
+  // the switcher works with zero consuming-app wiring (no @app-select handler
+  // needed just to move between apps).
+  if (app.id === props.currentAppId) {
+    e.preventDefault()
+  }
 }
 </script>
 
@@ -27,7 +34,7 @@ function handleSelect(app: NatcaApp) {
         :href="app.url"
         class="natca-shell-app-switcher-item"
         :class="{ 'natca-shell-app-switcher-active': app.id === currentAppId }"
-        @click.prevent="handleSelect(app)"
+        @click="handleSelect(app, $event)"
       >
         <span class="natca-shell-app-switcher-icon">
           <v-icon v-if="app.icon" :icon="app.icon" size="22" />
