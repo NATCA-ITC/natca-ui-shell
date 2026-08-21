@@ -104,7 +104,12 @@ function handleClick(e: MouseEvent) {
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 150ms;
+  /* NAT-954: never transition `color`. CSS transitions sit at the very top of
+     the cascade — above `!important` author declarations — so an in-flight or
+     just-applied colour transition makes this element's text colour
+     un-overridable by a consuming app, `!important` included. Transition only
+     the properties that actually animate on hover/focus. */
+  transition: background-color 150ms, border-color 150ms, opacity 150ms, box-shadow 150ms;
   text-decoration: none;
   flex-shrink: 0;
   box-sizing: border-box;
@@ -133,10 +138,16 @@ function handleClick(e: MouseEvent) {
   pointer-events: none;
 }
 
-/* ── Variants — mirror NatcaButton's color logic ── */
+/* ── Variants — mirror NatcaButton's color logic ──
+ *
+ * NAT-954: doubled base class for specificity (0,2,0), for the same reason as
+ * NatcaButton — see the long note there. Vuetify's reset declares
+ * `[type="button"] { color: inherit }` at (0,1,0), which ties with a
+ * single-class variant rule and wins on load order in some consuming apps.
+ */
 
 /* Primary — navy in light, red in dark */
-.natca-icon-btn--primary {
+.natca-icon-btn.natca-icon-btn--primary {
   background: var(--natca-navy);
   color: #FFFFFF;
 }
@@ -147,7 +158,7 @@ function handleClick(e: MouseEvent) {
 }
 
 /* Secondary — subtle filled neutral with border */
-.natca-icon-btn--secondary {
+.natca-icon-btn.natca-icon-btn--secondary {
   background: var(--color-bg-subtle);
   color: var(--color-text-primary);
   border: 1px solid var(--color-border);
@@ -155,7 +166,7 @@ function handleClick(e: MouseEvent) {
 .natca-icon-btn--secondary:hover { background: var(--overlay-hover); }
 
 /* Danger — outlined red, fills on hover */
-.natca-icon-btn--danger {
+.natca-icon-btn.natca-icon-btn--danger {
   background: transparent;
   color: var(--color-danger);
   border: 1px solid var(--color-danger);
@@ -166,7 +177,7 @@ function handleClick(e: MouseEvent) {
 }
 
 /* Ghost — transparent, muted icon, hover background */
-.natca-icon-btn--ghost {
+.natca-icon-btn.natca-icon-btn--ghost {
   background: transparent;
   color: var(--color-text-muted);
 }
@@ -176,7 +187,7 @@ function handleClick(e: MouseEvent) {
 }
 
 /* Link — blue icon, transparent background */
-.natca-icon-btn--link {
+.natca-icon-btn.natca-icon-btn--link {
   background: transparent;
   color: var(--natca-blue);
 }

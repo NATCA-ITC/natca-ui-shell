@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { NatcaShell } from '@/index'
-import type { NatcaTab, NatcaNavSection, NatcaBreadcrumb, NatcaApp, NatcaUser } from '@/types'
+import type { NatcaTab, NatcaNavSection, NatcaBreadcrumb, NatcaApp, NatcaUser, NatcaProfileMenuItem } from '@/types'
 
 const route = useRoute()
 
@@ -106,12 +106,20 @@ const mode = computed<ShellMode>(() => {
   return 'admin'
 })
 
+const bidProfileMenu: NatcaProfileMenuItem[] = [
+  { id: 'profile', label: 'My Profile' },
+  { id: 'signout', label: 'Sign Out', danger: true, dividerBefore: true },
+]
+
 const shellConfig = computed(() => {
   switch (mode.value) {
     case 'admin':
       return { appId: 'hub', appName: 'Hub', tabs: adminTabs, sidebarSections: adminSidebar }
     case 'member':
-      return { appId: 'bid', appName: 'BID', tabs: memberTabs, sidebarSections: undefined }
+      // NAT-392 demo: BID has no Settings screen — its profile menu is two items.
+      // Admin/minimal below deliberately omit `profileMenuItems` so the default
+      // three-item menu stays exercised in the playground too.
+      return { appId: 'bid', appName: 'BID', tabs: memberTabs, sidebarSections: undefined, profileMenuItems: bidProfileMenu }
     case 'minimal':
       return { appId: 'pay', appName: 'PayChecker', tabs: minimalTabs, sidebarSections: undefined }
   }
@@ -159,6 +167,7 @@ const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
     :sidebar-sections="shellConfig.sidebarSections"
     :breadcrumbs="breadcrumbs"
     :apps="apps"
+    :profile-menu-items="shellConfig.profileMenuItems"
     :show-search="true"
     :show-notifications="true"
     :notification-count="3"

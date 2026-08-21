@@ -114,6 +114,7 @@ function handleShellClick(e: MouseEvent) {
       :show-theme-toggle="showThemeToggle"
       :notification-count="notificationCount"
       :apps="apps"
+      :profile-menu-items="profileMenuItems"
       @profile-action="(action: string) => emit('profile-action', action)"
       @theme-change="(pref: string) => emit('theme-change', pref)"
     >
