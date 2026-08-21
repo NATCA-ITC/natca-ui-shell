@@ -564,6 +564,106 @@ Wrap in a `<v-card>` if you want a bordered container.
 
 ---
 
+## NatcaAuthLayout (pre-login landing page)
+
+The signed-out counterpart to `NatcaShell`. Every NATCA app needs a sign-in
+landing, and before this they each forked one — BID's `AuthLandingLayout` was
+promoted into the package so they stop.
+
+Use it for the **pre-login** route only. Once the user is authenticated, the
+page belongs inside `NatcaShell` like everything else.
+
+`NatcaShell` deliberately does *not* cover this case. Its logged-out mode still
+renders a sign-in pill plus search and theme controls, which a landing page
+does not want; `NatcaAuthLayout` ships a slim topbar carrying only the brand and
+the app switcher.
+
+### Minimal use
+
+```vue
+<script setup lang="ts">
+import { NatcaAuthLayout } from '@natca-itc/ui-shell'
+import { useAuth0 } from '@auth0/auth0-vue'
+const { loginWithRedirect } = useAuth0()
+</script>
+
+<template>
+  <NatcaAuthLayout app-name="BID" app-id="bid">
+    <template #action>
+      <NatcaButton variant="primary" size="md" @click="loginWithRedirect()">
+        Sign in with NATCA
+      </NatcaButton>
+    </template>
+  </NatcaAuthLayout>
+</template>
+```
+
+That is the whole integration. `apps` defaults to the built-in registry, so the
+switcher is correct with zero configuration.
+
+### Props
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `appName` | `string` | **required** | Rendered as "NATCA {appName}" and in the switcher trigger |
+| `appId` | `string` | `''` | Marks the current app in the switcher so it renders as a no-op |
+| `tagline` | `string` | `''` | Short line under the app name |
+| `logoSrc` | `string` | `''` | App logo in the identity panel; omit to show the name alone |
+| `apps` | `NatcaApp[]` | `natcaApps` | Switcher list. **Leave this alone** — see the registry section below |
+| `eyebrow` | `string` | `''` | Small label above the sign-in heading |
+| `heading` | `string` | `'Welcome back'` | Sign-in card heading (rendered uppercase) |
+| `subheading` | `string` | `''` | Supporting line under the heading |
+| `capabilities` | `NatcaCapability[]` | `[]` | Identity-panel tiles — `{ icon, title, text }`. Omit to hide them |
+
+### Slots
+
+| Slot | Replaces |
+|---|---|
+| `#action` | The sign-in button. **Each app wires its own auth** — the layout deliberately ships no default here |
+| `#identity` | The entire left brand block, when the default logo/name/tagline is not enough |
+| `#capabilities` | The default capability tiles |
+| `#subtext` | Optional fine print under the action, e.g. a link to a legacy system |
+
+`#action` is the only slot most apps need.
+
+---
+
+## The `natcaApps` registry (app switcher)
+
+`natcaApps` is the canonical list of NATCA apps with production URLs baked in.
+`NatcaShell` and `NatcaAuthLayout` both default their `apps` prop to it.
+
+```ts
+import { natcaApps } from '@natca-itc/ui-shell'
+```
+
+**Do not pass your own `apps` array.** This registry exists because the switcher
+used to be app-owned and every app hardcoded its own copy — BID and GATS shipped
+the identical bug, relative URLs (`/bid`, `/pay`) that 404'd inside the current
+origin, plus DMS listed before it launched. A bare `<NatcaShell app-id="gats">`
+now gets a correct, fully-linked switcher for free.
+
+Apps flagged `hidden: true` are filtered out. DMS carries that flag until it
+launches; when it goes live the flag is dropped **here, once**, and every app
+picks it up on its next ui-shell bump. That is the point — no consumer edits.
+
+Pass an explicit `apps` array only for a genuinely different set, such as a
+staging-only switcher. If you are tempted to pass one because an entry is wrong,
+fix the entry in this package instead, or the next app to copy it inherits the
+same bug.
+
+### Changing the registry is a coordination event
+
+Adding, renaming, re-URLing, or unhiding an app changes the switcher in **every**
+consuming frontend at once. Edit `src/data/natcaApps.ts`, note it in the release
+changelog, and tell the affected app sessions — they are not watching this repo.
+
+Switcher `description` values are **noun phrases, never gerunds** — "Facility
+Bids", not "Managing Bids" (NAT-824). They label what the app *is*, not what the
+user is doing.
+
+---
+
 ## Quick Reference: "I want X → use Y"
 
 | I want... | Use |
@@ -589,6 +689,9 @@ Wrap in a `<v-card>` if you want a bordered container.
 | Data table with filters | `<NatcaPillNav>` + `<v-data-table>` |
 | Form inputs | `<v-text-field>`, `<v-select>`, `<v-switch>`, etc. (styled by ui-shell overrides) |
 | Light/dark toggle | Built into topbar via `NatcaShell` (automatic) |
+| Pre-login sign-in landing page | `<NatcaAuthLayout app-name="..." app-id="...">` + `#action` slot |
+| App-switcher list | Built-in `natcaApps` registry — do not pass your own `apps` |
+| Custom profile dropdown items | `:profile-menu-items` on `<NatcaShell>` — omit for the default menu |
 
 ---
 

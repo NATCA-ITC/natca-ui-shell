@@ -137,7 +137,12 @@ function handleRouterKeydown(e: KeyboardEvent, navigate: RouterNavigate) {
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 150ms;
+  /* NAT-954: never transition `color`. CSS transitions sit at the very top of
+     the cascade — above `!important` author declarations — so an in-flight or
+     just-applied colour transition makes this element's text colour
+     un-overridable by a consuming app, `!important` included. Transition only
+     the properties that actually animate on hover/focus. */
+  transition: background-color 150ms, border-color 150ms, opacity 150ms, box-shadow 150ms;
   text-decoration: none;
   white-space: nowrap;
   text-transform: none; /* override any ambient uppercase */
@@ -174,10 +179,29 @@ function handleRouterKeydown(e: KeyboardEvent, navigate: RouterNavigate) {
   pointer-events: none;
 }
 
-/* ── Variants ── */
+/* ── Variants ──
+ *
+ * NAT-954: every variant colour rule doubles its base class
+ * (`.natca-btn.natca-btn--primary`, not `.natca-btn--primary`) to reach
+ * specificity (0,2,0). This is deliberate — do not "simplify" it back.
+ *
+ * Vuetify ships a CSS reset (vuetify/lib/styles/generic/_reset.scss:172)
+ * containing:
+ *
+ *     button, [type="button"], [type="reset"], [type="submit"], [role="button"]
+ *       { cursor: pointer; color: inherit }
+ *
+ * `[type="button"]` is (0,1,0) — a dead tie with a single-class variant rule,
+ * broken only by which stylesheet loads last. Consuming apps sequence their
+ * CSS differently: the playground injects SFC styles after Vuetify and wins
+ * the tie by luck, while BID loads ui-shell's prebuilt CSS before
+ * vite-plugin-vuetify's virtual sheet and loses it, so every button took its
+ * parent's colour (primary rendered black on navy, ~1.9:1). Winning a tie by
+ * load order is not a contract we can offer consumers — so we outrank it.
+ */
 
 /* Primary — navy in light, red in dark */
-.natca-btn--primary {
+.natca-btn.natca-btn--primary {
   background: var(--natca-navy);
   color: #FFFFFF;
 }
@@ -188,7 +212,7 @@ function handleRouterKeydown(e: KeyboardEvent, navigate: RouterNavigate) {
 }
 
 /* Secondary — subtle bg with border */
-.natca-btn--secondary {
+.natca-btn.natca-btn--secondary {
   background: var(--color-bg-subtle);
   color: var(--color-text-primary);
   border: 1px solid var(--color-border);
@@ -196,7 +220,7 @@ function handleRouterKeydown(e: KeyboardEvent, navigate: RouterNavigate) {
 .natca-btn--secondary:hover { background: var(--overlay-hover); }
 
 /* Danger — outlined red, fills on hover */
-.natca-btn--danger {
+.natca-btn.natca-btn--danger {
   background: transparent;
   color: var(--color-danger);
   border: 1px solid var(--color-danger);
@@ -207,7 +231,7 @@ function handleRouterKeydown(e: KeyboardEvent, navigate: RouterNavigate) {
 }
 
 /* Ghost — transparent, muted text */
-.natca-btn--ghost {
+.natca-btn.natca-btn--ghost {
   background: transparent;
   color: var(--color-text-muted);
 }
@@ -217,7 +241,7 @@ function handleRouterKeydown(e: KeyboardEvent, navigate: RouterNavigate) {
 }
 
 /* Link — blue text, no border */
-.natca-btn--link {
+.natca-btn.natca-btn--link {
   background: transparent;
   color: var(--natca-blue);
 }

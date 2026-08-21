@@ -541,7 +541,13 @@ correctness.
 - ❌ Custom theme switching logic — use `useNatcaTheme()` and
   `<NatcaThemeToggle />`.
 - ❌ Custom topbar / sidebar / app switcher — use `<NatcaShell>` and its
-  sub-components.
+  sub-components. To change the profile dropdown, pass `:profile-menu-items`
+  (0.4.0-beta.23+) rather than forking the topbar — each item emits
+  `profile-action` with its own `id`. Omit the prop for the default
+  My Profile / Settings / Sign Out menu.
+- ❌ Hardcoding your own app-switcher list — `NatcaShell` and `NatcaAuthLayout`
+  default to the built-in `natcaApps` registry, which carries production URLs
+  and hides unlaunched apps. If an entry is wrong, fix it in ui-shell.
 
 ## 16. Quick reference — copy-paste page skeleton
 

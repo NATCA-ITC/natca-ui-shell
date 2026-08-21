@@ -3,7 +3,7 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import natcaLogo from '../../assets/natca-logo.png'
 import { useShellState } from '../composables/useShellState'
 import { useNatcaTheme } from '../composables/useNatcaTheme'
-import type { NatcaUser, NatcaApp } from '../types'
+import type { NatcaUser, NatcaApp, NatcaProfileMenuItem } from '../types'
 
 const props = withDefaults(defineProps<{
   appName: string
@@ -17,6 +17,12 @@ const props = withDefaults(defineProps<{
   showThemeToggle?: boolean
   notificationCount?: number
   apps?: NatcaApp[]
+  /**
+   * Profile dropdown entries. Omit for the default menu
+   * (My Profile / Settings / Sign Out). Each item emits `profile-action`
+   * with its own `id`, so apps can define their own entries — see NAT-392.
+   */
+  profileMenuItems?: NatcaProfileMenuItem[]
 }>(), {
   authenticated: true,
   showSearch: true,
@@ -33,6 +39,22 @@ const emit = defineEmits<{
   'profile-action': [action: string]
   'theme-change': [preference: string]
 }>()
+
+/**
+ * NAT-392: the historical menu, preserved verbatim as the default so adding
+ * `profileMenuItems` breaks nobody. MyNATCA currently repurposes the
+ * `settings` emit for its permission-impersonation modal, so this list is not
+ * safe to narrow until every consumer has moved onto the prop.
+ */
+const DEFAULT_PROFILE_MENU_ITEMS: NatcaProfileMenuItem[] = [
+  { id: 'profile', label: 'My Profile' },
+  { id: 'settings', label: 'Settings' },
+  { id: 'signout', label: 'Sign Out', danger: true, dividerBefore: true },
+]
+
+const resolvedProfileMenuItems = computed<NatcaProfileMenuItem[]>(
+  () => props.profileMenuItems ?? DEFAULT_PROFILE_MENU_ITEMS,
+)
 
 const { toggleSearch, toggleAppSwitcher } = useShellState()
 const { isDark, setTheme } = useNatcaTheme()
@@ -196,10 +218,15 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside, true
               </div>
             </div>
             <div class="natca-shell-user-menu-divider" />
-            <button class="natca-shell-user-menu-item" type="button" @click="handleUserAction('profile')">My Profile</button>
-            <button class="natca-shell-user-menu-item" type="button" @click="handleUserAction('settings')">Settings</button>
-            <div class="natca-shell-user-menu-divider" />
-            <button class="natca-shell-user-menu-item natca-shell-user-menu-signout" type="button" @click="handleUserAction('signout')">Sign Out</button>
+            <template v-for="item in resolvedProfileMenuItems" :key="item.id">
+              <div v-if="item.dividerBefore" class="natca-shell-user-menu-divider" />
+              <button
+                class="natca-shell-user-menu-item"
+                :class="{ 'natca-shell-user-menu-signout': item.danger }"
+                type="button"
+                @click="handleUserAction(item.id)"
+              >{{ item.label }}</button>
+            </template>
           </div>
         </Transition>
       </div>

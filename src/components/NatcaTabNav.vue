@@ -465,7 +465,7 @@ watch(() => route.path, () => {
     <div
       v-if="openSwitcherTab"
       ref="switcherDropdownRef"
-      class="natca-shell-tab-dropdown"
+      class="natca-shell-tab-dropdown natca-shell-tab-dropdown--switcher"
       :data-theme="resolvedTheme"
       :style="switcherDropdownStyle"
     >

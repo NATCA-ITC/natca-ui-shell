@@ -24,8 +24,22 @@
    a stacking context that paints on top of .natca-shell-below-topbar — without
    this, the dropdown rendered "below" the breadcrumb row because below-topbar
    is `position: relative` and comes later in DOM order. */
-.natca-shell-topbar { background: var(--natca-navy); height: 52px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; border-bottom: 1px solid var(--color-border); max-width: 100%; overflow-x: clip; overflow-y: visible; position: relative; z-index: 60; }
-.natca-shell-logo-zone { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
+/* NAT-986: the topbar pins a theme-INVARIANT dark background (navy) while the
+   ambient text colour flips with the theme, so it must declare its own
+   foreground. Without `color`, light theme handed every child the root's dark
+   text — measured 1.67:1 on navy — and it only ever looked right in dark by
+   accident. This also covers slot content the shell does not own: consuming
+   apps put their own controls in #toolbar-actions (BID ships a
+   `<v-btn variant="outlined">`, which draws BOTH its text and its border from
+   currentColor), and Vuetify's reset forces `[type="button"]` to `color:
+   inherit`, so a correct inherited value is what makes those render properly.
+   Rule for the shell generally: any element that sets a background must set a
+   colour rather than inherit one that changes with the theme. */
+.natca-shell-topbar { background: var(--natca-navy); color: #FFFFFF; height: 52px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; border-bottom: 1px solid var(--color-border); max-width: 100%; overflow-x: clip; overflow-y: visible; position: relative; z-index: 60; }
+/* NAT-986: explicit colour because this is an <a> — Vuetify's reset covers
+   button/[type=button]/[role=button] but NOT links, so an anchor keeps the UA
+   default (rgb(0,0,238)) and inherits nothing. Measured 1.34:1 on navy. */
+.natca-shell-logo-zone { color: #FFFFFF; display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
 .natca-shell-logo-zone img { height: 28px; width: auto; }
 .natca-shell-app-chip { display: inline-flex; align-items: center; gap: 5px; margin-left: 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 4px 10px; font-family: var(--font-display); font-size: 12px; font-weight: 700; color: #FFFFFF; cursor: pointer; transition: all 150ms; white-space: nowrap; }
 .natca-shell-app-chip:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.2); }
@@ -121,6 +135,15 @@
 /* Switcher children flattened into the More menu — indent + left rail to indicate hierarchy. */
 .natca-shell-tab-dropdown-item.natca-shell-tab-dropdown-item-child { margin-left: 14px; padding-left: 12px; border-left: 2px solid var(--color-border-light); }
 .natca-shell-tab-dropdown-item.natca-shell-tab-dropdown-item-child.natca-shell-tab-dropdown-item-active { border-left-color: var(--natca-red); }
+
+/* NAT-331: the active item in a SWITCHER dropdown gets the same red left bar
+   the "More" overflow menu already gives active children, so you can see at a
+   glance which area (or facility) you are on. Scoped to --switcher on purpose:
+   in the overflow menu a top-level item is a peer of its children, and a bar
+   there would read as a nesting cue it is not — that menu renders unchanged.
+   12px padding + 2px border keeps the label on the same x as inactive items,
+   so nothing shifts when the active item changes. */
+.natca-shell-tab-dropdown--switcher .natca-shell-tab-dropdown-item.natca-shell-tab-dropdown-item-active { border-left: 2px solid var(--natca-red); padding-left: 12px; }
 
 /* ── Breadcrumb Row (theme-aware) ── */
 .natca-shell-breadcrumb-row { background: var(--color-shell-subtle); height: 38px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--color-sep); flex-shrink: 0; }

@@ -111,6 +111,11 @@ export interface NatcaShellProps {
   showNotifications?: boolean
   showThemeToggle?: boolean
   notificationCount?: number
+  /**
+   * Profile dropdown entries, forwarded to NatcaTopBar. Omit for the default
+   * menu (My Profile / Settings / Sign Out). See `NatcaProfileMenuItem`.
+   */
+  profileMenuItems?: NatcaProfileMenuItem[]
 }
 
 /**
@@ -147,3 +152,23 @@ export interface DocumentViewerChapterRef {
  */
 export type { NatcaTabItem } from '../components/NatcaTabs.vue'
 export type { MemberCardData } from '../components/NatcaMemberCard.vue'
+
+/**
+ * One entry in the topbar's profile dropdown (NAT-392).
+ *
+ * The shell owns the menu's chrome; the consuming app owns what is in it. When
+ * an item is clicked the shell emits `profile-action` with this item's `id`,
+ * so an app adds a menu entry without the shell knowing what it does.
+ *
+ * Leave `profileMenuItems` unset to keep the historical three-item default
+ * (My Profile / Settings / Sign Out) — passing it is opt-in and additive.
+ */
+export interface NatcaProfileMenuItem {
+  /** Emitted as the `profile-action` payload when this item is clicked. */
+  id: string
+  label: string
+  /** Destructive treatment — red text. Used by Sign Out in the default menu. */
+  danger?: boolean
+  /** Draw a divider directly above this item. */
+  dividerBefore?: boolean
+}
