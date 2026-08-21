@@ -173,3 +173,20 @@ npm publish --tag beta # Publish to GitHub Packages
 - Keep the package lightweight — minimize dependencies beyond Vue, Vue Router, and Vuetify peer deps
 - Test all changes in both light and dark themes before publishing
 - Port 1310 is reserved for this project — `strictPort: true` is set, do not change it
+
+## graphify — code knowledge graph
+
+This repo has a graphify knowledge graph at `.graphify/` (gitignored). Rebuild
+with `graphify update . --no-description --no-label` (~30s, no LLM, no tokens).
+
+**It is an orientation tool, not a grep replacement** — grep is measurably
+faster and adequate for a known symbol name. Use the graph for what grep cannot
+express: orienting in unfamiliar code, git co-change coupling, centrality, and
+cross-repo inventory via `graphify merge-graphs`.
+
+**Do not trust it for blast radius** — call-edge coverage is thin and never
+crosses file types. Treat an empty result as "unknown", never as "nothing
+depends on this."
+
+Full guidance, measured limits, and the grammar fix: the `graphify-code-graphs`
+shared rule (symlinked in `.claude/rules/shared/`).

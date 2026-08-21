@@ -22,3 +22,15 @@ test-results/
 .claude/chrome-profiles/
 .claude/chrome-logs/
 .claude/chrome.pid
+.claude/commands/chrome-down.md
+.claude/commands/chrome-status.md
+.claude/commands/chrome-up.md
+.claude/commands/dev-status.md
+.claude/commands/refresh-standards.md
+.claude/commands/restart-dev.md
+.claude/commands/start-dev.md
+.claude/commands/stop-dev.md
+.claude/skills/graphify
+.graphify/
+.env.local
+.claude/worktrees/.port-reservations.json
