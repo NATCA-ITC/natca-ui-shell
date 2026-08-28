@@ -128,6 +128,29 @@ npm run build          # Build CSS + Vue components
 npm publish --tag beta # Publish to GitHub Packages
 ```
 
+### Pre-release verification by a consuming app
+
+To let an app verify an unpublished build, `npm pack` and hand over the tarball
+path. Two ways for them to consume it, with what is actually known about each
+(BID, 2026-08-28, beta.24):
+
+- **`npm i <tarball>` — works, but leaves damage to undo.** Proven: it rewrote
+  `package.json` to a `file:` spec (which must never be committed) and removed
+  `@rollup/rollup-linux-x64-gnu` via npm's optional-deps bug, which broke the
+  test run until it was reinstalled with `--no-save`. Recoverable — BID did,
+  and all 68 of their tests then passed — but the app must revert
+  `package.json` and the lockfile afterwards.
+- **Swapping `dist/` into `node_modules/@natca-itc/ui-shell/` — UNTESTED.**
+  Should avoid both problems by leaving `package.json` and the lockfile alone.
+  Nobody has run it for a whole package yet, so do not present it as proven.
+  Caveat if someone does: it is only picked up on dev-server restart, and an
+  app that pre-bundles ui-shell (rather than `optimizeDeps.exclude`-ing it)
+  must clear its Vite dep cache or it will keep serving the old build and the
+  verification silently tests nothing.
+
+Either way the app should NOT commit the version bump until the release is
+published; it bumps to the real `^0.4.0-beta.N` afterwards.
+
 ## Rules
 
 ### Source & Build
