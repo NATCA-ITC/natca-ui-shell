@@ -4,6 +4,7 @@ import {
   NatcaTabs,
   NatcaCard,
   NatcaHeaderCard,
+  NatcaTabbedCard,
   NatcaStatCard,
   NatcaStatGrid,
   NatcaEmptyState,
@@ -32,6 +33,15 @@ const localTabItems: NatcaTabItem[] = [
   { id: 'details', label: 'Details', icon: 'mdi-information-outline' },
   { id: 'members', label: 'Members', icon: 'mdi-account-group-outline', badge: 198 },
   { id: 'history', label: 'History', icon: 'mdi-history' },
+]
+
+// ── Tabbed card demo (NAT-387) ──
+const cardTab = ref('settings')
+const cardTabItems: NatcaTabItem[] = [
+  { id: 'settings', label: 'Settings', icon: 'mdi-cog-outline' },
+  { id: 'subscribers', label: 'Subscribers', icon: 'mdi-account-multiple-outline', badge: 128 },
+  { id: 'senders', label: 'Senders' },
+  { id: 'messages', label: 'Messages', badge: 4 },
 ]
 
 const standaloneTab = ref('overview')
@@ -76,6 +86,9 @@ function statusChipColor(status: string): string | undefined {
 // ── Dialog demo ──
 const showConfirmDialog = ref(false)
 const showDangerDialog = ref(false)
+// NAT-909: a select inside a dialog must render its menu ABOVE the dialog.
+const dialogFacility = ref('ZJX')
+
 const showBareDialog = ref(false)
 
 // ── Document viewer demo ──
@@ -679,6 +692,41 @@ const members: MemberCardData[] = [
       </div>
     </section>
 
+    <!-- ═══════════ TABBED CARD ═══════════ -->
+    <section class="ds-section">
+      <h3 class="ds-section-title">Tabbed card</h3>
+      <p class="ds-body">
+        <code>NatcaTabbedCard</code> is the detail-page pattern: peer sections as tabs in the
+        card's own header strip. The strip is tinted one step darker than the panel body, and
+        <code>min-height</code> (default 320px, admin tables usually want 480) keeps the card
+        from reflowing its neighbours when you switch to a sparse tab. Use
+        <code>NatcaTabs</code> instead when the tabs belong to the page, not to a card.
+      </p>
+
+      <NatcaTabbedCard v-model="cardTab" :tabs="cardTabItems">
+        <template #header-right>
+          <NatcaButton variant="ghost" size="sm">Export</NatcaButton>
+        </template>
+        <template #panel-settings>
+          <h4 class="section-title">List settings</h4>
+          <p class="ds-body">Name, description, and delivery defaults for this list.</p>
+          <VTextField label="List name" model-value="Facility Reps" class="mt-2" style="max-width: 360px;" />
+        </template>
+        <template #panel-subscribers>
+          <h4 class="section-title">Subscribers</h4>
+          <p class="ds-body">128 members currently receive this list.</p>
+        </template>
+        <template #panel-senders>
+          <h4 class="section-title">Approved senders</h4>
+          <p class="ds-body">Only these addresses may post to the list.</p>
+        </template>
+        <template #panel-messages>
+          <h4 class="section-title">Recent messages</h4>
+          <p class="ds-body">Last four sends, newest first.</p>
+        </template>
+      </NatcaTabbedCard>
+    </section>
+
     <!-- ═══════════ DIALOGS ═══════════ -->
     <section class="ds-section">
       <h3 class="ds-section-title">Dialogs</h3>
@@ -702,6 +750,15 @@ const members: MemberCardData[] = [
         icon="mdi-swap-horizontal-circle"
       >
         Are you sure you want to migrate <strong>34 accounts</strong> from O365 to Mailcow? This action cannot be undone.
+        <!-- NAT-909 regression surface: this menu opens at z-index 2500 and
+             must paint above the dialog's 2400 overlay. If it ever renders
+             behind the dialog card again, this is where you'll see it. -->
+        <VSelect
+          v-model="dialogFacility"
+          :items="['ZJX', 'ZTL', 'ZDC', 'N90', 'PCT']"
+          label="Target facility"
+          class="mt-4"
+        />
         <template #actions>
           <NatcaButton variant="ghost" size="md" @click="showConfirmDialog = false">Cancel</NatcaButton>
           <NatcaButton variant="primary" size="md" @click="showConfirmDialog = false">Migrate now</NatcaButton>

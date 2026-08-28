@@ -30,6 +30,7 @@ import NatcaDialog from './components/NatcaDialog.vue'
 // Composite pattern components
 import NatcaCard from './components/NatcaCard.vue'
 import NatcaHeaderCard from './components/NatcaHeaderCard.vue'
+import NatcaTabbedCard from './components/NatcaTabbedCard.vue'
 import NatcaStatCard from './components/NatcaStatCard.vue'
 import NatcaStatGrid from './components/NatcaStatGrid.vue'
 import NatcaEmptyState from './components/NatcaEmptyState.vue'
@@ -74,6 +75,7 @@ export {
 export {
   NatcaCard,
   NatcaHeaderCard,
+  NatcaTabbedCard,
   NatcaStatCard,
   NatcaStatGrid,
   NatcaEmptyState,
@@ -136,6 +138,7 @@ export const NatcaUiShell = {
     // Composite pattern components
     app.component('NatcaCard', NatcaCard)
     app.component('NatcaHeaderCard', NatcaHeaderCard)
+    app.component('NatcaTabbedCard', NatcaTabbedCard)
     app.component('NatcaStatCard', NatcaStatCard)
     app.component('NatcaStatGrid', NatcaStatGrid)
     app.component('NatcaEmptyState', NatcaEmptyState)

@@ -281,6 +281,11 @@ export const natcaDefaults = {
   },
   VMenu: {
     rounded: 'md',
+    // NAT-909: VDialog's overlay sits at z-index 2400, VMenu defaults to 2000,
+    // so any select/autocomplete/menu opened inside a NatcaDialog rendered
+    // BEHIND the dialog card. VSelect/VAutocomplete open a VMenu internally,
+    // so setting it here covers them too.
+    zIndex: 2500,
   },
   VTooltip: {
     location: 'top' as const,

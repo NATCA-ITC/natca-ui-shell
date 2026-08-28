@@ -44,6 +44,22 @@ Apps should use Vuetify components directly for standard UI (buttons, forms, dia
 - `user: NatcaUser` — current user info for avatar/menu
 - `apps?: NatcaApp[]` — apps available in the switcher
 
+**Content box layout (0.4.0-beta.24, NAT-1082).** `<main class="natca-shell-content">`
+is a **flex column** with `overflow-y: auto`; everything you pass in the default
+slot is a flex item (`flex-shrink: 0`, so long pages still scroll rather than
+squash). This is what lets an app pin a footer to the bottom of the viewport on
+short pages:
+
+```vue
+<NatcaShell …>
+  <router-view />
+  <AppFooter class="app-footer" />   <!-- .app-footer { margin-top: auto } -->
+</NatcaShell>
+```
+
+The only behavioural difference from the old block flow is that adjacent
+margins between slot children no longer collapse.
+
 ## Theme Architecture
 
 Two Vuetify themes are registered: `natcaLight` and `natcaDark`. Both have matching `[data-theme]` CSS token blocks in `natca-tokens.css`.

@@ -359,6 +359,35 @@ Active tab gets primary accent color (navy in light, red in dark) and a
 </NatcaCard>
 ```
 
+### Tabs as a card header (`NatcaTabbedCard`)
+
+When the tabs ARE the card — a detail page whose peer sections (Settings /
+Subscribers / Senders / Messages) each fill the card body — reach for
+`NatcaTabbedCard` instead of hand-building `v-card > v-toolbar > v-tabs >
+v-window`. It owns the darker header strip, the divider, and a `min-height`
+floor so switching to a sparse tab doesn't collapse the card and reflow
+whatever sits beside it.
+
+```vue
+<NatcaTabbedCard v-model="tab" :tabs="tabs" :min-height="480" no-body-padding>
+  <template #header-right><NatcaButton variant="ghost" size="sm">Export</NatcaButton></template>
+  <template #panel-settings>…</template>
+  <template #panel-subscribers>…</template>
+</NatcaTabbedCard>
+```
+
+Which of the three tab components:
+
+| Component | Where it lives |
+|---|---|
+| `NatcaTabNav` | Shell chrome, directly under the topbar. Route-driven. |
+| `NatcaTabs` | In the page, on the page background (or inside `NatcaCard no-body-padding`). |
+| `NatcaTabbedCard` | The card's own header strip. Panels are the card body. |
+
+❌ Never hand-tune `rgba(var(--v-theme-on-surface), 0.04)` for a tab strip
+background or a `min-height` for a tab window in app CSS — those are design
+decisions and this component owns them.
+
 ## 8. Chips (`VChip`)
 
 Always `variant="tonal"`. Colors: `success`, `warning`, `error`, `info`,
@@ -413,6 +442,10 @@ Three layouts:
 
 For destructive confirmation use `variant="danger"` on the dialog (red
 header) and `variant="danger"` on the confirm button.
+
+Write `title` in sentence case — the header uppercases it in CSS (0.4.0-beta.24,
+NAT-1067). Select/autocomplete dropdowns opened inside a dialog render above it
+(`VMenu` z-index default 2500, NAT-909); no app-side override needed.
 
 ### Bare (lightbox / image preview)
 
