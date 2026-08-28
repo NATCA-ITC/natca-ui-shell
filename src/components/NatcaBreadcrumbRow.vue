@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useShellState } from '../composables/useShellState'
 import type { NatcaBreadcrumb } from '../types'
 
-defineProps<{
+const props = defineProps<{
   breadcrumbs: NatcaBreadcrumb[]
   hasSidebar?: boolean
 }>()
+
+const hasCrumbs = computed(() => props.breadcrumbs.length > 0)
 
 defineSlots<{
   right?: () => any
@@ -24,7 +27,10 @@ function handleHamburgerClick() {
 </script>
 
 <template>
-  <div class="natca-shell-breadcrumb-row">
+  <div
+    class="natca-shell-breadcrumb-row"
+    :class="{ 'natca-shell-breadcrumb-row--bare': !hasCrumbs }"
+  >
     <!-- Hamburger toggle (visible when sidebar exists) -->
     <button
       v-if="hasSidebar"
@@ -45,7 +51,7 @@ function handleHamburgerClick() {
     </button>
 
     <!-- Breadcrumb trail -->
-    <nav class="natca-shell-breadcrumb">
+    <nav v-if="hasCrumbs" class="natca-shell-breadcrumb">
       <template v-for="(crumb, i) in breadcrumbs" :key="i">
         <span v-if="i > 0" class="natca-shell-sep">/</span>
         <router-link
@@ -58,7 +64,25 @@ function handleHamburgerClick() {
       </template>
     </nav>
 
-    <!-- Right slot -->
+    <!--
+      NAT-1126: shell-owned teleport target. ALWAYS in the DOM, including when
+      the row is bare — apps teleport contextual chrome (status pills, live
+      badges, view toggles) in here from page components:
+
+        <Teleport to="#page-breadcrumb-extras"> … </Teleport>
+
+      Never wrap this in a v-if and never let it be conditionally unmounted:
+      Vue's Teleport throws on unmount when its target is gone, which aborts
+      the render patch and freezes router-view. The id is deliberately the one
+      apps already used when they hand-rolled this inside #breadcrumb-right.
+    -->
+    <div id="page-breadcrumb-extras" class="natca-shell-page-extras" />
+
+    <!-- Right slot — app-owned row chrome. Hidden when the row is bare (see
+         shell.css): an app that hides its breadcrumbs on a page is also
+         choosing to hide what it parked beside them, while teleported extras
+         above stay visible. Documented in page-patterns.md so the next app
+         doesn't debug a slot that vanished. -->
     <div class="natca-shell-breadcrumb-right">
       <slot name="right" />
     </div>

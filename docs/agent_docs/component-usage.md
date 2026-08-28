@@ -169,6 +169,15 @@ Same five variants as `NatcaButton`. Two sizes — `sm` = 28×28 (toolbar / row-
 
 Bare auto-renders a close button in the top-right with a translucent backdrop so it stays visible on dark images. Override via `#close="{ close }"` slot for custom styling.
 
+**Pass `title` in sentence case.** Since 0.4.0-beta.24 the header renders it in
+ALL CAPS via CSS (NAT-1067) — pre-uppercasing the string yourself gains nothing
+and makes the accessible name shout at screen readers. `subtitle` is unchanged.
+
+**Dropdowns inside a dialog work.** `natcaDefaults` sets `VMenu: { zIndex: 2500 }`
+(NAT-909) so a `VSelect` / `VAutocomplete` / `VMenu` opened inside a `NatcaDialog`
+renders above the dialog's 2400 overlay. If your app carries a local
+`VMenu: { zIndex: … }` override in `plugins/vuetify.*`, delete it on upgrade.
+
 ### Section helpers — global classes
 
 ```vue
@@ -415,6 +424,50 @@ Props: `title?`, `subtitle?`, `noBodyPadding?` (for tables or full-bleed content
   <v-data-table :headers :items />
 </NatcaCard>
 ```
+
+### NatcaAppFooter — the standard footer bar
+
+```vue
+<NatcaShell …>
+  <router-view />
+  <template #footer>
+    <NatcaAppFooter>
+      MyApp v2.4.0 · build 8f21c
+      <template #right><a :href="legacyUrl">Go to the old app</a></template>
+    </NatcaAppFooter>
+  </template>
+</NatcaShell>
+```
+
+Slots: `default` (centred body), `left`, `right`. Styled from the
+`--color-footer-bg` / `-text` / `-link` tokens, so it themes itself.
+
+The shell's `#footer` slot handles positioning only — pinned to the bottom on
+short pages, after the content on long ones. Put anything that must stay glued
+above the footer (release banner, offline notice) in the same slot above
+`NatcaAppFooter`. Don't re-implement the bar per app, and don't hand-roll the
+pin with a `min-height: 100%` wrapper — see page-patterns §7b.
+
+### NatcaTabbedCard — tabs as the card header
+
+```vue
+<NatcaTabbedCard v-model="tab" :tabs="[
+  { id: 'settings',    label: 'Settings', icon: 'mdi-cog-outline' },
+  { id: 'subscribers', label: 'Subscribers', badge: 128 },
+]">
+  <template #panel-settings>…</template>
+  <template #panel-subscribers>…</template>
+</NatcaTabbedCard>
+```
+
+Props: `tabs` (same `NatcaTabItem` shape as `NatcaTabs`; `to` is ignored — this
+card is v-model driven), `minHeight?` (default `320`, number = px; admin pages
+with data tables usually pass `480`), `noBodyPadding?`, `grow?`.
+Slots: `panel-<id>` per tab, `header-right` (actions in the strip), `actions` (footer row).
+
+Use it when the tabs belong to the card; use `NatcaTabs` when they belong to the
+page. Don't rebuild it from `v-toolbar` + `v-tabs` + `v-window` — the strip tint
+and the min-height floor are design decisions that live here (NAT-387).
 
 ### Data Table
 
@@ -679,6 +732,9 @@ user is doing.
 | Progress bar | `<VProgressLinear :model-value="65" color="primary" rounded height="4">` |
 | Pill toggle filters | `<NatcaPillNav v-model :items>` |
 | Underline tabs (router or local) | `<NatcaTabs>` |
+| Card whose header IS a tab strip (detail page sections) | `<NatcaTabbedCard v-model :tabs>` |
+| Page footer (version, build id, legacy link) | `<NatcaAppFooter>` in `NatcaShell`'s `#footer` slot |
+| Page-contextual chrome in the breadcrumb row | `<Teleport to="#page-breadcrumb-extras">` |
 | Page title + subtitle + action button | `<NatcaPageHeader>` |
 | Grid of KPI/metric numbers | `<NatcaStatGrid>` + `<NatcaStatCard>` |
 | "No results" placeholder | `<NatcaEmptyState>` |

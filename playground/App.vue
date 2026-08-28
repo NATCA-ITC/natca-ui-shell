@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { NatcaShell } from '@/index'
+import { NatcaShell, NatcaAppFooter } from '@/index'
 import type { NatcaTab, NatcaNavSection, NatcaBreadcrumb, NatcaApp, NatcaUser, NatcaProfileMenuItem } from '@/types'
 
 const route = useRoute()
@@ -175,6 +175,18 @@ const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
     @theme-change="pref => localStorage.setItem('natca-theme', pref)"
   >
     <router-view />
+
+    <!-- NAT-1082: the shell pins this block. No wrapper, no min-height:100%,
+         no margin-top:auto in app CSS. The notice sits INSIDE the slot above
+         NatcaAppFooter, so the two travel together instead of the notice
+         stranding at the end of short page content — the shape BID needs. -->
+    <template #footer>
+      <div class="playground-notice">A new version is available — reload to update.</div>
+      <NatcaAppFooter>
+        NATCA UI Shell · playground · {{ shellConfig.appName }}
+        <template #right><a href="#">Legacy app</a></template>
+      </NatcaAppFooter>
+    </template>
   </NatcaShell>
 </template>
 
@@ -202,4 +214,6 @@ html, body, #app {
   width: 100% !important;
   height: calc(100vh - 52px) !important;
 }
+
+.playground-notice { background: var(--overlay-active); color: var(--color-text-primary); font-size: 11.5px; padding: 6px 16px; text-align: center; }
 </style>

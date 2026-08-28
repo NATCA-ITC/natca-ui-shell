@@ -173,6 +173,10 @@ defineSlots<{
   font-family: var(--font-display);
   font-size: 15px;
   font-weight: 700;
+  /* NAT-1067: modal headers render in caps for hierarchy + brand consistency.
+     The letter-spacing keeps all-caps display type legible at 15px. */
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
   color: #FFFFFF;
   margin: 0;
   line-height: 1.2;
