@@ -101,6 +101,15 @@ export const router = createRouter({
       },
     },
     {
+      // NAT-1126 regression surface: sidebar present, breadcrumbs absent. The
+      // row must stay visible for the hamburger (collapse the sidebar on any
+      // crumbed admin page, land here, and without it the sidebar is stuck
+      // shut — sidebarCollapsed is in-memory state with no way back).
+      path: '/admin/no-crumbs',
+      component: PlaceholderPage,
+      meta: { title: 'No breadcrumbs (bare row)' },
+    },
+    {
       path: '/admin/design-standards',
       component: DesignStandardsPage,
       meta: {

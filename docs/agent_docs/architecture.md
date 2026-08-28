@@ -47,18 +47,59 @@ Apps should use Vuetify components directly for standard UI (buttons, forms, dia
 **Content box layout (0.4.0-beta.24, NAT-1082).** `<main class="natca-shell-content">`
 is a **flex column** with `overflow-y: auto`; everything you pass in the default
 slot is a flex item (`flex-shrink: 0`, so long pages still scroll rather than
-squash). This is what lets an app pin a footer to the bottom of the viewport on
-short pages:
+squash). Adjacent margins between slot children no longer collapse — that is the
+only behavioural difference from the old block flow.
+
+**The `#footer` slot owns the bottom of the page.** The shell renders it as the
+last child of the content column with `margin-top: auto; flex: 0 0 auto`, so it
+sits at the bottom of the viewport on short pages and follows the content on
+long ones. `flex: 0 0 auto` is load-bearing: flex items shrink by default, and
+without it the block loses height whenever the page above it overflows.
 
 ```vue
 <NatcaShell …>
   <router-view />
-  <AppFooter class="app-footer" />   <!-- .app-footer { margin-top: auto } -->
+  <template #footer>
+    <NewVersionBanner />          <!-- travels WITH the footer, not stranded -->
+    <NatcaAppFooter>BID v6.2.0 · build 4f21a</NatcaAppFooter>
+  </template>
 </NatcaShell>
 ```
 
-The only behavioural difference from the old block flow is that adjacent
-margins between slot children no longer collapse.
+The slot is **positioning only** — no border, background, padding or type
+styles. That is deliberate: anything an app stacks above the footer (a release
+banner, an offline notice) must be able to sit flush against it rather than
+inside its chrome. For the standard NATCA footer bar use `NatcaAppFooter`, which
+carries the `--color-footer-*` tokens the design system has always shipped.
+
+The slot renders as a **sibling** of the default slot, never a wrapper around
+it, so it can never become the containing block for an app's `position: sticky`
+elements. Those keep binding to `.natca-shell-content`, which is the scroller.
+
+Apps must NOT hand-roll this. A `min-height: 100%` wrapper, or a page root with
+`height: 100%`, consumes all the slack and the footer falls below the fold —
+and a page that declares its own `overflow-y` becomes a nested scroller, which
+also rebinds any sticky elements inside it.
+
+**The breadcrumb row is unconditional (0.4.0-beta.24, NAT-1126).** It always
+renders, because it hosts `#page-breadcrumb-extras` — a stable teleport target
+apps use to push page-contextual chrome into shell chrome. A `Teleport` whose
+target unmounts throws on a null `parentNode`, which aborts the render patch and
+freezes `router-view` while sibling branches keep updating. With no breadcrumbs
+the row goes **bare**:
+
+| | crumbs | bare (no crumbs) |
+|---|---|---|
+| breadcrumb trail | shown | hidden |
+| hamburger (when `sidebarSections` set) | shown | **shown** |
+| `#page-breadcrumb-extras` | shown | **shown** |
+| `#breadcrumb-right` slot | shown | **hidden** |
+| row chrome (tint, border) | shown | none |
+
+A bare row with nothing teleported in and no hamburger collapses entirely, so a
+page with none of the above renders exactly as it did before beta.24. The
+hamburger stays because it is sidebar chrome gated on `sidebarSections` alone —
+hiding it with the crumbs strands a collapsed sidebar with no way to reopen it.
 
 ## Theme Architecture
 

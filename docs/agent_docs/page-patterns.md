@@ -388,6 +388,53 @@ Which of the three tab components:
 background or a `min-height` for a tab window in app CSS — those are design
 decisions and this component owns them.
 
+## 7b. Page footer + shell chrome teleports
+
+### Footer — use the shell, never a wrapper
+
+```vue
+<NatcaShell …>
+  <router-view />
+  <template #footer>
+    <NatcaAppFooter>MyApp v2.4.0 · build 8f21c</NatcaAppFooter>
+  </template>
+</NatcaShell>
+```
+
+The shell pins it: bottom of the viewport on short pages, after the content on
+long ones. The slot takes arbitrary content, so anything that must stay glued
+above the footer goes in the same slot, above `NatcaAppFooter`.
+
+❌ **Never** wrap slot content in a `min-height: 100%` flex column with
+`margin-top: auto` on the footer. That was the pre-beta.24 workaround; it now
+fights the shell and leaves the footer unpinnable.
+❌ **Never** put `height: 100%` or `overflow-y` on a page root. It eats the
+slack the footer pins against, and a nested scroller rebinds any
+`position: sticky` inside the page. `.natca-shell-content` is the scroller.
+
+### Teleporting into the breadcrumb row
+
+The shell always renders `#page-breadcrumb-extras`, right-aligned in the
+breadcrumb row. Push page-contextual chrome — a live badge, an hours pill, a
+view toggle — into it from a page component:
+
+```vue
+<Teleport to="#page-breadcrumb-extras">
+  <BiddingHoursPill :hours="hours" />
+</Teleport>
+```
+
+The target is guaranteed to exist on every route, with or without breadcrumbs.
+Do **not** create your own target div inside `#breadcrumb-right`: when an app
+hides its breadcrumbs the row goes bare and that slot is hidden with it, so a
+teleport into your own div throws on unmount and freezes `router-view`. That
+was NAT-1081.
+
+**What bare mode hides:** the crumb trail and your `#breadcrumb-right` slot.
+**What it keeps:** the sidebar hamburger and `#page-breadcrumb-extras`. So a
+status badge parked in `#breadcrumb-right` disappears on uncrumbed pages by
+design — if it must always show, teleport it into the extras target instead.
+
 ## 8. Chips (`VChip`)
 
 Always `variant="tonal"`. Colors: `success`, `warning`, `error`, `info`,

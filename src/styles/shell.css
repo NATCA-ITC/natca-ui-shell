@@ -153,10 +153,38 @@
 .natca-shell-breadcrumb .natca-shell-sep { color: var(--overlay-divider); }
 .natca-shell-breadcrumb .natca-shell-current { color: var(--color-text-body); }
 .natca-shell-breadcrumb-right { margin-left: auto; font-size: 11px; color: var(--color-text-faint); }
+
+/* NAT-1126 — shell-owned teleport target for page-contextual row chrome.
+   Always present in the DOM (see NatcaBreadcrumbRow), right-aligned. When the
+   row has crumbs it sits immediately left of the app's #breadcrumb-right slot,
+   which is the ordering apps already hand-rolled. */
+.natca-shell-page-extras { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+/* Bare row — no crumbs. Loses its chrome entirely (no tint, no border) and
+   carries only whatever a page teleported into the extras target. The row
+   still exists in the DOM so the teleport target can never unmount. */
+.natca-shell-breadcrumb-row--bare { background: transparent; border-bottom: none; height: auto; min-height: 34px; }
+/* The app's own right-slot chrome belongs to the crumb row, not to teleported
+   page content — an app that hides its breadcrumbs is also choosing to hide
+   what it parked beside them. The hamburger is NOT hidden: it is sidebar
+   chrome, gated on `hasSidebar` alone, and hiding it with the crumbs strands a
+   collapsed sidebar with no way to reopen it (sidebarCollapsed is in-memory
+   singleton state — collapse it on a crumbed page, navigate to an uncrumbed
+   one, and the sidebar is stuck shut). Reported by BID against single-area
+   area home. */
+.natca-shell-breadcrumb-row--bare .natca-shell-breadcrumb-right { display: none; }
+/* Collapse completely only when the row has genuinely nothing to show: no
+   crumbs, nothing teleported in, AND no sidebar hamburger to host. That last
+   condition is load-bearing — without it this rule silently undoes the
+   hamburger fix above on exactly the pages that need it. */
+.natca-shell-breadcrumb-row--bare:not(:has(.natca-shell-breadcrumb-hamburger)):has(.natca-shell-page-extras:empty) { display: none; }
 .natca-shell-breadcrumb-hamburger { width: 28px; height: 28px; background: var(--overlay-subtle); border: none; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--color-text-muted); transition: all 150ms; flex-shrink: 0; margin-right: 10px; }
 .natca-shell-breadcrumb-hamburger:hover { background: var(--overlay-hover); color: var(--color-text-primary); }
 .natca-shell.natca-shell-no-sidebar .natca-shell-breadcrumb-hamburger { display: none; }
-.natca-shell.natca-shell-no-breadcrumb .natca-shell-breadcrumb-row { display: none; }
+/* NAT-1126: superseded by .natca-shell-breadcrumb-row--bare. The old blanket
+   rule hid the row (and with it the teleport target) whenever breadcrumbs were
+   empty, which is the freeze this ticket fixes. The root class stays for apps
+   that key off it. */
 
 /* ── Below-Topbar Wrapper (for search overlay positioning) ── */
 .natca-shell-below-topbar { display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative; }
@@ -190,6 +218,24 @@
 .natca-shell-content-head { padding: 20px 24px 16px; border-bottom: 1px solid var(--color-border-light); display: flex; align-items: center; justify-content: space-between; max-width: 100%; overflow: hidden; }
 .natca-shell-content-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--color-text-primary); }
 .natca-shell-content-sub { font-size: 12px; color: var(--color-text-faint); margin-top: 2px; }
+
+/* NAT-1082 — shell-owned page footer. `margin-top: auto` inside the content
+   flex column pins it to the bottom on short pages; on long pages it follows
+   the content and scrolls away, which is the behaviour apps were hand-rolling
+   with a min-height:100% wrapper. Apps pass content via NatcaShell's #footer
+   slot and own nothing about the positioning. */
+/* Positioning only — deliberately no chrome. `flex: 0 0 auto` rather than a
+   bare margin-top:auto: flex items shrink by default, and without it the block
+   loses height whenever the page above it overflows. */
+.natca-shell-foot { margin-top: auto; flex: 0 0 auto; }
+
+/* NatcaAppFooter — the standard NATCA footer bar, on the footer tokens the
+   design system has always shipped (--color-footer-*). Apps drop this into
+   NatcaShell's #footer slot instead of re-implementing the same strip. */
+.natca-app-footer { background: var(--color-footer-bg); color: var(--color-footer-text); border-top: 1px solid var(--color-sep); padding: 12px 16px; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.natca-app-footer a { color: var(--color-footer-link); text-decoration: none; }
+.natca-app-footer a:hover { text-decoration: underline; }
+.natca-app-footer__sep { opacity: 0.45; }
 
 /* ── Stat Cards (theme-aware) ── */
 .natca-shell-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; padding: 16px 24px; max-width: 100%; }

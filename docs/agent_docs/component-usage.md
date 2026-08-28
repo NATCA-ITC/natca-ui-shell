@@ -425,6 +425,29 @@ Props: `title?`, `subtitle?`, `noBodyPadding?` (for tables or full-bleed content
 </NatcaCard>
 ```
 
+### NatcaAppFooter — the standard footer bar
+
+```vue
+<NatcaShell …>
+  <router-view />
+  <template #footer>
+    <NatcaAppFooter>
+      MyApp v2.4.0 · build 8f21c
+      <template #right><a :href="legacyUrl">Go to the old app</a></template>
+    </NatcaAppFooter>
+  </template>
+</NatcaShell>
+```
+
+Slots: `default` (centred body), `left`, `right`. Styled from the
+`--color-footer-bg` / `-text` / `-link` tokens, so it themes itself.
+
+The shell's `#footer` slot handles positioning only — pinned to the bottom on
+short pages, after the content on long ones. Put anything that must stay glued
+above the footer (release banner, offline notice) in the same slot above
+`NatcaAppFooter`. Don't re-implement the bar per app, and don't hand-roll the
+pin with a `min-height: 100%` wrapper — see page-patterns §7b.
+
 ### NatcaTabbedCard — tabs as the card header
 
 ```vue
@@ -710,6 +733,8 @@ user is doing.
 | Pill toggle filters | `<NatcaPillNav v-model :items>` |
 | Underline tabs (router or local) | `<NatcaTabs>` |
 | Card whose header IS a tab strip (detail page sections) | `<NatcaTabbedCard v-model :tabs>` |
+| Page footer (version, build id, legacy link) | `<NatcaAppFooter>` in `NatcaShell`'s `#footer` slot |
+| Page-contextual chrome in the breadcrumb row | `<Teleport to="#page-breadcrumb-extras">` |
 | Page title + subtitle + action button | `<NatcaPageHeader>` |
 | Grid of KPI/metric numbers | `<NatcaStatGrid>` + `<NatcaStatCard>` |
 | "No results" placeholder | `<NatcaEmptyState>` |

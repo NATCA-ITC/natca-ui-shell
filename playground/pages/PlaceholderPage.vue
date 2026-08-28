@@ -1,5 +1,20 @@
 <template>
   <div class="placeholder-page">
+    <!--
+      NAT-1126 regression surface. This teleports into shell chrome from a page
+      component, which is the pattern that froze BID's router: on a route with
+      no breadcrumbs the row used to unmount, taking the target with it, and
+      Vue's Teleport threw on unmount. Toggle it off and on, and navigate
+      between a crumbed route (/minimal/upload) and an uncrumbed one (/minimal)
+      with it ON — nothing should throw and the shell should keep rendering.
+    -->
+    <Teleport v-if="showExtras" to="#page-breadcrumb-extras">
+      <span class="extras-pill">
+        <v-icon size="13">mdi-clock-outline</v-icon>
+        Teleported · {{ title }}
+      </span>
+    </Teleport>
+
     <div class="natca-shell-content-head">
       <div>
         <div class="natca-shell-content-title">{{ title }}</div>
@@ -27,14 +42,25 @@
           <span class="info-label">Shell mode</span>
           <code class="info-val">{{ shellMode }}</code>
         </div>
+        <div class="info-row">
+          <span class="info-label">Teleport</span>
+          <label class="info-val extras-toggle">
+            <input v-model="showExtras" type="checkbox" />
+            into #page-breadcrumb-extras (NAT-1126)
+          </label>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
+
+// Default ON so every placeholder route exercises the teleport target,
+// including /minimal which has no breadcrumbs at all.
+const showExtras = ref(true)
 
 const route = useRoute()
 
@@ -51,9 +77,13 @@ const shellMode = computed(() => {
 </script>
 
 <style scoped>
+/* NAT-1082: no `height: 100%` and no `overflow-y` here. A page that claims the
+   full height of .natca-shell-content leaves the shell's #footer block no slack
+   to pin against, and a nested scroller also rebinds any position:sticky inside
+   the page. The shell owns scrolling for the content area. */
 .placeholder-page {
-  height: 100%;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .placeholder-body {
@@ -125,4 +155,17 @@ const shellMode = computed(() => {
   padding: 2px 8px;
   border-radius: 4px;
 }
+
+.extras-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--overlay-active);
+  color: var(--color-text-primary);
+  font-size: 11px;
+  font-weight: 600;
+}
+.extras-toggle { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
 </style>
