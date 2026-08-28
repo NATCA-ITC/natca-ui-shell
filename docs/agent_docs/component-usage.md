@@ -761,6 +761,25 @@ user is doing.
 
 ---
 
+## Version pinning — use an exact version on the beta line
+
+Pin `@natca-itc/ui-shell` **exactly** (`"0.4.0-beta.24"`), not with a caret.
+
+A caret range does not do what it looks like it does here. `^0.4.0-beta.17`
+resolves to `>=0.4.0-beta.17 <0.5.0`, which **admits every later 0.4.0 beta and
+0.4.1 as well** — verified with `semver.satisfies`. Your lockfile is the only
+thing holding you at the version you think you're on: `npm install` and
+`npm ci` honour it, but `npm update`, a lockfile regeneration, or a merge
+conflict resolved by re-locking will jump you forward several betas at once,
+silently, with no changelog read and no bump ticket.
+
+That matters more than usual on a `0.x` beta line, where visible changes ship
+without a major bump — beta.24 alone put every dialog title in ALL CAPS and
+changed what `#breadcrumb-right` does on uncrumbed pages.
+
+Spotted by the mn session, 2026-08-28, while checking what beta.24 would do to
+their pinned tree.
+
 ## Consuming-app setup (required since 0.4.0)
 
 Vuetify is configured through three mechanisms — every app must wire all three for components to match the design system:
