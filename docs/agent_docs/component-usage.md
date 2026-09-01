@@ -351,6 +351,13 @@ Vuetify spacing: 1=4px, 2=8px, 3=12px, 4=16px, 5=20px, 6=24px, 8=32px.
 ### NEVER use !important
 If you need `!important`, the fix belongs in ui-shell, not your app.
 
+### NEVER patch a ui-shell visual bug in your app
+Black-on-grey tooltips, wrong on-colors, an invisible progress track — these
+are theme bugs that live in ui-shell. Check the installed version against the
+symptom table in the version-pinning section and upgrade; if it's not fixed at
+ui-shell HEAD, fix it there. An app-side CSS or defaults override outlives the
+real fix and resurrects the bug for the next reader.
+
 ### NEVER set props that natcaDefaults handles
 ```vue
 <!-- WRONG: redundant --> <v-text-field variant="outlined" density="compact" color="primary" />
@@ -779,6 +786,28 @@ changed what `#breadcrumb-right` does on uncrumbed pages.
 
 Spotted by the mn session, 2026-08-28, while checking what beta.24 would do to
 their pinned tree.
+
+### Symptoms of a stale install — check the version before you patch
+
+When a "fixed this a dozen times" visual bug reappears in a consuming app,
+the cause is almost always an old ui-shell build, not the app. Check
+`node_modules/@natca-itc/ui-shell/package.json` **first** — in an npm
+workspace that's the ROOT `node_modules`, and a nested per-package lockfile
+is dead weight that lies about what's installed. Do not hand-patch tooltip
+CSS or theme colors in the app; upgrade the pin.
+
+Known fingerprints:
+
+| Symptom | Cause | Fixed in |
+|---|---|---|
+| Dark-mode tooltips black text on grey; light-mode tooltips near-invisible (light on light) | Theme set `surface-variant` without its `on-` pair; Vuetify fills omitted keys from ITS defaults (dark `on-surface-variant: #000000`), not from luminance | 0.4.0-beta.18 |
+| VProgressLinear track same color as fill (bar always reads 100%) | Theme variables pin `border-opacity: 1` for crisp borders; the track's opacity falls back to `var(--v-border-opacity)` | 0.4.0-beta.25 (`bgOpacity` in natcaDefaults) |
+
+The general trap behind both: Vuetify merges a custom theme over its own
+internal defaults, so overriding one color or variable silently inherits
+whatever Vuetify pairs with it. Override a surface color → set its `on-`
+pair in the same commit; change a theme variable → check which component
+CSS consumes it (`grep -rn "var(--v-<name>" node_modules/vuetify/lib/components`).
 
 ## Consuming-app setup (required since 0.4.0)
 
