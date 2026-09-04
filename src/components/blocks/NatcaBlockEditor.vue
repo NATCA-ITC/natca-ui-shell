@@ -58,12 +58,13 @@ function clone<T>(value: T): T {
 
 // Adopt an externally replaced document (reload, discard) without clobbering
 // the author mid-edit: only re-seed when the incoming value differs from ours.
+// `null` is a reset — the host discarded the draft — not "leave it alone".
 watch(
   () => props.document,
   (next) => {
-    if (!next) return
-    if (JSON.stringify(next) === JSON.stringify(doc.value)) return
-    doc.value = clone(next)
+    const incoming = next ?? emptyBlockDocument()
+    if (JSON.stringify(incoming) === JSON.stringify(doc.value)) return
+    doc.value = clone(incoming)
     selectedId.value = null
   },
 )
@@ -341,7 +342,10 @@ function updateSelectedProps(next: Record<string, unknown>) {
   white-space: nowrap;
 }
 
-.natca-block-editor__block-body { padding: 8px; }
+/* Previews are pictures, not controls: a same-origin link or a host block's
+   button inside one would navigate away from an editor that never saves. Every
+   click lands on the wrapper and selects the block instead. */
+.natca-block-editor__block-body { padding: 8px; pointer-events: none; user-select: none; }
 
 .natca-block-editor__add-section { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 

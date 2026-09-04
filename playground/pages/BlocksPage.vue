@@ -152,6 +152,30 @@ const json = computed(() => JSON.stringify(document.value, null, 2))
 function reset() {
   document.value = { schema_version: 1, sections: [] }
 }
+
+/**
+ * A document an attacker would store: an undeclared `innerHTML` prop on a
+ * heading and a `javascript:` link. Structurally valid, so the validator lets
+ * it through — the renderer's schema allow-list and `isSafeBlockUrl` are what
+ * must hold. Switch to Member view: the heading must show only its text and
+ * the link must render as plain text.
+ */
+function loadHostile() {
+  document.value = {
+    schema_version: 1,
+    sections: [{
+      id: 'sec_hostile', layout: 'one',
+      columns: [{ id: 'col_hostile', blocks: [
+        { id: 'b_h', type: 'natca.heading', props: { text: 'Safe heading', level: '2', innerHTML: '<img src=x onerror="document.body.dataset.pwned=1">' } },
+        { id: 'b_l', type: 'natca.linkList', props: { title: 'Hostile links', links: [
+          { label: 'javascript link', url: 'javascript:document.body.dataset.pwned=1' },
+          { label: 'data link', url: 'data:text/html,hi' },
+          { label: 'fine link', url: 'https://natca.org' },
+        ] } },
+      ] }],
+    }],
+  }
+}
 </script>
 
 <template>
@@ -163,7 +187,10 @@ function reset() {
           NatcaBlockEditor / NatcaBlockCanvas — page composition (NAT-1241)
         </div>
       </div>
-      <NatcaButton variant="ghost" size="sm" @click="reset">Clear document</NatcaButton>
+      <div class="blocks-page__actions">
+        <NatcaButton variant="ghost" size="sm" @click="loadHostile">Load hostile fixture</NatcaButton>
+        <NatcaButton variant="ghost" size="sm" @click="reset">Clear document</NatcaButton>
+      </div>
     </div>
 
     <div class="blocks-page__body">
@@ -209,6 +236,8 @@ function reset() {
   margin: 0;
 }
 .blocks-page__status.is-bad { color: var(--color-danger); }
+
+.blocks-page__actions { display: flex; gap: 4px; }
 
 .blocks-page__json {
   margin: 0;

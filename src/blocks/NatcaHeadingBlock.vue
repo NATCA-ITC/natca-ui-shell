@@ -1,16 +1,21 @@
 <script setup lang="ts">
 /** Section heading. h1 is the page title, owned by the shell — blocks start at h2. */
-withDefaults(defineProps<{
+import { computed } from 'vue'
+
+const props = withDefaults(defineProps<{
   text?: string
   level?: '2' | '3'
 }>(), {
   text: '',
   level: '2',
 })
+
+/** Stored props are not schema-checked on the canvas; anything but '3' is an h2. */
+const tag = computed(() => (String(props.level) === '3' ? 'h3' : 'h2'))
 </script>
 
 <template>
-  <component :is="`h${level}`" v-if="text" class="natca-block-heading" :class="`natca-block-heading--h${level}`">
+  <component :is="tag" v-if="text" class="natca-block-heading" :class="`natca-block-heading--${tag}`">
     {{ text }}
   </component>
 </template>

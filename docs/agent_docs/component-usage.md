@@ -162,6 +162,16 @@ createBlockRegistry([...natcaContentBlocks, myBlock])
   contained error, not a broken page.
 - Declare `htmlProps` for any prop holding raw HTML so the backend knows what to
   sanitize.
+- Only `propsSchema` keys are passed to your component (plus `resolved`).
+  Anything else in the stored `props` is dropped before render.
+- **Rich text needs two optional peers.** If your registry includes
+  `natca.richText` (it does if you spread `natcaContentBlocks`) and admins will
+  open the editor, add `@tiptap/core` and `@tiptap/starter-kit` (`^3`) to the
+  app's dependencies. They load on demand inside the config panel only; the
+  read-only canvas never touches them, and an app that omits them gets an
+  "editor unavailable" notice in that one field, not a crash.
+- Node backends validate with `import { validateBlockDocument } from
+  '@natca-itc/ui-shell/block-document'` — the main entry will not load in Node.
 
 Full rules in `page-patterns.md` §13b.
 

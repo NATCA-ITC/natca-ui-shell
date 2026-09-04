@@ -7,6 +7,8 @@
  * permission check belongs to the viewer, not the author. That makes it a
  * data-bound block for phase 2. Until then, authors link out.
  */
+import { isExternalUrl, isSafeBlockUrl } from '../lib/safeUrl'
+
 interface LinkItem {
   label?: string
   url?: string
@@ -20,10 +22,9 @@ withDefaults(defineProps<{
   links: () => [],
 })
 
-/** External links get the noopener/noreferrer pair; same-origin ones stay in-tab. */
-function isExternal(url = ''): boolean {
-  return /^https?:\/\//i.test(url)
-}
+/** External links get the noopener/noreferrer pair; same-origin ones stay in-tab.
+ *  A URL that fails the scheme allow-list renders as plain text — never as an href. */
+const isExternal = isExternalUrl
 </script>
 
 <template>
@@ -32,8 +33,8 @@ function isExternal(url = ''): boolean {
     <ul>
       <li v-for="(link, i) in links" :key="i">
         <a
-          v-if="link.url"
-          :href="link.url"
+          v-if="isSafeBlockUrl(link.url)"
+          :href="link.url.trim()"
           :target="isExternal(link.url) ? '_blank' : undefined"
           :rel="isExternal(link.url) ? 'noopener noreferrer' : undefined"
         >{{ link.label || link.url }}</a>
@@ -65,7 +66,7 @@ li a,
 li span {
   display: block;
   padding: 5px 8px;
-  border-radius: var(--radius-sm, 4px);
+  border-radius: var(--radius-sm);
   font-size: var(--text-sm);
   color: var(--color-text-body);
   text-decoration: none;

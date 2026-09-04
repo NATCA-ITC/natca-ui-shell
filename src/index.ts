@@ -130,6 +130,7 @@ export {
   createBlockSection,
   relayoutSection,
 } from './lib/blockDocument'
+export { isSafeBlockUrl, isExternalUrl } from './lib/safeUrl'
 
 export {
   NATCA_BLOCK_SCHEMA_VERSION,

@@ -21,6 +21,10 @@
       "import": "./dist/vue/natca-ui-shell.js",
       "types": "./dist/vue/theme/index.d.ts"
     },
+    "./block-document": {
+      "import": "./dist/vue/block-document.js",
+      "types": "./dist/vue/lib/blockDocument.d.ts"
+    },
     "./tokens": "./dist/natca-tokens.css",
     "./components": "./dist/natca-components.css",
     "./shell-styles": "./dist/vue/natca-ui-shell.css",

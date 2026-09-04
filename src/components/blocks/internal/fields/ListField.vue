@@ -1,10 +1,16 @@
 <script setup lang="ts">
-/** Repeating group — the `list` field type. Rows are shaped by `field.item`. */
-import { computed } from 'vue'
-import { VTextField } from 'vuetify/components'
+/**
+ * Repeating group — the `list` field type. Rows are shaped by `field.item`,
+ * and every item is a full NatcaBlockField, so a row can hold a select, a
+ * switch or a URL input, not only free text. Each cell delegates back to
+ * BlockField; the async import breaks the BlockField ↔ ListField cycle.
+ */
+import { computed, defineAsyncComponent } from 'vue'
 import type { NatcaBlockField } from '../../../../types/blocks'
 import NatcaButton from '../../../NatcaButton.vue'
 import NatcaIconButton from '../../../NatcaIconButton.vue'
+
+const BlockField = defineAsyncComponent(() => import('./BlockField.vue'))
 
 const props = defineProps<{
   field: Extract<NatcaBlockField, { type: 'list' }>
@@ -23,8 +29,20 @@ function setCell(rowIndex: number, key: string, value: unknown) {
   emitRows(rows.value.map((row, i) => (i === rowIndex ? { ...row, [key]: value } : row)))
 }
 
+/** A fresh row seeded per item type, so a boolean starts false, not ''. */
+function seed(item: NatcaBlockField): unknown {
+  switch (item.type) {
+    case 'boolean': return false
+    case 'number': return undefined
+    case 'select': return item.options[0]?.value
+    case 'table': return { columns: ['Column 1'], rows: [['']] }
+    case 'list': return []
+    default: return ''
+  }
+}
+
 function addRow() {
-  emitRows([...rows.value, Object.fromEntries(props.field.item.map((f) => [f.key, '']))])
+  emitRows([...rows.value, Object.fromEntries(props.field.item.map((f) => [f.key, seed(f)]))])
 }
 
 function removeRow(index: number) {
@@ -46,12 +64,11 @@ function move(index: number, delta: number) {
 
     <div v-for="(row, i) in rows" :key="i" class="natca-list-field__row">
       <div class="natca-list-field__inputs">
-        <VTextField
+        <BlockField
           v-for="item in field.item"
           :key="item.key"
-          :model-value="row[item.key] as string"
-          :label="item.label"
-          :placeholder="(item as any).placeholder"
+          :field="item"
+          :model-value="row[item.key]"
           @update:model-value="setCell(i, item.key, $event)"
         />
       </div>

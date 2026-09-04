@@ -20,9 +20,17 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: {
+        'natca-ui-shell': resolve(__dirname, 'src/index.ts'),
+        // Vue-free, CSS-free: `@natca-itc/ui-shell/block-document` for a Node
+        // backend that validates a block document before storing it.
+        'block-document': resolve(__dirname, 'src/lib/blockDocument.ts'),
+      },
       formats: ['es'],
-      fileName: 'natca-ui-shell',
+      fileName: (_format, name) => `${name}.js`,
+      // With more than one entry Vite names the stylesheet after the package;
+      // pin it so the `./shell-styles` export keeps resolving.
+      cssFileName: 'natca-ui-shell',
     },
     rollupOptions: {
       external: [

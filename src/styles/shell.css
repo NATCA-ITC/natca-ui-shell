@@ -325,17 +325,17 @@
 
 .natca-block-doc { display: flex; flex-direction: column; gap: 16px; }
 
-.natca-block-section { display: grid; gap: 16px; align-items: start; }
-.natca-block-section--one    { grid-template-columns: 1fr; }
-.natca-block-section--50-50  { grid-template-columns: 1fr 1fr; }
-.natca-block-section--67-33  { grid-template-columns: 2fr 1fr; }
-.natca-block-section--33-67  { grid-template-columns: 1fr 2fr; }
-.natca-block-section--thirds { grid-template-columns: repeat(3, 1fr); }
+/* Mobile-first: one column is the default and the presets only apply above
+   the stack width, so no rule has to out-rank another. */
+.natca-block-section { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
+
+@media (min-width: 901px) {
+  .natca-block-section--50-50  { grid-template-columns: 1fr 1fr; }
+  .natca-block-section--67-33  { grid-template-columns: 2fr 1fr; }
+  .natca-block-section--33-67  { grid-template-columns: 1fr 2fr; }
+  .natca-block-section--thirds { grid-template-columns: repeat(3, 1fr); }
+}
 
 /* min-width:0 is load-bearing: without it a wide table refuses to shrink and
    blows the grid track out past the viewport. */
 .natca-block-column { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-
-@media (max-width: 900px) {
-  .natca-block-section { grid-template-columns: 1fr !important; }
-}

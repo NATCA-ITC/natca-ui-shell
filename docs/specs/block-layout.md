@@ -2,7 +2,12 @@
 
 **ADR:** BID ADR-048 (`bid/docs/architecture/decisions/048-facility-pages-are-composed-of-blocks.md`)
 **Status:** Implemented on `nat-1241` — the file tables below record what shipped
-**Version:** 0.4.0-beta.25 (additive — no breaking-change protocol required)
+**Version:** unreleased (additive — no breaking-change protocol required). beta.25 is taken by PR #30; this lands in the next cut.
+
+> Reviewed 2026-09-04 by the ui-shell session after bid-44's hand-off. The API
+> section below was rewritten to match the code; the docs in `docs/agent_docs/`
+> were already correct. Where this file and the code disagree, the code wins and
+> this file is the bug.
 
 A page-composition engine: authors build a page from blocks arranged in preset
 column layouts. ui-shell owns the engine, the registry contract, the
@@ -37,7 +42,8 @@ First consumer is BID's facility home page. MyNATCA v2 is the second.
 | `src/blocks/NatcaDividerBlock.vue` | Rule / spacer |
 | `src/blocks/index.ts` | The six definitions + `natcaContentBlocks` |
 | `src/composables/useBlockRegistry.ts` | `createBlockRegistry`, `defineBlock`, provide/inject |
-| `src/lib/blockDocument.ts` | `validateBlockDocument` + document construction helpers |
+| `src/lib/blockDocument.ts` | `validateBlockDocument` + document construction helpers — also built as its own CSS-free entry, `@natca-itc/ui-shell/block-document`, so a Node backend can import it |
+| `src/lib/safeUrl.ts` | `isSafeBlockUrl` — the one scheme allow-list shared by the link list, the rich-text link dialog and the `url` field |
 | `src/types/blocks.ts` | All block types |
 | `playground/pages/BlocksPage.vue` | Dev harness: in-memory document, fake data block, unknown type |
 | `playground/pages/blocks/FakeRosterBlock.vue` | Stand-in host-app data block |
@@ -65,12 +71,11 @@ First consumer is BID's facility home page. MyNATCA v2 is the second.
 | File | Change |
 |------|--------|
 | `src/index.ts` | Export the two components, registry helpers, `natcaContentBlocks`, validator, types |
-| `src/types/index.ts` | Re-export `./blocks` |
 | `src/styles/shell.css` | `--natca-content-stack-width: 900px` + section/column grid rules |
 | `playground/router.ts` | Route `/admin/blocks` |
 | `playground/App.vue` | Sidebar + tab entry for the harness |
 | `package.json` | `@tiptap/*` as **peerDependenciesMeta.optional**, not a hard dep |
-| `vite.config.ts` | `/^@tiptap\//` external, so the dynamic import stays unresolved at build |
+| `vite.config.ts` | `/^@tiptap\//` external, so the dynamic import stays unresolved at build; second lib entry for `block-document` |
 | `src/components/NatcaIconButton.vue` | Fixes an unrelated pre-existing bug — see below |
 | `docs/agent_docs/page-patterns.md` | New §13b — block layouts, when to use vs. a hand-built page |
 | `docs/agent_docs/component-usage.md` | Registering an app block; the data-bound pattern |
@@ -137,9 +142,11 @@ export type NatcaBlockField =
   | { key: string; label: string; type: 'table' }
   | { key: string; label: string; type: 'list'; item: NatcaBlockField[] }
 
-/** Opaque app-supplied context handed to every block and every resolve(). */
+/** Handed to every resolve(). `scope` is whatever the page passed to `:scope`. */
 export interface NatcaBlockContext {
-  [key: string]: unknown
+  scope: Record<string, unknown>
+  /** Aborts when the block unmounts or its props change. */
+  signal: AbortSignal
 }
 
 export interface NatcaBlockRegistry {
@@ -171,22 +178,36 @@ const registry = createBlockRegistry([
     propsSchema: [
       { key: 'limit', label: 'How many to show', type: 'number' },
     ],
-    resolve: (props, ctx) => api.getEvents(ctx.facilityCode, props.limit),
+    resolve: (props, ctx) => api.getEvents(ctx.scope.facilityCode, props.limit),
   }),
 ])
 ```
 
 ```vue
 <!-- Read -->
-<NatcaBlockCanvas :document="doc" :registry="registry" :context="{ facilityCode }" />
+<NatcaBlockCanvas :document="doc" :registry="registry" :scope="{ facilityCode }"
+                  empty-text="Nothing has been posted here yet." />
 
-<!-- Edit -->
-<NatcaBlockEditor v-model:document="doc" :registry="registry" :saving="saving" @save="persist" />
+<!-- Edit. The editor never saves — it only emits update:document. -->
+<NatcaBlockEditor v-model:document="draft" :registry="registry" :scope="{ facilityCode }" />
+<NatcaButton @click="persist(draft)">Save</NatcaButton>
 ```
 
-`validateBlockDocument(doc, registry)` returns `{ ok, errors[] }` — structural
-only: known layout ids, column count matching the layout, known block types,
-props matching `propsSchema`. It does **not** sanitise HTML.
+Setting `v-model:document` to `null` resets the editor to an empty document
+(that is how a host discards a draft).
+
+`validateBlockDocument(doc)` returns `{ valid, errors[] }` — structural only:
+`schema_version`, known layout ids, column count matching the layout, unique
+ids, `type` a non-empty string, `props` an object. It takes **no registry** and
+does **not** check props against `propsSchema` or sanitise HTML; unknown block
+types are legal by design. Import it from `@natca-itc/ui-shell/block-document`
+in Node (the main entry pulls Vuetify CSS and will not load there).
+
+**What reaches a block component.** `BlockRenderer` binds only the keys named
+in the definition's `propsSchema` (plus `resolved` for data-bound blocks). A
+stored key that is not in the schema never reaches the component — that is
+what stops an author-supplied `innerHTML` prop from falling through as a DOM
+attribute. If your block needs a prop, declare it in the schema.
 
 ---
 
@@ -201,9 +222,9 @@ props matching `propsSchema`. It does **not** sanitise HTML.
 | `thirds` | 3 | `1fr 1fr 1fr` |
 
 **Every preset collapses to a single column at `≤ 900px`**, stacking in author
-order. Columns are reordered by moving them in the editor — there are no
-per-column mobile-order flags in phase 1, and the editor carries a phone-width
-preview toggle so the author sees the stack they are creating.
+order. Blocks are moved between columns with the editor's left/right controls —
+there are no per-column mobile-order flags in phase 1, and no phone-width
+preview toggle yet (the author narrows the window).
 
 Three columns is the cap. On a phone every layout is one column, so a fourth
 buys a worse desktop layout and nothing else.
@@ -220,19 +241,25 @@ columns than prose does.
 ## Block notes
 
 - **richText** — the TipTap setup lifts out of BID's `RichTextEditor.vue`
-  (StarterKit + Underline + the link dialog, which is worth keeping as-is).
-  TipTap is an **optional peer dependency, lazy-imported inside the block**,
-  exactly as `NatcaDocumentViewer` treats `pdfjs-dist`. An app that registers no
-  rich-text block pays nothing. `htmlProps: ['html']`.
-- **table** — `overflow-x: auto` always, plus a `stackOnMobile` prop that renders
-  each row as a label/value card below the breakpoint. Tables are the one block
-  that cannot reflow, so this ships with it rather than after it.
+  (StarterKit v3, which already bundles Underline and Link, plus the link
+  dialog). TipTap is an **optional peer dependency, lazy-imported inside the
+  config panel's `richText` field** — not the block, so the read-only canvas
+  never loads it — exactly as `NatcaDocumentViewer` treats `pdfjs-dist`. If the
+  peer is absent the field shows an "editor unavailable" notice and leaves the
+  stored HTML untouched. `htmlProps: ['html']`. The link dialog only accepts
+  URLs that pass `isSafeBlockUrl`.
+- **table** — `overflow-x: auto` always, and stacks each row into a labelled
+  card below the breakpoint. `firstRowHeader` promotes the first data row to
+  the header. Tables are the one block that cannot reflow, so this ships with
+  it rather than after it.
 - **callout** — wraps `NatcaAlert`. Note the two live constraints: `NatcaAlert`
   takes `type` (not `variant`), and its body is a flex row, so the block must
   pass **one** child element — loose text next to a `<strong>` renders as
   columns.
-- **linkList** — `type: 'list'` field of `{ label, url }`. Screens URLs against
-  the same scheme allow-list the rich-text link dialog uses.
+- **linkList** — `type: 'list'` field of `{ label, url }`. A URL that fails
+  `isSafeBlockUrl` (http, https, mailto, tel, or a same-origin path) renders
+  as plain text, never as an `href`. `links[].url` is not an `htmlProp`, so the
+  backend must apply the same allow-list on write.
 - **UnknownBlock** — renders a quiet bordered placeholder naming the missing
   type. Never throws. This is what lets MN ship a block BID has not registered
   without white-screening a shared document.
@@ -250,6 +277,11 @@ The same applies to the rich-text allow-list: BID's `App\Support\HtmlSanitizer`
 and the TipTap schema must agree, or an admin saves markup and gets it silently
 unwrapped. Widening one without the other is the failure this whole design
 exists to stop — do not do it in a hurry.
+
+And to URLs: `isSafeBlockUrl` in `src/lib/safeUrl.ts` is the client rule for
+every author-entered href (link list rows, rich-text links). The backend must
+reject or strip anything that fails it, because the canvas trusts what it is
+given.
 
 ---
 

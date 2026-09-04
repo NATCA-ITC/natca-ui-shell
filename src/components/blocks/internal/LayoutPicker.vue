@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /** Preset row layouts, drawn as proportional bars. No free-form resizing. */
-import { NATCA_SECTION_COLUMN_COUNT, type NatcaSectionLayout } from '../../../types/blocks'
+import type { NatcaSectionLayout } from '../../../types/blocks'
 
 defineProps<{ modelValue: NatcaSectionLayout }>()
 const emit = defineEmits<{ 'update:modelValue': [value: NatcaSectionLayout] }>()
@@ -12,8 +12,6 @@ const LAYOUTS: Array<{ value: NatcaSectionLayout; label: string; widths: number[
   { value: '33-67', label: 'Narrow left, wide right', widths: [33, 67] },
   { value: 'thirds', label: 'Three columns', widths: [33, 33, 33] },
 ]
-
-void NATCA_SECTION_COLUMN_COUNT
 </script>
 
 <template>
@@ -50,7 +48,7 @@ void NATCA_SECTION_COLUMN_COUNT
   height: 24px;
   padding: 3px;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm, 4px);
+  border-radius: var(--radius-sm);
   background: var(--color-bg-surface);
   cursor: pointer;
   transition: border-color 120ms, background 120ms;

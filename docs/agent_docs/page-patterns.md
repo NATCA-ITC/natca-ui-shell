@@ -615,9 +615,23 @@ const registry = createBlockRegistry([
   and the canvas renders it as-is. A block declares which of its props are HTML
   in `htmlProps`; the server must run those through its allow-list before it
   stores them. ui-shell does not sanitize and must not be relied on to.
-- **Validate the document server-side** with `validateBlockDocument()` (exported
-  and Vue-free, so a Node backend can import it directly). It checks structure
-  and id uniqueness only — block props are the block's business.
+- **Validate the document server-side** with `validateBlockDocument()`. In Node
+  import it from `@natca-itc/ui-shell/block-document` — a separate, CSS-free
+  entry; the main entry pulls Vuetify styles and will not load outside a
+  bundler. It checks structure and id uniqueness only — block props are the
+  block's business.
+- **Only `propsSchema` keys reach your block component.** The renderer binds
+  the schema's keys (plus `resolved`) and drops everything else in the stored
+  `props`, so an author-supplied `innerHTML` can never fall through as a DOM
+  attribute. If the component needs a prop, declare it in the schema.
+- **Author-entered URLs go through `isSafeBlockUrl()`** (http, https, mailto,
+  tel, same-origin paths). The link list and the rich-text link dialog already
+  do; use it in your own blocks, and apply the same rule server-side.
+- **The editor never saves, and `null` resets it.** Bind `v-model:document`;
+  persist on your own button. Setting the model to `null` clears the editor —
+  that is how "Discard" works. Previews inside the editor are inert
+  (`pointer-events: none`), so a link in a preview selects the block instead of
+  navigating away from unsaved work.
 - **TipTap is an optional peer dependency** (`@tiptap/core`,
   `@tiptap/starter-kit`), imported dynamically and only when an author opens a
   rich-text field. An app that registers no rich-text block installs nothing and

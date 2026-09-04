@@ -17,6 +17,7 @@
 import { ref, shallowRef, onMounted, onBeforeUnmount, watch } from 'vue'
 import NatcaAlert from '../../../NatcaAlert.vue'
 import NatcaIconButton from '../../../NatcaIconButton.vue'
+import { isSafeBlockUrl } from '../../../../lib/safeUrl'
 
 const props = withDefaults(defineProps<{
   modelValue?: string
@@ -49,6 +50,15 @@ onMounted(async () => {
     // textarea that would mangle the stored markup.
     unavailable.value = true
     console.warn('[natca-blocks] rich text editing needs @tiptap/core and @tiptap/starter-kit', e)
+    return
+  }
+
+  // In a production build Vite stubs an absent optional peer as `{}` instead of
+  // throwing, so the import above succeeds and `Editor` is undefined. Check the
+  // shape, not just the import.
+  if (typeof Editor !== 'function' || !StarterKit?.configure) {
+    unavailable.value = true
+    console.warn('[natca-blocks] rich text editing needs @tiptap/core and @tiptap/starter-kit')
     return
   }
 
@@ -98,9 +108,14 @@ function toggleLink() {
     e.chain().focus().unsetLink().run()
     return
   }
-  const url = window.prompt('Link URL')
-  if (!url) return
-  const href = /^(https?:|mailto:|tel:)/i.test(url) ? url : `https://${url}`
+  const raw = window.prompt('Link URL')?.trim()
+  if (!raw) return
+  // Bare "natca.org/foo" becomes https; anything else must pass the allow-list.
+  const href = /^[a-z][a-z0-9+.-]*:/i.test(raw) || raw.startsWith('/') ? raw : `https://${raw}`
+  if (!isSafeBlockUrl(href)) {
+    window.alert('Links must start with http://, https://, mailto: or tel:.')
+    return
+  }
   e.chain().focus().extendMarkRange('link').setLink({ href }).run()
 }
 </script>
