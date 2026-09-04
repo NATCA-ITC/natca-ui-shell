@@ -18,7 +18,11 @@ import {
   NatcaDialog,
   NatcaDocumentViewer,
   NatcaSlugLabel,
+  NatcaBlockCanvas,
+  createBlockRegistry,
+  natcaContentBlocks,
 } from '@/index'
+import type { NatcaBlockDocument } from '@/index'
 import type { NatcaTabItem } from '@/components/NatcaTabs.vue'
 import type { MemberCardData } from '@/components/NatcaMemberCard.vue'
 import {
@@ -124,6 +128,31 @@ const members: MemberCardData[] = [
   { name: 'Jason Doss', initials: 'JD', facility: 'ZJX', region: 'Southern', memberType: 'BUE', memberNumber: '12345' },
   { name: 'Sarah Mitchell', initials: 'SM', facility: 'ZDC', region: 'Eastern', memberType: 'CPC', memberNumber: '23456' },
 ]
+
+// ── Composed pages (block engine) ─────────────────────────────────────
+// Read-only demo: the shipped content blocks only, so this page never loads
+// TipTap. Authoring lives on /admin/blocks.
+const blockRegistry = createBlockRegistry(natcaContentBlocks)
+const blockDemoDoc: NatcaBlockDocument = {
+  schema_version: 1,
+  sections: [
+    {
+      id: 'ds_sec_1', layout: '67-33',
+      columns: [
+        { id: 'ds_col_1', blocks: [
+          { id: 'ds_b1', type: 'natca.heading', props: { text: 'Round 3 opens Monday', level: '2' } },
+          { id: 'ds_b2', type: 'natca.richText', props: { html: '<p>Check your window before you bid — it is listed on your <strong>summary page</strong>. Bids placed outside the window are held until it opens.</p>' } },
+          { id: 'ds_b3', type: 'natca.table', props: { caption: 'Round schedule', data: { columns: ['Round', 'Opens', 'Closes'], rows: [['1', 'Sep 8', 'Sep 12'], ['2', 'Sep 15', 'Sep 19'], ['3', 'Sep 22', 'Sep 26']] }, firstRowHeader: false } },
+        ] },
+        { id: 'ds_col_2', blocks: [
+          { id: 'ds_b4', type: 'natca.callout', props: { type: 'warning', title: 'Heads up', body: 'Leave slots are recalculated overnight.' } },
+          { id: 'ds_b5', type: 'natca.linkList', props: { title: 'Resources', links: [{ label: 'Bidding guide', url: 'https://natca.org' }, { label: 'Contact your rep', url: 'mailto:rep@natca.org' }] } },
+          { id: 'ds_b6', type: 'mn.events', props: { limit: 3 } },
+        ] },
+      ],
+    },
+  ],
+}
 </script>
 
 <template>
@@ -844,6 +873,53 @@ const members: MemberCardData[] = [
         <strong>pdf.js is an optional peer dep.</strong> Install <code>pdfjs-dist</code> in the
         consuming app to enable PDF rendering; image and download-CTA paths work without it.
         The worker URL is auto-resolved via <code>import.meta.url</code>.
+      </NatcaAnnotation>
+    </section>
+
+    <!-- ═══════════ COMPOSED PAGES (BLOCK ENGINE) ═══════════ -->
+    <section class="ds-section">
+      <h3 class="ds-section-title">Composed pages — block engine</h3>
+      <p class="ds-body">
+        Some pages are laid out by an <strong>administrator</strong>, not a developer: BID's
+        facility home, MyNATCA landing pages. Those use the shared block engine —
+        <code>NatcaBlockCanvas</code> renders a stored document, <code>NatcaBlockEditor</code>
+        authors one, and both take a registry built with
+        <code>createBlockRegistry([...natcaContentBlocks, ...appBlocks])</code>. Apps never
+        build their own page builder; they register blocks with this one. Config forms are
+        generated from each block's <code>propsSchema</code>. An unregistered block type (the
+        <code>mn.events</code> slot below) renders a quiet placeholder, never an error.
+      </p>
+
+      <p class="eyebrow">Read-only canvas — 67 / 33 preset, shipped content blocks, one unregistered type</p>
+      <NatcaCard>
+        <NatcaBlockCanvas :document="blockDemoDoc" :registry="blockRegistry" />
+      </NatcaCard>
+
+      <p class="eyebrow" style="margin-top: 24px;">Layout presets</p>
+      <table class="ds-props-table">
+        <thead><tr><th>Preset</th><th>Desktop</th><th>≤ 900px</th></tr></thead>
+        <tbody>
+          <tr><td><code>one</code></td><td>1fr</td><td rowspan="5">One column, author order. <code>--natca-content-stack-width</code>.</td></tr>
+          <tr><td><code>50-50</code></td><td>1fr 1fr</td></tr>
+          <tr><td><code>67-33</code></td><td>2fr 1fr</td></tr>
+          <tr><td><code>33-67</code></td><td>1fr 2fr</td></tr>
+          <tr><td><code>thirds</code></td><td>1fr 1fr 1fr</td></tr>
+        </tbody>
+      </table>
+
+      <div class="ds-btn-row" style="margin-top: 16px;">
+        <NatcaButton variant="secondary" to="/admin/blocks">Open the editor harness</NatcaButton>
+      </div>
+
+      <NatcaAnnotation style="margin-top: 16px; max-width: 760px;">
+        <strong>Rules that are not optional.</strong> Only <code>propsSchema</code> keys reach a
+        block component — a stored <code>innerHTML</code> never falls through as a DOM attribute.
+        Author URLs pass <code>isSafeBlockUrl</code> (http, https, mailto, tel, same-origin) or
+        render as text. The backend sanitises <code>htmlProps</code>, applies the same URL rule,
+        and persists only schema-declared keys — ui-shell trusts what it is given. TipTap is an
+        optional peer loaded only when an author opens a rich-text field; this read-only canvas
+        never loads it. Full guide: <code>docs/agent_docs/block-engine-tutorial.md</code>;
+        decision: ADR-003.
       </NatcaAnnotation>
     </section>
 
