@@ -1,7 +1,7 @@
 # Block Layout — Implementation Spec
 
 **ADR:** BID ADR-048 (`bid/docs/architecture/decisions/048-facility-pages-are-composed-of-blocks.md`)
-**Status:** Ready for implementation
+**Status:** Implemented on `nat-1241` — the file tables below record what shipped
 **Version:** 0.4.0-beta.25 (additive — no breaking-change protocol required)
 
 A page-composition engine: authors build a page from blocks arranged in preset
@@ -19,24 +19,46 @@ First consumer is BID's facility home page. MyNATCA v2 is the second.
 | File | Purpose |
 |------|---------|
 | `src/components/blocks/NatcaBlockCanvas.vue` | Read-only renderer — document + registry in, page out |
-| `src/components/blocks/NatcaBlockEditor.vue` | Authoring surface — sections, layout picker, inserter, config panel |
-| `src/components/blocks/internal/BlockSection.vue` | One section: applies the column preset, renders columns |
-| `src/components/blocks/internal/BlockColumn.vue` | One column: renders its block instances in order |
+| `src/components/blocks/NatcaBlockEditor.vue` | Authoring surface — sections, layout picker, inserter, block chrome |
+| `src/components/blocks/internal/BlockRenderer.vue` | Renders one instance; the only place that runs `resolve()` |
 | `src/components/blocks/internal/BlockInserter.vue` | "Add block" menu, built from the registry |
 | `src/components/blocks/internal/BlockConfigPanel.vue` | Config form generated from a block's `propsSchema` |
 | `src/components/blocks/internal/LayoutPicker.vue` | The five section presets as a visual picker |
 | `src/components/blocks/internal/UnknownBlock.vue` | Placeholder for a type the registry does not have |
-| `src/blocks/richText.ts` + `RichTextBlock.vue` | TipTap block (lazy-imported) |
-| `src/blocks/table.ts` + `TableBlock.vue` | Table block with a mobile stack mode |
-| `src/blocks/heading.ts` + `HeadingBlock.vue` | Section heading |
-| `src/blocks/callout.ts` + `CalloutBlock.vue` | Wraps `NatcaAlert` |
-| `src/blocks/linkList.ts` + `LinkListBlock.vue` | Repeatable label + URL rows |
-| `src/blocks/divider.ts` + `DividerBlock.vue` | Rule / spacer |
-| `src/blocks/index.ts` | `natcaContentBlocks` — the default set |
-| `src/composables/useBlockRegistry.ts` | `createBlockRegistry`, `defineBlock` |
-| `src/lib/validateBlockDocument.ts` | Structural validation, exported for Node backends |
+| `src/components/blocks/internal/fields/BlockField.vue` | Dispatches one `propsSchema` entry to an input |
+| `src/components/blocks/internal/fields/TableField.vue` | Editable grid behind the `table` field type |
+| `src/components/blocks/internal/fields/ListField.vue` | Repeating group behind the `list` field type |
+| `src/components/blocks/internal/fields/RichTextField.vue` | TipTap surface — the only file that touches TipTap |
+| `src/blocks/NatcaRichTextBlock.vue` | Renders stored HTML (host sanitizes on write) |
+| `src/blocks/NatcaTableBlock.vue` | Table with a mobile stack mode |
+| `src/blocks/NatcaHeadingBlock.vue` | Section heading |
+| `src/blocks/NatcaCalloutBlock.vue` | Wraps `NatcaAlert` |
+| `src/blocks/NatcaLinkListBlock.vue` | Repeatable label + URL rows |
+| `src/blocks/NatcaDividerBlock.vue` | Rule / spacer |
+| `src/blocks/index.ts` | The six definitions + `natcaContentBlocks` |
+| `src/composables/useBlockRegistry.ts` | `createBlockRegistry`, `defineBlock`, provide/inject |
+| `src/lib/blockDocument.ts` | `validateBlockDocument` + document construction helpers |
 | `src/types/blocks.ts` | All block types |
-| `playground/pages/AdminBlocks.vue` | Dev harness: in-memory document + fake data-bound block |
+| `playground/pages/BlocksPage.vue` | Dev harness: in-memory document, fake data block, unknown type |
+| `playground/pages/blocks/FakeRosterBlock.vue` | Stand-in host-app data block |
+
+**Deviations from the plan, and why.**
+
+- *No `BlockSection.vue` / `BlockColumn.vue`.* Sections and columns are a grid
+  class and a `v-for`. The canvas needs eight lines for both; the editor needs
+  the section chrome inline anyway, since every control mutates the document it
+  already owns. Two components that only drill props are two more places to look.
+- *Blocks are `.vue` files with their definitions in `index.ts`,* not a
+  `.ts` + `.vue` pair each. Twelve files for six blocks bought nothing.
+- *Rich text is edited in the config panel's `richText` field, not in the block.*
+  The block component is a pure renderer, which is why the read-only canvas
+  never loads TipTap at all — better than the plan, which had it in the block.
+- *Only `@tiptap/core` and `@tiptap/starter-kit`.* StarterKit v3 already bundles
+  Underline and Link; registering Underline separately raises a duplicate-name
+  warning. One fewer optional peer.
+- *Added `shiftBlock`* — move a block sideways between columns. Without
+  drag-and-drop there was otherwise no way to get a block out of the column it
+  was created in, which authors hit immediately.
 
 ## Modified files
 
@@ -46,8 +68,11 @@ First consumer is BID's facility home page. MyNATCA v2 is the second.
 | `src/types/index.ts` | Re-export `./blocks` |
 | `src/styles/shell.css` | `--natca-content-stack-width: 900px` + section/column grid rules |
 | `playground/router.ts` | Route `/admin/blocks` |
+| `playground/App.vue` | Sidebar + tab entry for the harness |
 | `package.json` | `@tiptap/*` as **peerDependenciesMeta.optional**, not a hard dep |
-| `docs/agent_docs/page-patterns.md` | New section 17 — block layouts, when to use vs. a hand-built page |
+| `vite.config.ts` | `/^@tiptap\//` external, so the dynamic import stays unresolved at build |
+| `src/components/NatcaIconButton.vue` | Fixes an unrelated pre-existing bug — see below |
+| `docs/agent_docs/page-patterns.md` | New §13b — block layouts, when to use vs. a hand-built page |
 | `docs/agent_docs/component-usage.md` | Registering an app block; the data-bound pattern |
 
 ---
@@ -234,3 +259,24 @@ Drag-and-drop reordering (blocks move with up/down controls), image blocks (no
 upload path exists yet), revision history, per-block permissions, nested
 sections, and data-bound blocks beyond the playground's fake one — those are
 registered by apps, and BID's first real ones land with NAT-1239.
+
+
+---
+
+## Incidental fix: `NatcaIconButton` had no accessible name
+
+Found while validating this work, and fixed here because the editor adds ~20
+icon buttons that would otherwise all be nameless.
+
+`NatcaIconButton` declared its prop as `'aria-label'` and read it back with
+`$props['aria-label']`. Vue camelizes incoming attribute names when matching
+props, so the value written as `aria-label="Close"` was stored under `ariaLabel`
+and the template's lookup returned `undefined` — **every icon button in every
+NATCA app rendered with no `aria-label` and no `title`**, silently, since the
+component was written.
+
+The fix declares both keys and reads whichever is populated, so the public type
+contract (`aria-label`) is unchanged and no call site in any app needs editing.
+Verified in the browser: buttons now carry both the accessible name and the
+tooltip. This deserves its own ticket for the record — it is not a block-engine
+change and it improves every existing page.

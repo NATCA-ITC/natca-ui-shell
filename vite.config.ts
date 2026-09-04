@@ -33,6 +33,9 @@ export default defineConfig({
         '@mdi/font',
         'pdfjs-dist',
         /^pdfjs-dist\//,
+        // Optional peer — the rich-text field imports these dynamically, so an
+        // app that registers no rich-text block never resolves them.
+        /^@tiptap\//,
       ],
       output: {
         dir: 'dist/vue',

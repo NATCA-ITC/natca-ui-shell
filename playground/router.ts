@@ -4,6 +4,7 @@ import MembersPage from './pages/MembersPage.vue'
 import PlaceholderPage from './pages/PlaceholderPage.vue'
 import ComponentsPage from './pages/ComponentsPage.vue'
 import DesignStandardsPage from './pages/DesignStandardsPage.vue'
+import BlocksPage from './pages/BlocksPage.vue'
 import AuthLandingPage from './pages/AuthLandingPage.vue'
 
 export const router = createRouter({
@@ -108,6 +109,17 @@ export const router = createRouter({
       path: '/admin/no-crumbs',
       component: PlaceholderPage,
       meta: { title: 'No breadcrumbs (bare row)' },
+    },
+    {
+      path: '/admin/blocks',
+      component: BlocksPage,
+      meta: {
+        title: 'Block layout',
+        breadcrumbs: [
+          { label: 'Hub', to: '/admin' },
+          { label: 'Block layout' },
+        ],
+      },
     },
     {
       path: '/admin/design-standards',

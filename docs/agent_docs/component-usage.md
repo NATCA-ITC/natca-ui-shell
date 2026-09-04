@@ -144,6 +144,27 @@ Use anywhere you'd otherwise reach for `<v-btn icon>`: dialog close X, table-row
 
 Same five variants as `NatcaButton`. Two sizes — `sm` = 28×28 (toolbar / row-action tier), `md` = 36×36 (form-footer / dialog-footer tier). **`aria-label` is required** (TypeScript enforces it). Describe the *action*, not the icon ("Delete member", not "trash icon").
 
+### Block engine — registering a block
+
+`NatcaBlockCanvas` renders a composed page; `NatcaBlockEditor` authors one. Both
+take a registry built with `createBlockRegistry`.
+
+```ts
+createBlockRegistry([...natcaContentBlocks, myBlock])
+```
+
+- Namespace your `type` (`bid.roster`, `mn.events`). `natca.*` belongs to the
+  design system.
+- `propsSchema` generates the config form — supported field types are `text`,
+  `textarea`, `richText`, `url`, `number`, `boolean`, `select`, `table`, `list`.
+- Give data-bound blocks a `resolve(props, context)`. It runs on the canvas, and
+  `context.scope` is whatever the page passed to `:scope`. Throwing renders a
+  contained error, not a broken page.
+- Declare `htmlProps` for any prop holding raw HTML so the backend knows what to
+  sanitize.
+
+Full rules in `page-patterns.md` §13b.
+
 ### NatcaDialog — three variants
 
 ```vue

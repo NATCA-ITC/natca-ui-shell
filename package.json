@@ -35,12 +35,20 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
+    "@tiptap/core": "^3.0.0",
+    "@tiptap/starter-kit": "^3.0.0",
     "pdfjs-dist": "^5.0.0",
     "vue": "^3.4.0",
     "vue-router": "^4.3.0",
     "vuetify": "^3.6.0"
   },
   "peerDependenciesMeta": {
+    "@tiptap/core": {
+      "optional": true
+    },
+    "@tiptap/starter-kit": {
+      "optional": true
+    },
     "pdfjs-dist": {
       "optional": true
     }
@@ -48,6 +56,8 @@
   "devDependencies": {
     "@mdi/font": "^7.4.47",
     "@playwright/test": "^1.59.1",
+    "@tiptap/core": "^3.31.3",
+    "@tiptap/starter-kit": "^3.31.3",
     "@vitejs/plugin-vue": "^5.2.4",
     "pdfjs-dist": "^5.7.284",
     "sass": "^1.99.0",

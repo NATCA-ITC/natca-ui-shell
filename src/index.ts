@@ -42,6 +42,10 @@ import NatcaSlugLabel from './components/NatcaSlugLabel.vue'
 // Document viewer (DMS Phase 2 — URL + metadata in, events out; zero DMS knowledge)
 import NatcaDocumentViewer from './components/NatcaDocumentViewer.vue'
 
+// Block layout engine (NAT-1241 — page composition; app registers its own blocks)
+import NatcaBlockCanvas from './components/blocks/NatcaBlockCanvas.vue'
+import NatcaBlockEditor from './components/blocks/NatcaBlockEditor.vue'
+
 // Theme components
 import NatcaThemeToggle from './components/NatcaThemeToggle.vue'
 
@@ -88,6 +92,63 @@ export {
 
 // Document viewer
 export { NatcaDocumentViewer }
+
+// ── Block layout engine ───────────────────────────────────────────────────
+// The engine and the generic content blocks. Data-bound blocks are registered
+// by the host app: createBlockRegistry([...natcaContentBlocks, myDataBlock]).
+export { NatcaBlockCanvas, NatcaBlockEditor }
+
+export {
+  createBlockRegistry,
+  defineBlock,
+  provideBlockRegistry,
+  useBlockRegistry,
+  NatcaBlockRegistryKey,
+} from './composables/useBlockRegistry'
+
+export {
+  natcaContentBlocks,
+  headingBlock,
+  richTextBlock,
+  tableBlock,
+  calloutBlock,
+  linkListBlock,
+  dividerBlock,
+  NatcaHeadingBlock,
+  NatcaRichTextBlock,
+  NatcaTableBlock,
+  NatcaCalloutBlock,
+  NatcaLinkListBlock,
+  NatcaDividerBlock,
+} from './blocks/index'
+
+export {
+  validateBlockDocument,
+  emptyBlockDocument,
+  createBlockId,
+  createBlockColumn,
+  createBlockSection,
+  relayoutSection,
+} from './lib/blockDocument'
+
+export {
+  NATCA_BLOCK_SCHEMA_VERSION,
+  NATCA_SECTION_COLUMN_COUNT,
+} from './types/blocks'
+
+export type {
+  NatcaBlockDocument,
+  NatcaBlockSection,
+  NatcaBlockColumn,
+  NatcaBlockInstance,
+  NatcaBlockDefinition,
+  NatcaBlockRegistry,
+  NatcaBlockField,
+  NatcaBlockContext,
+  NatcaBlockTableValue,
+  NatcaSectionLayout,
+} from './types/blocks'
+export type { NatcaBlockValidationResult } from './lib/blockDocument'
 
 export type { NatcaPillItem } from './components/NatcaPillNav.vue'
 
@@ -150,6 +211,9 @@ export const NatcaUiShell = {
     app.component('NatcaSlugLabel', NatcaSlugLabel)
     // Document viewer
     app.component('NatcaDocumentViewer', NatcaDocumentViewer)
+    // Block layout engine
+    app.component('NatcaBlockCanvas', NatcaBlockCanvas)
+    app.component('NatcaBlockEditor', NatcaBlockEditor)
     // Theme
     app.component('NatcaThemeToggle', NatcaThemeToggle)
   },
