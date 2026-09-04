@@ -759,6 +759,18 @@ const members: MemberCardData[] = [
           label="Target facility"
           class="mt-4"
         />
+        <!-- NAT-1133 regression surface: VTooltip opts out of Vuetify's overlay
+             stack, so without natcaDefaults.VTooltip.zIndex it opens at 2000 —
+             genuinely open, correct text, exposed to AT — and paints BEHIND
+             this dialog. Hover the icon: the tooltip must be visible. -->
+        <p class="mt-3 text-caption">
+          Migration is reversible for 24 hours
+          <v-tooltip text="Accounts can be rolled back to O365 until the retention window closes." location="top">
+            <template #activator="{ props: tip }">
+              <v-icon v-bind="tip" icon="mdi-information-outline" size="16" class="ds-dialog-tip" role="button" tabindex="0" aria-label="More about rollback" />
+            </template>
+          </v-tooltip>
+        </p>
         <template #actions>
           <NatcaButton variant="ghost" size="md" @click="showConfirmDialog = false">Cancel</NatcaButton>
           <NatcaButton variant="primary" size="md" @click="showConfirmDialog = false">Migrate now</NatcaButton>
