@@ -2,7 +2,7 @@
 
 **ADR:** BID ADR-048 (`bid/docs/architecture/decisions/048-facility-pages-are-composed-of-blocks.md`)
 **Status:** Implemented on `nat-1241` — the file tables below record what shipped
-**Version:** unreleased (additive — no breaking-change protocol required). beta.25 is taken by PR #30; this lands in the next cut.
+**Version:** 0.4.0-beta.26 (additive — no breaking-change protocol required). Decision record in ui-shell: `docs/architecture/decisions/ADR-003-block-layout-engine.md`.
 
 > Reviewed 2026-09-04 by the ui-shell session after bid-44's hand-off. The API
 > section below was rewritten to match the code; the docs in `docs/agent_docs/`

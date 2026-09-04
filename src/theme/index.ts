@@ -267,9 +267,8 @@ export const natcaDefaults = {
     border: 'start' as const,
   },
   VSnackbar: {
-    // NAT-1133 audit: toasts sit above everything at rest. Like VTooltip, a
-    // snackbar that opens while a dialog is up is promoted past it by useStack
-    // anyway; this is the declared order, not the mechanism.
+    // NAT-1133 audit: toasts sit above everything at rest, and above a dialog
+    // even in the two-Vuetify-instance dev case described under VTooltip.
     zIndex: 2600,
     rounded: 'md',
     timeout: 5000,
@@ -295,13 +294,14 @@ export const natcaDefaults = {
     location: 'top' as const,
     // NAT-1133. Declares the resting stacking order in one place:
     //   VDialog 2400 < VMenu / VTooltip 2500 < VSnackbar 2600.
-    // Measured (Vuetify 3.10.11 and 3.12.5): any overlay that activates while
-    // another is open is promoted by useStack to top-of-stack + 10 regardless
-    // of this value — a tooltip hovered inside a NatcaDialog lands at 2410
-    // with or without it. So this value only governs a tooltip opened with
-    // nothing else open. The BID report of a tooltip stuck at 2000 behind a
-    // dialog did not reproduce in the playground; if it recurs, capture the
-    // ACTIVE overlay's inline z-index and check whether `attach` is in play.
+    // With ONE Vuetify instance this value is inert inside a dialog: useStack
+    // promotes any overlay that activates while another is open to
+    // top-of-stack + 10 (measured 2410, with or without this). Where it does
+    // matter is the NAT-909 root cause: a consumer dev server that pre-bundles
+    // vuetify/components/* while excluding ui-shell ends up with TWO Vuetify
+    // module instances, the stack Symbol differs, and useStack falls back to
+    // props.zIndex — 2000, behind the dialog. Dev-only, but that is where BID
+    // saw it, so the default stays.
     zIndex: 2500,
   },
   // ── Toolbar ──

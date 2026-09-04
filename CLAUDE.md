@@ -5,7 +5,7 @@ Design system, Vuetify theme preset, and shared Vue components for all NATCA web
 ## Project Context
 
 - **Status:** Phase 2 (BETA) — Vue + Vuetify component library with shared theme + SASS overrides
-- **Package:** `@natca-itc/ui-shell@0.4.0-beta.24` on GitHub Packages
+- **Package:** `@natca-itc/ui-shell@0.4.0-beta.26` on GitHub Packages
 - **Org:** NATCA-ITC
 - **Repo:** `NATCA-ITC/natca-ui-shell`
 - **Port:** 1310 (playground dev server, `strictPort: true`)
@@ -16,6 +16,8 @@ Design system, Vuetify theme preset, and shared Vue components for all NATCA web
 ### Published Package (`dist/`)
 - Vue shell components (NatcaShell, NatcaTopBar, NatcaTabNav, NatcaSidebar, etc.)
 - Shared Vuetify-wrapped components (NatcaTabs, NatcaMemberCard)
+- Block layout engine (NatcaBlockCanvas, NatcaBlockEditor, `natcaContentBlocks`, `createBlockRegistry`) — admin-composed pages; see `docs/agent_docs/block-engine-tutorial.md`
+- `@natca-itc/ui-shell/block-document` — Vue-free validator entry for Node backends
 - Vuetify theme preset (`natcaVuetifyTheme`, `natcaDefaults`)
 - `natca-tokens.css` — CSS custom properties (colors, typography, spacing, light/dark)
 - `natca-components.css` — Standalone component styles (non-Vuetify pages only)
@@ -34,6 +36,7 @@ Design system, Vuetify theme preset, and shared Vue components for all NATCA web
 ### Agent Docs (`docs/agent_docs/`)
 - **`architecture.md`** — Package layers, Vuetify integration strategy, shell contract, build pipeline
 - **`component-usage.md`** — **READ THIS FIRST** when building UI in consuming apps. Patterns, anti-patterns, color/spacing/typography rules, and code examples for every common component pattern. Prevents hardcoding.
+- **`block-engine-tutorial.md`** — step-by-step adoption of the block layout engine in an app: registry, canvas, editor, a data-bound block, the backend write-path rules. ADR-003 records the decision.
 
 ### Design Previews (HTML)
 - `natca-design-system.html` — Full token reference + component library (standalone CSS)

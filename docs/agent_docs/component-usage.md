@@ -801,7 +801,7 @@ user is doing.
 
 ## Version pinning — use an exact version on the beta line
 
-Pin `@natca-itc/ui-shell` **exactly** (`"0.4.0-beta.24"`), not with a caret.
+Pin `@natca-itc/ui-shell` **exactly** (`"0.4.0-beta.26"`), not with a caret.
 
 A caret range does not do what it looks like it does here. `^0.4.0-beta.17`
 resolves to `>=0.4.0-beta.17 <0.5.0`, which **admits every later 0.4.0 beta and
@@ -832,7 +832,7 @@ Known fingerprints:
 | Symptom | Cause | Fixed in |
 |---|---|---|
 | Dark-mode tooltips black text on grey; light-mode tooltips near-invisible (light on light) | Theme set `surface-variant` without its `on-` pair; Vuetify fills omitted keys from ITS defaults (dark `on-surface-variant: #000000`), not from luminance | 0.4.0-beta.18 |
-| VProgressLinear track same color as fill (bar always reads 100%) | Theme variables pin `border-opacity: 1` for crisp borders; the track's opacity falls back to `var(--v-border-opacity)` | 0.4.0-beta.25 (`bgOpacity` in natcaDefaults) |
+| VProgressLinear track same color as fill (bar always reads 100%) | Theme variables pin `border-opacity: 1` for crisp borders; the track's opacity falls back to `var(--v-border-opacity)` | 0.4.0-beta.26 (`bgOpacity` in natcaDefaults; beta.25 was never published) |
 
 The general trap behind both: Vuetify merges a custom theme over its own
 internal defaults, so overriding one color or variable silently inherits
