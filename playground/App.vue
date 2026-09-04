@@ -29,6 +29,7 @@ const adminTabs: NatcaTab[] = [
   { id: 'reports', label: 'Reports', icon: 'mdi-chart-bar', to: '/admin/reports' },
   { id: 'email', label: 'Email', icon: 'mdi-email', to: '/admin/email' },
   { id: 'components', label: 'Components', icon: 'mdi-puzzle', to: '/admin/components' },
+  { id: 'blocks', label: 'Block layout', icon: 'mdi-view-grid-plus', to: '/admin/blocks' },
   { id: 'design-standards', label: 'Design Standards', icon: 'mdi-palette', to: '/admin/design-standards' },
   { id: 'settings', label: 'Settings', icon: 'mdi-cog', to: '/admin/settings' },
 ]
@@ -56,6 +57,7 @@ const adminSidebar: NatcaNavSection[] = [
       { id: 'infrastructure', label: 'Infrastructure', icon: 'mdi-server', to: '/admin/infrastructure' },
       { id: 'config', label: 'Config', icon: 'mdi-cog', to: '/admin/config' },
       { id: 'components', label: 'Components', icon: 'mdi-puzzle', to: '/admin/components' },
+      { id: 'blocks', label: 'Block layout', icon: 'mdi-view-grid-plus', to: '/admin/blocks' },
       { id: 'design-standards', label: 'Design Standards', icon: 'mdi-palette', to: '/admin/design-standards' },
       { id: 'auth-landing', label: 'Auth Landing (demo)', icon: 'mdi-login', to: '/auth' },
     ],

@@ -558,6 +558,85 @@ Hard rules — you should never see hardcoded values in a NATCA app:
 For programmatic use (charts, canvas, dynamic styles) import
 `natcaColors` from `@natca-itc/ui-shell`.
 
+## 13b. Composed pages (`NatcaBlockCanvas` / `NatcaBlockEditor`)
+
+Some pages are not laid out by a developer at all — a facility admin composes
+them. That is what the block engine is for: BID's facility home page today,
+MyNATCA's landing pages next. Do not build a bespoke page builder; register
+blocks with this one.
+
+**Two components, one registry.**
+
+```ts
+import {
+  createBlockRegistry, defineBlock, natcaContentBlocks,
+} from '@natca-itc/ui-shell'
+
+const registry = createBlockRegistry([
+  ...natcaContentBlocks,          // text, heading, table, callout, links, divider
+  defineBlock({                   // your app's data-bound block
+    type: 'bid.roster',           // namespace it — 'natca.*' is reserved
+    label: 'Area roster',
+    icon: 'mdi-account-group',
+    component: RosterBlock,
+    propsSchema: [{ key: 'areaId', label: 'Area', type: 'select', options }],
+    resolve: (props, ctx) => api.roster(props.areaId, ctx.scope),
+  }),
+])
+```
+
+```vue
+<!-- What members see -->
+<NatcaBlockCanvas :document="page.layout" :registry="registry"
+                  :scope="{ facilityId, bidYear }"
+                  empty-text="Nothing has been posted here yet." />
+
+<!-- What admins get. It never saves — you do. -->
+<NatcaBlockEditor v-model:document="draft" :registry="registry" :scope="scope" />
+<NatcaButton @click="save(draft)">Save</NatcaButton>
+```
+
+**Rules.**
+
+- **Author-content and data-bound blocks are the same thing.** A block with a
+  `resolve()` fetches; a block without one is filled from the config form. They
+  share one inserter, one config panel, one document. There is no second system.
+- **Never hand-write a block's config form.** It is generated from
+  `propsSchema`. If a field type you need is missing, add it to the engine —
+  do not bypass it.
+- **Layout is preset rows**, `sections → columns → blocks`, two levels, no
+  nesting: `one`, `50-50`, `67-33`, `33-67`, `thirds`. All of them collapse to
+  one column at `--natca-content-stack-width` (900px) in author order, so put
+  the primary column first. There is no drag-resize and no free-form grid —
+  that is a deliberate refusal, not a missing feature.
+- **Unknown block types render a quiet placeholder, never an error.** That is
+  what lets MyNATCA ship a block BID has not registered.
+- **Sanitize HTML on write, in the backend.** `natca.richText` stores raw HTML
+  and the canvas renders it as-is. A block declares which of its props are HTML
+  in `htmlProps`; the server must run those through its allow-list before it
+  stores them. ui-shell does not sanitize and must not be relied on to.
+- **Validate the document server-side** with `validateBlockDocument()`. In Node
+  import it from `@natca-itc/ui-shell/block-document` — a separate, CSS-free
+  entry; the main entry pulls Vuetify styles and will not load outside a
+  bundler. It checks structure and id uniqueness only — block props are the
+  block's business.
+- **Only `propsSchema` keys reach your block component.** The renderer binds
+  the schema's keys (plus `resolved`) and drops everything else in the stored
+  `props`, so an author-supplied `innerHTML` can never fall through as a DOM
+  attribute. If the component needs a prop, declare it in the schema.
+- **Author-entered URLs go through `isSafeBlockUrl()`** (http, https, mailto,
+  tel, same-origin paths). The link list and the rich-text link dialog already
+  do; use it in your own blocks, and apply the same rule server-side.
+- **The editor never saves, and `null` resets it.** Bind `v-model:document`;
+  persist on your own button. Setting the model to `null` clears the editor —
+  that is how "Discard" works. Previews inside the editor are inert
+  (`pointer-events: none`), so a link in a preview selects the block instead of
+  navigating away from unsaved work.
+- **TipTap is an optional peer dependency** (`@tiptap/core`,
+  `@tiptap/starter-kit`), imported dynamically and only when an author opens a
+  rich-text field. An app that registers no rich-text block installs nothing and
+  bundles nothing. The read-only canvas never loads it at all.
+
 ## 14. Validating in Chrome — required for every UI change
 
 Every UI change must be validated visually in Chrome before being

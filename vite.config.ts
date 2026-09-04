@@ -20,9 +20,17 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: {
+        'natca-ui-shell': resolve(__dirname, 'src/index.ts'),
+        // Vue-free, CSS-free: `@natca-itc/ui-shell/block-document` for a Node
+        // backend that validates a block document before storing it.
+        'block-document': resolve(__dirname, 'src/lib/blockDocument.ts'),
+      },
       formats: ['es'],
-      fileName: 'natca-ui-shell',
+      fileName: (_format, name) => `${name}.js`,
+      // With more than one entry Vite names the stylesheet after the package;
+      // pin it so the `./shell-styles` export keeps resolving.
+      cssFileName: 'natca-ui-shell',
     },
     rollupOptions: {
       external: [
@@ -33,6 +41,9 @@ export default defineConfig({
         '@mdi/font',
         'pdfjs-dist',
         /^pdfjs-dist\//,
+        // Optional peer — the rich-text field imports these dynamically, so an
+        // app that registers no rich-text block never resolves them.
+        /^@tiptap\//,
       ],
       output: {
         dir: 'dist/vue',

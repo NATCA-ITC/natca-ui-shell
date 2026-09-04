@@ -144,6 +144,37 @@ Use anywhere you'd otherwise reach for `<v-btn icon>`: dialog close X, table-row
 
 Same five variants as `NatcaButton`. Two sizes — `sm` = 28×28 (toolbar / row-action tier), `md` = 36×36 (form-footer / dialog-footer tier). **`aria-label` is required** (TypeScript enforces it). Describe the *action*, not the icon ("Delete member", not "trash icon").
 
+### Block engine — registering a block
+
+`NatcaBlockCanvas` renders a composed page; `NatcaBlockEditor` authors one. Both
+take a registry built with `createBlockRegistry`.
+
+```ts
+createBlockRegistry([...natcaContentBlocks, myBlock])
+```
+
+- Namespace your `type` (`bid.roster`, `mn.events`). `natca.*` belongs to the
+  design system.
+- `propsSchema` generates the config form — supported field types are `text`,
+  `textarea`, `richText`, `url`, `number`, `boolean`, `select`, `table`, `list`.
+- Give data-bound blocks a `resolve(props, context)`. It runs on the canvas, and
+  `context.scope` is whatever the page passed to `:scope`. Throwing renders a
+  contained error, not a broken page.
+- Declare `htmlProps` for any prop holding raw HTML so the backend knows what to
+  sanitize.
+- Only `propsSchema` keys are passed to your component (plus `resolved`).
+  Anything else in the stored `props` is dropped before render.
+- **Rich text needs two optional peers.** If your registry includes
+  `natca.richText` (it does if you spread `natcaContentBlocks`) and admins will
+  open the editor, add `@tiptap/core` and `@tiptap/starter-kit` (`^3`) to the
+  app's dependencies. They load on demand inside the config panel only; the
+  read-only canvas never touches them, and an app that omits them gets an
+  "editor unavailable" notice in that one field, not a crash.
+- Node backends validate with `import { validateBlockDocument } from
+  '@natca-itc/ui-shell/block-document'` — the main entry will not load in Node.
+
+Full rules in `page-patterns.md` §13b.
+
 ### NatcaDialog — three variants
 
 ```vue
