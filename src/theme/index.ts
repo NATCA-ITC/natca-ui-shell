@@ -300,6 +300,10 @@ export const natcaDefaults = {
     color: 'primary',
     rounded: true,
     height: 4,
+    // Track opacity falls back to var(--v-border-opacity), which our theme
+    // variables pin to 1 for crisp borders — leaving track and fill the same
+    // color (bar always reads 100%). Restore a visible track here.
+    bgOpacity: 0.15,
   },
   VProgressCircular: {
     color: 'primary',
