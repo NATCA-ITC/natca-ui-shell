@@ -35,6 +35,17 @@ const props = withDefaults(defineProps<{
   size?: 'sm' | 'md'
   /** Required when no visible label — describes the action for screen readers. */
   'aria-label': string
+  /**
+   * Runtime alias for the prop above, and the reason both exist.
+   *
+   * Vue camelizes incoming attribute names when matching props, so the value
+   * written as `aria-label="…"` is stored under `ariaLabel` — which made
+   * `$props['aria-label']` read back `undefined` and rendered every icon button
+   * in the design system with no accessible name and no tooltip. Declaring both
+   * keeps the public type contract (`aria-label`) untouched while giving the
+   * template something that actually holds the value. Do not pass this directly.
+   */
+  ariaLabel?: string
   type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
   /** Optional href to render as <a> instead of <button>. */
@@ -51,6 +62,9 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
+
+/** The value lands under whichever key Vue matched; take whichever is set. */
+const label = computed(() => props.ariaLabel ?? (props as Record<string, any>)['aria-label'])
 
 const classes = computed(() => [
   'natca-icon-btn',
@@ -75,8 +89,8 @@ function handleClick(e: MouseEvent) {
     v-if="href"
     :href="href"
     :class="classes"
-    :aria-label="$props['aria-label']"
-    :title="title ?? $props['aria-label']"
+    :aria-label="label"
+    :title="title ?? label"
     :aria-disabled="disabled"
     @click="handleClick"
   >
@@ -86,8 +100,8 @@ function handleClick(e: MouseEvent) {
     v-else
     :type="type"
     :class="classes"
-    :aria-label="$props['aria-label']"
-    :title="title ?? $props['aria-label']"
+    :aria-label="label"
+    :title="title ?? label"
     :disabled="disabled"
     @click="handleClick"
   >
