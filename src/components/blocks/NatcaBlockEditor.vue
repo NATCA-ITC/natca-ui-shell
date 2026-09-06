@@ -8,11 +8,18 @@
  * a touch screen and needs no library.
  *
  * The editor never saves. It emits `update:document`; when and how to persist
- * is the host app's call.
+ * is the host app's call. Save/Cancel go in the `footer` slot rather than
+ * sitting beside the editor as the host's own sibling markup, so they land in
+ * the same row as "Add section" instead of a second stacked row underneath it
+ * (found 2026-09-05, BID's facility-home editor).
  *
  * @example
- * <NatcaBlockEditor v-model:document="draft" :registry="registry" />
- * <NatcaButton @click="save(draft)">Save</NatcaButton>
+ * <NatcaBlockEditor v-model:document="draft" :registry="registry">
+ *   <template #footer>
+ *     <NatcaButton variant="ghost" @click="cancel">Cancel</NatcaButton>
+ *     <NatcaButton variant="primary" @click="save(draft)">Save</NatcaButton>
+ *   </template>
+ * </NatcaBlockEditor>
  */
 import { computed, ref, watch } from 'vue'
 import type {
@@ -46,6 +53,11 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{ 'update:document': [document: NatcaBlockDocument] }>()
+
+defineSlots<{
+  /** Save/Cancel (or equivalent) — rendered right-aligned beside "Add section". */
+  footer?: () => any
+}>()
 
 provideBlockRegistry(props.registry)
 
@@ -249,10 +261,15 @@ function updateSelectedProps(next: Record<string, unknown>) {
       </section>
 
       <div class="natca-block-editor__add-section">
-        <NatcaButton variant="secondary" size="md" @click="addSection('one')">Add section</NatcaButton>
-        <span v-if="doc.sections.length === 0" class="natca-block-editor__hint">
-          A section is a row. Pick how many columns it has, then add blocks to it.
-        </span>
+        <div class="natca-block-editor__add-section-start">
+          <NatcaButton variant="secondary" size="md" @click="addSection('one')">Add section</NatcaButton>
+          <span v-if="doc.sections.length === 0" class="natca-block-editor__hint">
+            A section is a row. Pick how many columns it has, then add blocks to it.
+          </span>
+        </div>
+        <div v-if="$slots.footer" class="natca-block-editor__add-section-end">
+          <slot name="footer" />
+        </div>
       </div>
     </div>
 
@@ -347,7 +364,21 @@ function updateSelectedProps(next: Record<string, unknown>) {
    click lands on the wrapper and selects the block instead. */
 .natca-block-editor__block-body { padding: 8px; pointer-events: none; user-select: none; }
 
-.natca-block-editor__add-section { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.natca-block-editor__add-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.natca-block-editor__add-section-start,
+.natca-block-editor__add-section-end {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 
 .natca-block-editor__hint { font-size: var(--text-xs); color: var(--color-text-muted); }
 </style>
