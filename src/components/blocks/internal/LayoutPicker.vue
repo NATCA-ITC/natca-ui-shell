@@ -62,7 +62,14 @@ const LAYOUTS: Array<{ value: NatcaSectionLayout; label: string; widths: number[
 }
 
 .natca-layout-picker__bar {
-  background: var(--color-border);
+  /* --color-border is a hairline token (#DDDDDD light / #2E3347 dark) —
+     right for the option's own 1px outline, wrong for a bar that has to
+     read as a filled shape against --color-bg-surface. Same color on both
+     meant every non-active option rendered as one undifferentiated block:
+     the whole point of drawing proportional bars was invisible (found
+     2026-09-05, via BID's block editor in dark mode). --color-text-muted
+     has real contrast against the surface in both themes. */
+  background: var(--color-text-muted);
   border-radius: 1px;
   flex-grow: 1;
 }
