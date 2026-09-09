@@ -153,16 +153,21 @@ async function loadPdf() {
   }
 }
 
+// Bumped on every render pass so a newer pass (zoom, host remount) cancels an
+// in-flight one instead of both appending pages to the same host.
+let renderGen = 0
+
 async function renderAllPages() {
   const host = pdfHost.value
   const doc = pdfDoc.value
   if (!host || !doc) return
   const token = renderToken
+  const gen = ++renderGen
   host.innerHTML = ''
   const effectiveScale = Math.min(scale.value, props.maxScale)
   const dpr = typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1
   for (let i = 1; i <= doc.numPages; i++) {
-    if (token !== renderToken) return
+    if (token !== renderToken || gen !== renderGen) return
     const page = await doc.getPage(i)
     const viewport = page.getViewport({ scale: effectiveScale })
     const canvas = document.createElement('canvas')
@@ -178,6 +183,15 @@ async function renderAllPages() {
     await page.render({ canvasContext: ctx, viewport }).promise
   }
 }
+
+// The page host lives inside the dialog in lightbox mode, and VDialog mounts
+// its content lazily (and unmounts it after close). If the document finishes
+// loading before the host exists, renderAllPages() bails — so re-run it
+// whenever a host appears while a parsed document is held. Inline mode mounts
+// the host before load completes, so this is a no-op there.
+watch(pdfHost, host => {
+  if (host && pdfDoc.value) void renderAllPages()
+})
 
 function zoomIn() {
   scale.value = Math.min(props.maxScale, +(scale.value + 0.2).toFixed(2))
