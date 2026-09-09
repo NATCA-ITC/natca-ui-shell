@@ -5,7 +5,7 @@ Design system, Vuetify theme preset, and shared Vue components for all NATCA web
 ## Project Context
 
 - **Status:** Phase 2 (BETA) — Vue + Vuetify component library with shared theme + SASS overrides
-- **Package:** `@natca-itc/ui-shell@0.4.0-beta.26` on GitHub Packages
+- **Package:** `@natca-itc/ui-shell@0.4.0-beta.30` on GitHub Packages
 - **Org:** NATCA-ITC
 - **Repo:** `NATCA-ITC/natca-ui-shell`
 - **Port:** 1310 (playground dev server, `strictPort: true`)
