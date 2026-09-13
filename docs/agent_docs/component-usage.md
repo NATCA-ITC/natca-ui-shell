@@ -128,9 +128,18 @@ Since 0.4.0 the ui-shell configures Vuetify's SASS variables through `@natca-itc
 
 <!-- Sizes: sm (default, 28px) for toolbars, md (36px) for card/dialog actions -->
 <NatcaButton variant="primary" size="md">Submit Request</NatcaButton>
+
+<!-- Saving state: spinner replaces the label, width is preserved, aria-busy set,
+     click suppressed. Not `disabled` — a busy control is still announced. -->
+<NatcaButton variant="primary" :loading="saving" @click="save">Save</NatcaButton>
 ```
 
 Primary auto-switches: navy in light, red in dark. No theme prop needed.
+
+Props: `variant`, `size`, `type`, `disabled`, `loading`, `block`, `href`, `to`.
+**Props it does NOT have:** `icon`, `color`, `prepend-icon`. Anything else you
+bind falls through as an inert HTML attribute and does nothing — put an icon
+in the slot, and use `NatcaIconButton` for icon-only actions.
 
 ### NatcaIconButton — icon-only actions
 
@@ -434,7 +443,13 @@ Props: `icon` (MDI icon name), `title`, `subtitle`. Slots: `default` (body), `ac
 </NatcaStatGrid>
 ```
 
-`NatcaStatGrid` props: `cols` (2, 3, or 4). `NatcaStatCard` props: `label`, `value`, `change?`, `changeColor?` ('success' | 'warning' | 'error' | 'info').
+`NatcaStatGrid` props: `cols` (2, 3, or 4). `NatcaStatCard` props: `label`, `value`, `change?`, `changeColor?` ('success' | 'warning' | 'error' | 'info'), `icon?` (MDI name, decorative, top-right), `hint?` (explanatory text behind an ⓘ next to the label).
+
+```vue
+<NatcaStatCard label="Open rows" value="84" icon="mdi-table-alert" hint="Rows still awaiting a decision" change="+12 today" change-color="warning" />
+```
+
+**Props it does NOT have:** `color`. The only semantic colour on a stat card is `changeColor`; an arbitrary card colour is not a design-system option. Unknown bindings fall through as inert attributes — they do not error.
 
 ### Card with Actions
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useShellState } from '../composables/useShellState'
 import type { NatcaNavSection, NatcaNavItem } from '../types'
@@ -12,6 +13,18 @@ defineSlots<{
 }>()
 
 const route = useRoute()
+
+// NAT-1340: `id` is required by the NatcaNavItem type, but a plain-JS or
+// `as`-cast consumer can omit it and nothing fails loudly. Say so once.
+watch(() => props.sections, sections => {
+  const missing = sections.flatMap(s => s.items).filter(i => !i.id)
+  if (missing.length && typeof console !== 'undefined') {
+    console.warn(
+      `[NatcaSidebar] ${missing.length} nav item(s) have no \`id\` (${missing.map(i => JSON.stringify(i.label)).join(', ')}). ` +
+      '`id` is required by NatcaNavItem and is used as the render key.',
+    )
+  }
+}, { immediate: true })
 const { state, toggleSidebar } = useShellState()
 
 function isActive(item: NatcaNavItem): boolean {
@@ -22,7 +35,10 @@ function isActive(item: NatcaNavItem): boolean {
   // Only match if this is the longest matching prefix among all nav items
   const allItems = props.sections.flatMap(s => s.items)
   return !allItems.some(other => {
-    if (other.id === item.id || !other.to) return false
+    // NAT-1340: skip *this* item by reference, not by id — with id-less items
+    // `undefined === undefined` skipped every other item and the shortest
+    // prefix (e.g. `/admin` Overview) lit on every nested route.
+    if (other === item || !other.to) return false
     const otherPath = typeof other.to === 'string' ? other.to : (other.to as any).path ?? ''
     return otherPath.length > resolved.length && (route.path.startsWith(otherPath + '/') || route.path === otherPath)
   })

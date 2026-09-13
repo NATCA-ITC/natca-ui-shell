@@ -95,7 +95,7 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
       :grow="grow"
       density="compact"
       :height="40"
-      :color="color"
+      :color="variant === 'pills' ? '' : color"
       :slider-color="variant === 'pills' ? 'transparent' : sliderColor"
       :class="['natca-tabs', { 'natca-tabs--pills': variant === 'pills' }]"
     >
@@ -233,7 +233,13 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
   color: var(--color-text-body);
 }
 
-/* ── Pills variant ── */
+/* ── Pills variant ──
+   NAT-1346: `color` is NOT forwarded to VTabs for pills. Vuetify applies it to
+   the selected tab as the `text-primary` utility class (`!important`), which
+   beat the `--color-text-primary` rule below in every theme since pills
+   shipped — red label on the neutral overlay in dark. Passing `''` (not
+   `undefined` — `natcaDefaults.VTabs.color` would refill that) is the fix;
+   do not answer with `!important` here. */
 
 /* Pills wrapper = inline, not full width */
 .natca-tabs-wrap--pills {

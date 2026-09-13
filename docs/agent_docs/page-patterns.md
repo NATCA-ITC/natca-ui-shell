@@ -131,6 +131,19 @@ Both `NatcaButton` and `NatcaIconButton` use the same five variants:
 | `ghost` | Tertiary or dismissive — Cancel, Close, Skip |
 | `link` | Inline navigation — View details, Open report |
 
+### Saving state — `loading`, not `disabled`
+
+While a form submits, put the button in `:loading`, not `:disabled`:
+
+```vue
+<NatcaButton variant="primary" size="md" :loading="saving" @click="save">Save</NatcaButton>
+```
+
+A loading button keeps its width (no layout shift when it flips back), shows
+a spinner in the variant's own colour, sets `aria-busy`, and swallows clicks.
+`disabled` is for "you cannot do this", `loading` is for "this is happening";
+screen readers announce them differently, so do not fake one with the other.
+
 ### Icon button accessibility
 
 `NatcaIconButton` makes `aria-label` a required prop — TypeScript

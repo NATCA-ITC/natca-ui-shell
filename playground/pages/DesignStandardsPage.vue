@@ -89,6 +89,13 @@ function statusChipColor(status: string): string | undefined {
 
 // ── Dialog demo ──
 const showConfirmDialog = ref(false)
+
+// NAT-1336 — loading-state demo: flips on for 2s per click
+const demoSaving = ref(false)
+function demoSave() {
+  demoSaving.value = true
+  window.setTimeout(() => { demoSaving.value = false }, 2000)
+}
 const showDangerDialog = ref(false)
 // NAT-909: a select inside a dialog must render its menu ABOVE the dialog.
 const dialogFacility = ref('ZJX')
@@ -290,6 +297,19 @@ const blockDemoDoc: NatcaBlockDocument = {
         </tbody>
       </table>
 
+      <p class="eyebrow" style="margin-top: 16px;">Saving state — <code>:loading</code>, not <code>:disabled</code></p>
+      <p class="ds-body">
+        A loading button keeps its width, shows a spinner in the variant's colour, sets
+        <code>aria-busy</code>, and swallows clicks. Click any of these — they flip on for two seconds.
+      </p>
+      <div class="ds-btn-row" data-demo="loading">
+        <NatcaButton variant="primary" :loading="demoSaving" @click="demoSave">Save</NatcaButton>
+        <NatcaButton variant="secondary" :loading="demoSaving" @click="demoSave">Export</NatcaButton>
+        <NatcaButton variant="danger" :loading="demoSaving" @click="demoSave">Delete</NatcaButton>
+        <NatcaButton variant="ghost" :loading="demoSaving" @click="demoSave">Cancel</NatcaButton>
+        <NatcaButton variant="primary" size="md" :loading="demoSaving" @click="demoSave">Submit Request</NatcaButton>
+      </div>
+
       <p class="eyebrow" style="margin-top: 16px;">Buttons as links — <code>:to</code> and <code>href</code></p>
       <p class="ds-body">
         Pass <code>:to</code> for internal SPA navigation (renders as
@@ -457,7 +477,7 @@ const blockDemoDoc: NatcaBlockDocument = {
         </NatcaCard>
         <NatcaStatCard label="Membership status" value="Active" change="Since 07/22/2008" change-color="info" />
         <NatcaStatCard label="Career level" value="CPC" change="EOD 01/14/2008" change-color="info" />
-        <NatcaStatCard label="PAC contributions" value="$•••" change="+$25 this month" />
+        <NatcaStatCard label="PAC contributions" value="$•••" change="+$25 this month" icon="mdi-hand-heart-outline" hint="Voluntary political action contributions, year to date" />
         <NatcaStatCard label="Pay grade" value="KH" change="Yearly $•••" change-color="info" />
       </div>
 
