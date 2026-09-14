@@ -306,6 +306,31 @@ as the form heading — give it real weight; don't ship a card titled "
 </NatcaCard>
 ```
 
+### Explaining a field — info tooltip, not prose
+
+A sentence of help text under every field turns a compact form into a
+brochure. Put the explanation behind an ⓘ next to the label instead:
+
+```vue
+<span class="d-inline-flex align-center ga-1">
+  Quota (GB)
+  <VTooltip location="top" open-on-focus>
+    <template #activator="{ props }">
+      <span v-bind="props" tabindex="0" role="img" aria-label="Quota applies per mailbox, not per user"
+            style="display:inline-flex; color: var(--color-text-muted); cursor: help;">
+        <VIcon icon="mdi-information-outline" size="14" />
+      </span>
+    </template>
+    Quota applies per mailbox, not per user.
+  </VTooltip>
+</span>
+```
+
+Keep it to two sentences, make the trigger focusable with an `aria-label`
+(the tooltip text), and never put anything *required* to complete the form
+behind it. `NatcaSlugLabel` and `NatcaStatCard`'s `hint` are this pattern
+built in — reach for those before hand-rolling it.
+
 ### Rules
 
 - Form fields are always raw Vuetify (`VTextField`, `VSelect`,
@@ -448,6 +473,43 @@ was NAT-1081.
 status badge parked in `#breadcrumb-right` disappears on uncrumbed pages by
 design — if it must always show, teleport it into the extras target instead.
 
+## 7c. Wizard steps (`NatcaStepper`)
+
+A multi-step operator flow (batch review, import, posting) gets **`NatcaStepper`**:
+the same 40px underline strip as `NatcaTabs`, with a numbered marker per step
+and a *toned* badge that carries either a count or a state word. It is **not**
+a Vuetify `v-stepper` — that chrome was rejected (NAT-1338) as oversized and
+marketing-styled, and a `v-stepper-header` on a NATCA page is an anti-pattern.
+
+```vue
+<NatcaStepper v-model="step" :steps="[
+  { id: 'roadmap',    label: 'Roadmap',             badge: 59 },
+  { id: 'exceptions', label: 'Pay-file exceptions', badge: 34 },
+  { id: 'review',     label: 'Review batch',        done: true },
+  { id: 'post',       label: 'Post batch',          badge: 'blocked', tone: 'warning', blocked: true },
+]">
+  <template #panel-roadmap>…</template>
+  <template #panel-post>…</template>
+</NatcaStepper>
+```
+
+Rules:
+
+- **Steps are non-linear.** Any step is selectable in any order; the strip
+  never enforces sequence. Enforce gates in the step's content, not by
+  hiding the step.
+- **`blocked` stays navigable.** A gated final step (Post) keeps its tab so
+  the operator can open it and read *why* the gate is closed. Use
+  `badge: 'blocked', tone: 'warning'` with `blocked: true`. Reserve
+  `disabled` for steps that genuinely do not exist yet.
+- **Badge = what is left to do.** Counts on work steps (`59`), nothing on a
+  step with no queue, a state word on the gate (`ready` / `blocked` /
+  `posted` with `tone` `success` / `warning` / `info`). Pre-format numbers.
+- `done: true` swaps the number for a check. Set it from data, not from
+  "the user visited it".
+- Header only. Content goes in `#panel-<id>` or below the strip; step content
+  is page-specific by definition.
+
 ## 8. Chips (`VChip`)
 
 Always `variant="tonal"`. Colors: `success`, `warning`, `error`, `info`,
@@ -461,6 +523,25 @@ default (no `color` prop = neutral pill).
 `vuetify-overrides.css` raises the tonal background opacity in dark mode
 and lifts the default-chip text color so neutral chips stay readable.
 Don't set custom backgrounds; just pick the right `color`.
+
+### Live status chips — one mapping for the whole fleet
+
+A chip that tracks a job / upload / sync state (updated from realtime or
+polling) uses this mapping so "pending" looks the same in every app. Always
+`variant="tonal" size="small"`; never recolour with `!important`.
+
+| State | `color` | Leading icon (optional) |
+|---|---|---|
+| queued / pending / not started | *(none — neutral)* | `mdi-clock-outline` |
+| in progress / processing / syncing | `info` | `mdi-progress-clock` |
+| success / done / posted | `success` | `mdi-check-circle` |
+| warning / partial / needs attention | `warning` | `mdi-alert` |
+| error / failed / rejected | `error` | `mdi-alert-circle` |
+
+```vue
+<VChip :color="STATE_COLOR[file.state]" variant="tonal" size="small"
+       :prepend-icon="STATE_ICON[file.state]">{{ file.state }}</VChip>
+```
 
 ## 9. Alerts (`NatcaAlert`)
 

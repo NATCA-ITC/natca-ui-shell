@@ -526,6 +526,21 @@ Use it when the tabs belong to the card; use `NatcaTabs` when they belong to the
 page. Don't rebuild it from `v-toolbar` + `v-tabs` + `v-window` — the strip tint
 and the min-height floor are design decisions that live here (NAT-387).
 
+### NatcaStepper — wizard steps
+
+```vue
+<NatcaStepper v-model="step" :steps="steps">
+  <template #panel-roadmap>…</template>
+</NatcaStepper>
+```
+
+Props: `steps` (`NatcaStep[]`: `id`, `label`, `badge?: number | string`,
+`tone?: 'neutral' | 'success' | 'warning' | 'error' | 'info'`, `done?`,
+`blocked?` (navigable, warning ring), `disabled?` (not navigable)),
+`modelValue` (step id), `numbered?` (default `true`), `grow?`.
+Slots: `panel-<id>` per step. Not a `v-stepper` — see `page-patterns.md` §7c for
+the rules (non-linear, `blocked` stays navigable, badge = what is left to do).
+
 ### Data Table
 
 ```vue
@@ -790,6 +805,7 @@ user is doing.
 | Pill toggle filters | `<NatcaPillNav v-model :items>` |
 | Underline tabs (router or local) | `<NatcaTabs>` |
 | Card whose header IS a tab strip (detail page sections) | `<NatcaTabbedCard v-model :tabs>` |
+| Multi-step operator flow (review → post) | `<NatcaStepper v-model :steps>` — never `v-stepper` |
 | Page footer (version, build id, legacy link) | `<NatcaAppFooter>` in `NatcaShell`'s `#footer` slot |
 | Page-contextual chrome in the breadcrumb row | `<Teleport to="#page-breadcrumb-extras">` |
 | Page title + subtitle + action button | `<NatcaPageHeader>` |
