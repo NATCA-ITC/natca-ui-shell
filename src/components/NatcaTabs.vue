@@ -263,10 +263,13 @@ const hasPanels = computed(() => props.items.some(item => !item.to))
 }
 
 .natca-tabs--pills :deep(.v-tab) {
-  font-size: 10.5px;
+  /* NAT-1346: 11.5px / 24px (was 10.5px / 22px) — 10.5px sat below the
+     ~11px floor for interactive labels. Still visibly subordinate to the
+     13.5px / 40px default tabs. */
+  font-size: 11.5px;
   padding: 0 10px;
-  min-height: 22px;
-  height: 22px;
+  min-height: 24px;
+  height: 24px;
   border-radius: 3px;
   color: var(--color-text-muted);
 }

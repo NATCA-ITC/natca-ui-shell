@@ -18,6 +18,7 @@
  * <NatcaButton variant="primary" :loading="saving" @click="save">Save</NatcaButton>
  */
 import { computed } from 'vue'
+import { useUnknownPropsWarning } from '../composables/useUnknownPropsWarning'
 import {
   RouterLink,
   type NavigationFailure,
@@ -54,6 +55,14 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
+
+// NAT-1339: dev-only warning for the props consumers keep guessing.
+useUnknownPropsWarning('NatcaButton', {
+  color: 'use `variant`',
+  icon: 'put the icon in the default slot, or use NatcaIconButton for icon-only actions',
+  prependIcon: 'put the icon in the default slot',
+  appendIcon: 'put the icon in the default slot',
+})
 
 const classes = computed(() => [
   'natca-btn',

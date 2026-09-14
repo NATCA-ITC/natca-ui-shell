@@ -139,7 +139,11 @@ Primary auto-switches: navy in light, red in dark. No theme prop needed.
 Props: `variant`, `size`, `type`, `disabled`, `loading`, `block`, `href`, `to`.
 **Props it does NOT have:** `icon`, `color`, `prepend-icon`. Anything else you
 bind falls through as an inert HTML attribute and does nothing — put an icon
-in the slot, and use `NatcaIconButton` for icon-only actions.
+in the slot, and use `NatcaIconButton` for icon-only actions. In dev builds
+the component warns once in the console when it sees one of those names
+(`[NatcaButton] \`color\` is not a prop and does nothing here — use \`variant\`.`);
+production builds carry none of that code. `NatcaIconButton` and
+`NatcaStatCard` do the same for their commonly guessed names.
 
 ### NatcaIconButton — icon-only actions
 

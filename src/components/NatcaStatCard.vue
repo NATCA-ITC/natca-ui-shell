@@ -15,6 +15,12 @@
  * an inert HTML attribute.
  */
 import { VIcon, VTooltip } from 'vuetify/components'
+import { useUnknownPropsWarning } from '../composables/useUnknownPropsWarning'
+
+// NAT-1339: dev-only warning for the props consumers keep guessing.
+useUnknownPropsWarning('NatcaStatCard', {
+  color: 'the only colour a stat card carries is `changeColor`',
+})
 
 withDefaults(defineProps<{
   label: string

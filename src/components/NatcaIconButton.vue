@@ -24,6 +24,7 @@
  * <NatcaIconButton variant="ghost" size="sm" icon="mdi-close" aria-label="Close" @click="show=false" />
  */
 import { computed } from 'vue'
+import { useUnknownPropsWarning } from '../composables/useUnknownPropsWarning'
 import { VIcon } from 'vuetify/components'
 
 const props = withDefaults(defineProps<{
@@ -64,6 +65,13 @@ const emit = defineEmits<{
 }>()
 
 /** The value lands under whichever key Vue matched; take whichever is set. */
+// NAT-1339: dev-only warning for the props consumers keep guessing.
+useUnknownPropsWarning('NatcaIconButton', {
+  color: 'use `variant`',
+  label: 'use `aria-label`',
+  tooltip: 'use `title` (defaults to the aria-label)',
+})
+
 const label = computed(() => props.ariaLabel ?? (props as Record<string, any>)['aria-label'])
 
 const classes = computed(() => [
