@@ -32,6 +32,7 @@ import NatcaDialog from './components/NatcaDialog.vue'
 import NatcaCard from './components/NatcaCard.vue'
 import NatcaHeaderCard from './components/NatcaHeaderCard.vue'
 import NatcaTabbedCard from './components/NatcaTabbedCard.vue'
+import NatcaStepper from './components/NatcaStepper.vue'
 import NatcaStatCard from './components/NatcaStatCard.vue'
 import NatcaStatGrid from './components/NatcaStatGrid.vue'
 import NatcaEmptyState from './components/NatcaEmptyState.vue'
@@ -82,6 +83,7 @@ export {
   NatcaCard,
   NatcaHeaderCard,
   NatcaTabbedCard,
+  NatcaStepper,
   NatcaStatCard,
   NatcaStatGrid,
   NatcaEmptyState,
@@ -159,6 +161,7 @@ export { NatcaThemeToggle }
 // Types
 export * from './types'
 export type { NatcaTabItem } from './components/NatcaTabs.vue'
+export type { NatcaStep, NatcaStepTone } from './components/NatcaStepper.vue'
 export type { MemberCardData } from './components/NatcaMemberCard.vue'
 
 // Canonical app registry — default apps list for the switcher (production URLs
@@ -204,6 +207,7 @@ export const NatcaUiShell = {
     app.component('NatcaCard', NatcaCard)
     app.component('NatcaHeaderCard', NatcaHeaderCard)
     app.component('NatcaTabbedCard', NatcaTabbedCard)
+    app.component('NatcaStepper', NatcaStepper)
     app.component('NatcaStatCard', NatcaStatCard)
     app.component('NatcaStatGrid', NatcaStatGrid)
     app.component('NatcaEmptyState', NatcaEmptyState)

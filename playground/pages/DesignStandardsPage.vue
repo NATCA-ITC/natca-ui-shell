@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import {
   NatcaTabs,
+  NatcaStepper,
   NatcaCard,
   NatcaHeaderCard,
   NatcaTabbedCard,
@@ -96,6 +97,16 @@ function demoSave() {
   demoSaving.value = true
   window.setTimeout(() => { demoSaving.value = false }, 2000)
 }
+
+// NAT-1338 — NatcaStepper demo (mirrors the Employer Data posting wizard)
+const wizardStep = ref('roadmap')
+const wizardSteps = [
+  { id: 'roadmap', label: 'Roadmap', badge: 59 },
+  { id: 'exceptions', label: 'Pay-file exceptions', badge: 34 },
+  { id: 'review', label: 'Review batch', done: true },
+  { id: 'post', label: 'Post batch', badge: 'blocked', tone: 'warning' as const, blocked: true },
+  { id: 'archive', label: 'Archive', disabled: true },
+]
 const showDangerDialog = ref(false)
 // NAT-909: a select inside a dialog must render its menu ABOVE the dialog.
 const dialogFacility = ref('ZJX')
@@ -673,6 +684,22 @@ const blockDemoDoc: NatcaBlockDocument = {
             <p>Audit log tab content.</p>
           </template>
         </NatcaTabs>
+      </div>
+
+      <p class="eyebrow">Wizard steps — <code>NatcaStepper</code>, not <code>v-stepper</code></p>
+      <p class="ds-body">
+        Same strip as the tabs above, plus a numbered marker and a toned badge per step. Steps are
+        non-linear; <strong>blocked</strong> stays navigable so the operator can open the gate and
+        read why it is closed; <strong>disabled</strong> is not navigable. The Vuetify stepper header
+        is an anti-pattern here.
+      </p>
+      <div data-demo="stepper" style="margin-bottom: 20px;">
+        <NatcaStepper v-model="wizardStep" :steps="wizardSteps">
+          <template #panel-roadmap><p>Roadmap step — 59 open members.</p></template>
+          <template #panel-exceptions><p>Pay-file exceptions — 34 open.</p></template>
+          <template #panel-review><p>Review batch — reconciled.</p></template>
+          <template #panel-post><p>Post batch — gate is <strong>blocked</strong>: 59 + 34 open members.</p></template>
+        </NatcaStepper>
       </div>
 
       <p class="eyebrow">Inside a card — tabs as card header</p>
