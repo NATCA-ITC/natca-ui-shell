@@ -51,8 +51,15 @@ defineSlots<{
   justify-content: space-between;
   padding: 18px 0 14px;
   gap: 16px;
+  /* NAT-1335: let the actions cluster drop under the title instead of
+     pushing past the viewport when the two no longer fit side by side. */
+  flex-wrap: wrap;
   border-bottom: 1px solid var(--overlay-border);
   margin-bottom: 16px;
+}
+
+.natca-page-header__text {
+  min-width: 0;
 }
 
 .natca-page-header__title {
@@ -76,5 +83,19 @@ defineSlots<{
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* NAT-1335: phone widths — stack explicitly so a long action cluster sits
+   left-aligned under the title rather than centred by space-between. */
+@media (max-width: 600px) {
+  .natca-page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .natca-page-header__actions {
+    justify-content: flex-start;
+  }
 }
 </style>

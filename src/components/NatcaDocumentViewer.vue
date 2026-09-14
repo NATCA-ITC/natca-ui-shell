@@ -181,6 +181,10 @@ async function renderAllPages() {
     ctx.scale(dpr, dpr)
     host.appendChild(canvas)
     await page.render({ canvasContext: ctx, viewport }).promise
+    // NAT-1297: reveal as soon as the first page is painted. Before this the
+    // host stayed `display: none` behind the spinner until every page had
+    // rendered sequentially — 20s+ on a large scan with page 1 long done.
+    if (i === 1 && token === renderToken) pdfLoading.value = false
   }
 }
 

@@ -13,8 +13,12 @@
  *
  * @example Action tier (use inside dialog/card actions)
  * <NatcaButton variant="primary" size="md">Submit Request</NatcaButton>
+ *
+ * @example Saving state — width stays fixed, label hidden, spinner shown
+ * <NatcaButton variant="primary" :loading="saving" @click="save">Save</NatcaButton>
  */
 import { computed } from 'vue'
+import { useUnknownPropsWarning } from '../composables/useUnknownPropsWarning'
 import {
   RouterLink,
   type NavigationFailure,
@@ -28,6 +32,12 @@ const props = withDefaults(defineProps<{
   size?: 'sm' | 'md'
   type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
+  /**
+   * Busy state (NAT-1336): shows a spinner in place of the label, keeps the
+   * button's width, sets `aria-busy`, and suppresses activation. Not the same
+   * as `disabled` — a busy control is still announced as available.
+   */
+  loading?: boolean
   block?: boolean
   /** External link target — renders as `<a href>`. */
   href?: string
@@ -38,6 +48,7 @@ const props = withDefaults(defineProps<{
   size: 'sm',
   type: 'button',
   disabled: false,
+  loading: false,
   block: false,
 })
 
@@ -45,15 +56,29 @@ const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
 
+// NAT-1339: dev-only warning for the props consumers keep guessing.
+useUnknownPropsWarning('NatcaButton', {
+  color: 'use `variant`',
+  icon: 'put the icon in the default slot, or use NatcaIconButton for icon-only actions',
+  prependIcon: 'put the icon in the default slot',
+  appendIcon: 'put the icon in the default slot',
+})
+
 const classes = computed(() => [
   'natca-btn',
   `natca-btn--${props.variant}`,
   `natca-btn--${props.size}`,
-  { 'natca-btn--block': props.block, 'natca-btn--disabled': props.disabled },
+  {
+    'natca-btn--block': props.block,
+    'natca-btn--disabled': props.disabled,
+    'natca-btn--loading': props.loading,
+  },
 ])
 
+const inert = computed(() => props.disabled || props.loading)
+
 function handleClick(e: MouseEvent) {
-  if (props.disabled) {
+  if (inert.value) {
     e.preventDefault()
     return
   }
@@ -64,7 +89,7 @@ function handleClick(e: MouseEvent) {
 // disabled or the user used a modifier (Cmd/Ctrl/Shift/middle-click) which
 // the browser handles natively (open in new tab/window).
 function handleRouterClick(e: MouseEvent, navigate: RouterNavigate) {
-  if (props.disabled) {
+  if (inert.value) {
     e.preventDefault()
     return
   }
@@ -78,7 +103,7 @@ function handleRouterClick(e: MouseEvent, navigate: RouterNavigate) {
 // Space-bar activation for anchor-rendered buttons (mirrors native <button>).
 function handleRouterKeydown(e: KeyboardEvent, navigate: RouterNavigate) {
   if (e.key !== ' ') return
-  if (props.disabled) {
+  if (inert.value) {
     e.preventDefault()
     return
   }
@@ -98,11 +123,13 @@ function handleRouterKeydown(e: KeyboardEvent, navigate: RouterNavigate) {
       :href="rlHref"
       :class="classes"
       :aria-disabled="disabled"
+      :aria-busy="loading || undefined"
       :tabindex="disabled ? -1 : 0"
       @click="(e) => handleRouterClick(e, navigate)"
       @keydown="(e) => handleRouterKeydown(e, navigate)"
     >
-      <slot />
+      <span class="natca-btn__label"><slot /></span>
+      <span v-if="loading" class="natca-btn__spinner" aria-hidden="true" />
     </a>
   </RouterLink>
   <a
@@ -110,18 +137,22 @@ function handleRouterKeydown(e: KeyboardEvent, navigate: RouterNavigate) {
     :href="href"
     :class="classes"
     :aria-disabled="disabled"
+    :aria-busy="loading || undefined"
     @click="handleClick"
   >
-    <slot />
+    <span class="natca-btn__label"><slot /></span>
+    <span v-if="loading" class="natca-btn__spinner" aria-hidden="true" />
   </a>
   <button
     v-else
     :type="type"
     :class="classes"
     :disabled="disabled"
+    :aria-busy="loading || undefined"
     @click="handleClick"
   >
-    <slot />
+    <span class="natca-btn__label"><slot /></span>
+    <span v-if="loading" class="natca-btn__spinner" aria-hidden="true" />
   </button>
 </template>
 
@@ -177,6 +208,49 @@ function handleRouterKeydown(e: KeyboardEvent, navigate: RouterNavigate) {
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+/* Label wrapper mirrors the button's own flex so slot content (icon + text)
+   keeps the same 6px gap it had as direct children. */
+.natca-btn__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Loading (NAT-1336) ──
+   The label stays in the DOM but invisible so the button keeps its width;
+   the spinner is absolutely centred over it. currentColor keeps it on-brand
+   per variant without a per-variant rule. */
+.natca-btn--loading {
+  position: relative;
+  cursor: progress;
+  pointer-events: none;
+}
+.natca-btn--loading .natca-btn__label {
+  visibility: hidden;
+}
+.natca-btn__spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.natca-btn__spinner::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: natca-btn-spin 0.7s linear infinite;
+}
+@keyframes natca-btn-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .natca-btn__spinner::before { animation-duration: 1.6s; }
 }
 
 /* ── Variants ──
