@@ -21,13 +21,13 @@ A document is `{ schema_version: 1, sections: [{ id, layout, columns: [{ id, blo
 ## Step 0 — prerequisites
 
 - ui-shell pinned **exactly** (`"0.4.0-beta.26"`, no caret) and the three-step Vuetify wiring from `component-usage.md` in place.
-- If admins will open the editor and your registry includes `natca.richText` (it does if you spread `natcaContentBlocks`), add the two optional peers:
+- If admins will open the editor and your registry includes `natca.richText` (it does if you spread `natcaContentBlocks`), add TipTap 3 to **your** app's dependencies:
 
   ```bash
   npm i @tiptap/core@^3 @tiptap/starter-kit@^3
   ```
 
-  They load only when an author opens a rich-text field. Read-only pages never touch them. Without them the field shows an "editor unavailable" notice; nothing else breaks.
+  ui-shell does **not** declare them as peers (NAT-1661) — the rich-text field `import()`s them at runtime from whatever your app has installed, so an app on TipTap 2 for its own editor can still install ui-shell. They load only when an author opens a rich-text field. Read-only pages never touch them. Without them the field shows an "editor unavailable" notice; nothing else breaks.
 
 ## Step 1 — build the registry once
 

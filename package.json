@@ -1,6 +1,6 @@
 {
   "name": "@natca-itc/ui-shell",
-  "version": "0.4.0-beta.31",
+  "version": "0.4.0-beta.32",
   "description": "NATCA Design System — tokens, components, Vue shell, and shared styles for all NATCA web properties (BETA)",
   "license": "UNLICENSED",
   "private": false,
@@ -40,20 +40,12 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-    "@tiptap/core": "^3.0.0",
-    "@tiptap/starter-kit": "^3.0.0",
     "pdfjs-dist": "^5.0.0",
     "vue": "^3.4.0",
     "vue-router": "^4.3.0",
     "vuetify": "^3.6.0"
   },
   "peerDependenciesMeta": {
-    "@tiptap/core": {
-      "optional": true
-    },
-    "@tiptap/starter-kit": {
-      "optional": true
-    },
     "pdfjs-dist": {
       "optional": true
     }
