@@ -177,12 +177,15 @@ createBlockRegistry([...natcaContentBlocks, myBlock])
   sanitize.
 - Only `propsSchema` keys are passed to your component (plus `resolved`).
   Anything else in the stored `props` is dropped before render.
-- **Rich text needs two optional peers.** If your registry includes
-  `natca.richText` (it does if you spread `natcaContentBlocks`) and admins will
-  open the editor, add `@tiptap/core` and `@tiptap/starter-kit` (`^3`) to the
-  app's dependencies. They load on demand inside the config panel only; the
-  read-only canvas never touches them, and an app that omits them gets an
-  "editor unavailable" notice in that one field, not a crash.
+- **Rich text needs TipTap 3 in *your* app — it is not a ui-shell peer.** If
+  your registry includes `natca.richText` (it does if you spread
+  `natcaContentBlocks`) and admins will open the editor, add `@tiptap/core` and
+  `@tiptap/starter-kit` (`^3`) to the app's dependencies. ui-shell deliberately
+  declares no tiptap peer (NAT-1661): npm validates even an *optional* peer's
+  range when the package is present, which made ui-shell uninstallable beside an
+  app's own TipTap 2 editor. The field `import()`s tiptap on demand inside the
+  config panel only; the read-only canvas never touches it, and an app that
+  omits it gets an "editor unavailable" notice in that one field, not a crash.
 - Node backends validate with `import { validateBlockDocument } from
   '@natca-itc/ui-shell/block-document'` — the main entry will not load in Node.
 
