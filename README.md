@@ -153,7 +153,7 @@ See **Shell Variants** in Notion for Admin / Member / Minimal patterns.
 
 ### Shell layout (7)
 
-`NatcaShell`, `NatcaTopBar`, `NatcaTabNav`, `NatcaBreadcrumbRow`, `NatcaSidebar`, `NatcaSearchDrawer`, `NatcaAppSwitcher`
+`NatcaShell`, `NatcaTopBar`, `NatcaTopBarAction`, `NatcaTabNav`, `NatcaBreadcrumbRow`, `NatcaSidebar`, `NatcaSearchDrawer`, `NatcaAppSwitcher`
 
 ### Native primitives (4)
 

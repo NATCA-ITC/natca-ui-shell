@@ -6,6 +6,7 @@ import type { App } from 'vue'
 // Shell layout components
 import NatcaShell from './components/NatcaShell.vue'
 import NatcaTopBar from './components/NatcaTopBar.vue'
+import NatcaTopBarAction from './components/NatcaTopBarAction.vue'
 import NatcaTabNav from './components/NatcaTabNav.vue'
 import NatcaBreadcrumbRow from './components/NatcaBreadcrumbRow.vue'
 import NatcaSidebar from './components/NatcaSidebar.vue'
@@ -54,6 +55,7 @@ import NatcaThemeToggle from './components/NatcaThemeToggle.vue'
 export {
   NatcaShell,
   NatcaTopBar,
+  NatcaTopBarAction,
   NatcaTabNav,
   NatcaBreadcrumbRow,
   NatcaSidebar,
@@ -168,6 +170,9 @@ export type { MemberCardData } from './components/NatcaMemberCard.vue'
 // baked in so consuming apps don't hardcode their own; see NAT-833 / NAT-825)
 export { natcaApps } from './data/natcaApps'
 
+// The shell's one phone breakpoint (NAT-1986 / NAT-1987)
+export { NATCA_PHONE_BREAKPOINT, NATCA_PHONE_MEDIA_QUERY } from './lib/breakpoints'
+
 // Composables
 export { useShellState } from './composables/useShellState'
 export { useNatcaTheme } from './composables/useNatcaTheme'
@@ -187,6 +192,7 @@ export const NatcaUiShell = {
     // Shell
     app.component('NatcaShell', NatcaShell)
     app.component('NatcaTopBar', NatcaTopBar)
+    app.component('NatcaTopBarAction', NatcaTopBarAction)
     app.component('NatcaTabNav', NatcaTabNav)
     app.component('NatcaBreadcrumbRow', NatcaBreadcrumbRow)
     app.component('NatcaSidebar', NatcaSidebar)

@@ -120,12 +120,16 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside, true
         <rect x="4.5" y="9" width="3" height="3" rx="0.75" />
         <rect x="9" y="9" width="3" height="3" rx="0.75" />
       </svg>
-      {{ appName }}
+      <span class="natca-shell-chip-label">{{ appName }}</span>
       <span class="natca-shell-chip-caret">&#9662;</span>
     </button>
 
-    <!-- Right section -->
+    <!-- Right section. NAT-1986: three regions on a grid (see shell.css) —
+         shell lead controls, the app's slot, shell trail controls. Only the
+         slot region can shrink, so app content can never push the theme
+         toggle or the avatar off-screen. -->
     <div class="natca-shell-topbar-right">
+      <div class="natca-shell-topbar-lead">
       <!-- Facility badge -->
       <span v-if="facility" class="natca-shell-facility">
         <!-- Map pin icon -->
@@ -164,9 +168,16 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside, true
         <span v-if="hasNotifications" class="natca-shell-top-badge" />
       </button>
 
-      <!-- App-provided toolbar actions (auto-styled) -->
-      <slot name="toolbar-actions" />
+      </div>
 
+      <!-- App-provided toolbar actions. Wrapped so this region — and only this
+           region — gives way when the bar is too narrow (NAT-1986). Use
+           <NatcaTopBarAction> in here so labels collapse to icons on phones. -->
+      <div v-if="$slots['toolbar-actions']" class="natca-shell-topbar-actions">
+        <slot name="toolbar-actions" />
+      </div>
+
+      <div class="natca-shell-topbar-trail">
       <!-- Theme toggle (sun/moon) -->
       <button
         v-if="showThemeToggle"
@@ -245,6 +256,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside, true
         </svg>
         <span>Sign in</span>
       </button>
+      </div>
     </div>
   </div>
 </template>

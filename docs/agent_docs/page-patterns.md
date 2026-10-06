@@ -56,6 +56,31 @@ in `mynatca/hub`, `mynatca/bid`, `mynatca/dms`, `mynatca/pay`,
    introduces a section. Don't wrap an entire section in a
    `NatcaHeaderCard` "for visual separation" — use the section title.
 
+5. **The shell owns the page gutter (0.4.0-beta.33+).** The view's root is
+   `<div class="natca-page">` and each section is
+   `<section class="natca-page-section">`. Do not hand-roll
+   `.page { padding: … }` per view.
+
+### Page gutter and the phone breakpoint
+
+There is **one** phone breakpoint: **`max-width: 768px`**. At that width the
+shell hides the sidebar, tightens its chrome, collapses `NatcaTopBarAction` to
+icon-only, and drops the gutter. JS gets it as `NATCA_PHONE_BREAKPOINT` (768)
+or `NATCA_PHONE_MEDIA_QUERY`; CSS documents it as `--natca-phone-breakpoint`.
+App-side phone rules use the same value — not 600px, not 374px.
+
+| | Desktop | Phone (≤ 768px) |
+|---|---|---|
+| `--natca-page-gutter` — left/right padding of `.natca-page`, the breadcrumb row, `.natca-shell-content-head` | **24px** | **12px** |
+| `--natca-page-gutter-bottom` — bottom padding of `.natca-page` | **32px** | **24px** |
+| `--natca-page-max-width` — `.natca-page` max width (`.natca-page--full` removes it) | 1080px | 1080px |
+| `.natca-page-section` vertical padding | 24px | 16px |
+
+Because the breadcrumb row and the page read the same token, page content and
+the crumbs share one left edge at every width. Need the value in a view's own
+layout (a full-bleed band, a sticky bar)? Use `var(--natca-page-gutter)`; never
+a literal.
+
 ### Section title styling
 
 Every section title uses the same red-underline pattern. The
@@ -473,6 +498,38 @@ was NAT-1081.
 status badge parked in `#breadcrumb-right` disappears on uncrumbed pages by
 design — if it must always show, teleport it into the extras target instead.
 
+### Which side of the breadcrumb row gives way (0.4.0-beta.33+)
+
+The row is one line at every width. When it is too narrow, **the crumbs give
+way**: each crumb truncates with an ellipsis, ancestors first, the current page
+last. On phones every crumb keeps a short stub ("Fa…"), and if even the stubs do
+not fit the trail is cut from the left so the current page is the last thing to
+go. **The right side — `#page-breadcrumb-extras` and `#breadcrumb-right` —
+never shrinks and never wraps.**
+
+So **anything you put on the right must have a compact phone form**: a short
+label, an icon-only state below 768px, or nothing. If the right side alone is
+wider than the row, the row clips it at its right edge rather than widening the
+page. Budget for it: at 360px the row has 336px for crumbs *and* right-side
+chrome together.
+
+### Topbar actions (`NatcaTopBarAction`, 0.4.0-beta.33+)
+
+App controls in `NatcaShell`'s `#toolbar-actions` slot are
+`<NatcaTopBarAction icon="…" label="…">` (or carry its classes — see
+component-usage.md). They show icon + label on desktop and collapse to a 32px
+icon at the phone breakpoint, keeping the label as the accessible name.
+
+The shell guarantees its own controls — search, notifications, theme toggle,
+avatar / sign-in — stay on-screen whatever the slot holds: the slot is the only
+region of the bar that shrinks, and it clips (from the left) rather than pushing
+anything off the right edge. **Clipped means unreachable.** A labelled control
+with no phone form will simply vanish on phones; that is the app's bug, not the
+shell's. Use `NatcaTopBarAction` and keep the slot to two or three controls.
+
+❌ **Never** hand-roll a `.topbar-btn` + visually-hidden-label media query in
+the app. That is what `NatcaTopBarAction` is.
+
 ## 7c. Wizard steps (`NatcaStepper`)
 
 A multi-step operator flow (batch review, import, posting) gets **`NatcaStepper`**:
@@ -798,6 +855,14 @@ correctness.
   (0.4.0-beta.23+) rather than forking the topbar — each item emits
   `profile-action` with its own `id`. Omit the prop for the default
   My Profile / Settings / Sign Out menu.
+- ❌ Hand-rolling `.page { padding: 0 24px … }` per view, or a per-view
+  `@media (max-width: 600px) { .page { padding: … } }` — use
+  `class="natca-page"`; the shell owns the gutter and its phone value.
+- ❌ A phone breakpoint other than `max-width: 768px`
+  (`NATCA_PHONE_BREAKPOINT`).
+- ❌ A labelled control in `#toolbar-actions` or the breadcrumb row's right
+  side with no phone form — use `NatcaTopBarAction` up top; give right-side
+  breadcrumb chrome a compact form below 768px.
 - ❌ Hardcoding your own app-switcher list — `NatcaShell` and `NatcaAuthLayout`
   default to the built-in `natcaApps` registry, which carries production URLs
   and hides unlaunched apps. If an entry is wrong, fix it in ui-shell.
@@ -812,7 +877,7 @@ import {
 </script>
 
 <template>
-  <div class="page">
+  <div class="natca-page">
     <NatcaPageHeader title="Members" subtitle="1,247 members across all facilities">
       <template #actions>
         <NatcaButton variant="ghost">Export</NatcaButton>
@@ -820,7 +885,7 @@ import {
       </template>
     </NatcaPageHeader>
 
-    <section class="page-section">
+    <section class="natca-page-section">
       <h3 class="section-title">All members</h3>
       <p class="section-body">Active and pending bargaining-unit members.</p>
       <NatcaCard no-body-padding>
@@ -828,7 +893,7 @@ import {
       </NatcaCard>
     </section>
 
-    <section class="page-section">
+    <section class="natca-page-section">
       <h3 class="section-title">Recent activity</h3>
       <p class="section-body">The last 50 changes across the directory.</p>
       <NatcaCard no-body-padding>
@@ -838,10 +903,14 @@ import {
   </div>
 </template>
 
-<style scoped>
-/* .section-title and .section-body are global helpers shipped from
-   @natca-itc/ui-shell/shell-styles — no scoped definition needed. */
-.page         { padding: 0 24px 48px; max-width: 1080px; }
-.page-section { padding: 24px 0; }
-</style>
+<!-- No <style> block needed. .natca-page / .natca-page-section (the page
+     gutter, with its phone value) and .section-title / .section-body are all
+     global helpers shipped from @natca-itc/ui-shell/shell-styles. -->
 ```
+
+Before 0.4.0-beta.33 this skeleton told apps to paste
+`.page { padding: 0 24px 48px; max-width: 1080px }` and
+`.page-section { padding: 24px 0 }` into every view, with no phone value. Views
+that still do keep working — nothing in the shell targets `.page` — but switch
+them to `natca-page` / `natca-page-section` when you touch them. Note the bottom
+padding is now 32px (24px on phones), not 48px.
