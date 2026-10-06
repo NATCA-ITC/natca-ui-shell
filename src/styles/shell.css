@@ -35,7 +35,10 @@
    inherit`, so a correct inherited value is what makes those render properly.
    Rule for the shell generally: any element that sets a background must set a
    colour rather than inherit one that changes with the theme. */
-.natca-shell-topbar { background: var(--natca-navy); color: #FFFFFF; height: 52px; display: flex; align-items: center; padding: 0 20px; flex-shrink: 0; border-bottom: 1px solid var(--color-border); max-width: 100%; overflow-x: clip; overflow-y: visible; position: relative; z-index: 60; }
+/* beta.34 (NAT-1987 follow-up): horizontal padding is the page gutter, so the
+   logo, the breadcrumb row and a .natca-page share one left edge — 24px on
+   desktop (was a hand-set 20px, 4px left of the crumbs), 12px on phones. */
+.natca-shell-topbar { background: var(--natca-navy); color: #FFFFFF; height: 52px; display: flex; align-items: center; padding: 0 var(--natca-page-gutter); flex-shrink: 0; border-bottom: 1px solid var(--color-border); max-width: 100%; overflow-x: clip; overflow-y: visible; position: relative; z-index: 60; }
 /* NAT-986: explicit colour because this is an <a> — Vuetify's reset covers
    button/[type=button]/[role=button] but NOT links, so an anchor keeps the UA
    default (rgb(0,0,238)) and inherits nothing. Measured 1.34:1 on navy. */
@@ -76,13 +79,40 @@
    renders — which let the section shrink past the sign-in CTA at 320px. */
 .natca-shell-topbar-lead > *,
 .natca-shell-topbar-trail > * { flex-shrink: 0; }
-.natca-shell-topbar-lead { grid-column: 1; }
-.natca-shell-topbar-trail { grid-column: 3; margin-left: var(--natca-shell-topbar-gap); }
+/* beta.34: the shell's own regions stack ABOVE the app's slot region, so
+   whatever the slot paints past its edge (a badge, a focus ring — see the
+   overhang allowance below) can never cover or intercept a shell control.
+   Both are already the topbar's descendants and the topbar is position:
+   relative, so this changes stacking only; the user menu's containing block
+   is still its own .natca-shell-user-menu-wrap. */
+.natca-shell-topbar-lead { grid-column: 1; position: relative; z-index: 1; }
+.natca-shell-topbar-trail { grid-column: 3; margin-left: var(--natca-shell-topbar-gap); position: relative; z-index: 1; }
 /* The app's slot region. overflow-x: clip (NOT hidden) so anything an app
    positions below the bar can still escape vertically — the same reason the
    bar itself is clip/visible (NAT-335). Overflowing content is cut at the left
-   edge (flex-end), so the items nearest the shell controls stay visible. */
-.natca-shell-topbar-actions { grid-column: 2; min-width: 0; margin-left: var(--natca-shell-topbar-gap); display: flex; align-items: center; justify-content: flex-end; gap: var(--natca-shell-topbar-gap); overflow-x: clip; overflow-y: visible; }
+   edge (flex-end), so the items nearest the shell controls stay visible.
+
+   Overhang allowance (beta.34, NAT-1986 follow-up). overflow-x: clip cuts at
+   the PADDING box, and in beta.33 the padding box was the content box, so a
+   v-badge hanging past the last item's right edge (BID's bell: 4px for "1",
+   18.4px for "99+") was cut at every width, squeezed or not. The region now
+   carries --natca-shell-topbar-overhang of inline-end padding, cancelled by
+   the same negative inline-end margin: the margin box — the only thing grid
+   track sizing sees — is unchanged to the pixel, but the clip edge sits that
+   far right of the content. Content itself still ends at the content box
+   (flex-end), so only overhang ever enters the allowance, squeezed or not. The
+   LEFT clip edge is untouched: squeezed content is still cut flush, clear of
+   the lead controls.
+   Padding + negative margin is CSS2 — it works wherever overflow: clip does
+   (Safari 16+). overflow-clip-margin would be the obvious tool and is NOT
+   used: Safari/iOS do not support it at all (caniuse, 2026-10), and it only
+   applies to overflow: clip, so it would have to be the whole fix, not an
+   enhancement.
+   isolation: isolate keeps every z-index an app uses inside the slot below the
+   lead/trail (z-index 1) without changing the slot's containing block, so an
+   app's absolutely-positioned dropdown resolves against the same ancestor as
+   before. */
+.natca-shell-topbar-actions { --natca-shell-topbar-overhang: 24px; grid-column: 2; min-width: 0; margin-left: var(--natca-shell-topbar-gap); padding-right: var(--natca-shell-topbar-overhang); margin-right: calc(-1 * var(--natca-shell-topbar-overhang)); display: flex; align-items: center; justify-content: flex-end; gap: var(--natca-shell-topbar-gap); overflow-x: clip; overflow-y: visible; isolation: isolate; }
 .natca-shell-top-icon { flex-shrink: 0; width: 32px; height: 32px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.6); transition: all 150ms; position: relative; }
 .natca-shell-top-icon:hover { background: rgba(255,255,255,0.09); color: #FFFFFF; border-color: rgba(255,255,255,0.14); }
 .natca-shell-top-badge { position: absolute; top: 2px; right: 2px; width: 7px; height: 7px; background: var(--natca-red); border-radius: 50%; border: 1.5px solid var(--natca-navy); }
@@ -359,7 +389,7 @@
   .natca-page-section { padding: 16px 0; }
   .natca-shell-sidebar { display: none; }
   .natca-shell-breadcrumb-hamburger { display: none; }
-  .natca-shell-topbar { padding: 0 12px; gap: 4px; }
+  .natca-shell-topbar { gap: 4px; } /* padding follows --natca-page-gutter (12px here) */
   .natca-shell-topbar-right { --natca-shell-topbar-gap: 2px; }
   .natca-shell-wordmark { display: none; }
   .natca-shell-divider { display: none; }

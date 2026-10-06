@@ -68,15 +68,18 @@ shell hides the sidebar, tightens its chrome, collapses `NatcaTopBarAction` to
 icon-only, and drops the gutter. JS gets it as `NATCA_PHONE_BREAKPOINT` (768)
 or `NATCA_PHONE_MEDIA_QUERY`; CSS documents it as `--natca-phone-breakpoint`.
 App-side phone rules use the same value — not 600px, not 374px.
+`NatcaPageHeader` stacks its actions under the title at this breakpoint too
+(0.4.0-beta.34). It used 600px before, so between 601px and 768px the header
+now stacks where it used to stay in a row.
 
 | | Desktop | Phone (≤ 768px) |
 |---|---|---|
-| `--natca-page-gutter` — left/right padding of `.natca-page`, the breadcrumb row, `.natca-shell-content-head` | **24px** | **12px** |
+| `--natca-page-gutter` — left/right padding of `.natca-page`, the topbar (beta.34+), the breadcrumb row, `.natca-shell-content-head` | **24px** | **12px** |
 | `--natca-page-gutter-bottom` — bottom padding of `.natca-page` | **32px** | **24px** |
 | `--natca-page-max-width` — `.natca-page` max width (`.natca-page--full` removes it) | 1080px | 1080px |
 | `.natca-page-section` vertical padding | 24px | 16px |
 
-Because the breadcrumb row and the page read the same token, page content and
+Because the topbar, the breadcrumb row and the page read the same token, the logo, page content and
 the crumbs share one left edge at every width. Need the value in a view's own
 layout (a full-bleed band, a sticky bar)? Use `var(--natca-page-gutter)`; never
 a literal.
@@ -526,6 +529,18 @@ region of the bar that shrinks, and it clips (from the left) rather than pushing
 anything off the right edge. **Clipped means unreachable.** A labelled control
 with no phone form will simply vanish on phones; that is the app's bug, not the
 shell's. Use `NatcaTopBarAction` and keep the slot to two or three controls.
+
+Since 0.4.0-beta.34 the clip is **left-side only**. Overhang on the right of
+the last item, such as a `v-badge` or a focus ring, is allowed up to 24px. The
+shell's controls are drawn above it, so overhang wider than the slot-to-toggle
+gap (6px desktop, 2px on phones) runs under the theme toggle. Reserve the room
+with `margin-inline-end` on your control if the badge must be fully clear. See
+component-usage.md → "Overhang".
+
+The topbar's horizontal padding is the page gutter (`--natca-page-gutter`) since
+0.4.0-beta.34. The logo, the crumbs and a `.natca-page` share one left edge:
+24px on desktop and 12px on phones. The avatar sits the same distance from the
+right edge.
 
 ❌ **Never** hand-roll a `.topbar-btn` + visually-hidden-label media query in
 the app. That is what `NatcaTopBarAction` is.

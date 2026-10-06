@@ -133,6 +133,20 @@ const isGuest = computed(() => route.query.guest !== undefined && route.query.gu
 // Append ?overflow=1 to stress the topbar slot + breadcrumb row (NAT-1986).
 const isOverflow = computed(() => route.query.overflow !== undefined && route.query.overflow !== 'false')
 
+// Append ?lean=1 to drop the shell's search + notifications controls, which
+// leaves the slot room on a 320px phone (the unsqueezed badge fixture, beta.34).
+const isLean = computed(() => route.query.lean !== undefined && route.query.lean !== 'false')
+
+// Append ?badge=<n> to add BID's notification bell as the LAST slot item: a
+// v-btn icon wrapping a v-badge with offset-x="-3", which overhangs the slot
+// region's right edge (NAT-1986 follow-up, beta.34). n > 99 renders "99+".
+const badgeContent = computed(() => {
+  const raw = route.query.badge
+  if (raw === undefined || raw === 'false') return undefined
+  const n = Number(raw)
+  return Number.isFinite(n) && n > 99 ? '99+' : String(raw || '1')
+})
+
 // Standalone routes (e.g. the pre-login NatcaAuthLayout) render full-page, no shell.
 const isStandalone = computed(() => route.meta.standalone === true)
 
@@ -173,8 +187,8 @@ const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
     :breadcrumbs="breadcrumbs"
     :apps="apps"
     :profile-menu-items="shellConfig.profileMenuItems"
-    :show-search="true"
-    :show-notifications="true"
+    :show-search="!isLean"
+    :show-notifications="!isLean"
     :notification-count="3"
     @profile-action="onProfileAction"
     @theme-change="pref => localStorage.setItem('natca-theme', pref)"
@@ -183,12 +197,23 @@ const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
          with NatcaTopBarAction; append ?overflow=1 to any route to add a
          deliberately oversized, non-collapsing control and prove the shell's
          own theme toggle + avatar stay on-screen anyway. -->
-    <template v-if="mode === 'member' || isOverflow" #toolbar-actions>
-      <NatcaTopBarAction icon="mdi-help-circle-outline" label="Support" />
-      <NatcaTopBarAction icon="mdi-open-in-new" label="Go to BID v5" href="#" variant="warning" />
+    <template v-if="mode === 'member' || isOverflow || badgeContent" #toolbar-actions>
+      <template v-if="mode === 'member' || isOverflow">
+        <NatcaTopBarAction icon="mdi-help-circle-outline" label="Support" />
+        <NatcaTopBarAction icon="mdi-open-in-new" label="Go to BID v5" href="#" variant="warning" />
+      </template>
       <button v-if="isOverflow" type="button" class="playground-oversized">
         A deliberately oversized app control that never collapses on phones
       </button>
+      <!-- Copied from BID's NotificationDrawer.vue trigger: the badge hangs
+           past the v-btn's right edge, i.e. past the slot region's edge. -->
+      <span v-if="badgeContent" class="playground-bell-wrap">
+        <v-btn icon variant="text" size="default" density="default" class="playground-bell" aria-label="Notifications">
+          <v-badge :content="badgeContent" color="error" offset-x="-3" offset-y="3">
+            <v-icon size="22">mdi-bell</v-icon>
+          </v-badge>
+        </v-btn>
+      </span>
     </template>
 
     <template v-if="isOverflow" #breadcrumb-right>
@@ -239,6 +264,9 @@ html, body, #app {
 
 /* NAT-1986 stress content — deliberately hostile: wide, labelled, no phone form. */
 .playground-oversized { flex-shrink: 0; height: 32px; padding: 0 14px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #FFFFFF; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.playground-bell-wrap { display: inline-flex; align-items: center; }
+/* BID .notification-bell-btn (scoped there, so it out-ranks Vuetify's icon-button size). */
+.playground-bell-wrap .playground-bell.v-btn { width: 36px; height: 36px; color: #FFFFFF; }
 .playground-crumb-pill { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; margin-left: 6px; border-radius: 999px; background: var(--overlay-active); color: var(--color-text-primary); font-size: 11px; font-weight: 600; }
 .playground-notice { background: var(--overlay-active); color: var(--color-text-primary); font-size: 11.5px; padding: 6px 16px; text-align: center; }
 </style>

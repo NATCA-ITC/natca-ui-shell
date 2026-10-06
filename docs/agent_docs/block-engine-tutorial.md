@@ -20,7 +20,7 @@ A document is `{ schema_version: 1, sections: [{ id, layout, columns: [{ id, blo
 
 ## Step 0 — prerequisites
 
-- ui-shell pinned **exactly** (`"0.4.0-beta.26"`, no caret) and the three-step Vuetify wiring from `component-usage.md` in place.
+- ui-shell pinned **exactly** (`"0.4.0-beta.26"` or later, e.g. `"0.4.0-beta.34"`; no caret) and the three-step Vuetify wiring from `component-usage.md` in place.
 - If admins will open the editor and your registry includes `natca.richText` (it does if you spread `natcaContentBlocks`), add TipTap 3 to **your** app's dependencies:
 
   ```bash

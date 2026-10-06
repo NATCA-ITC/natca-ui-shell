@@ -21,8 +21,8 @@ npm install @natca-itc/ui-shell@beta
 ```php
 // functions.php
 function natca_enqueue_design_system() {
-  wp_enqueue_style('natca-tokens', get_template_directory_uri() . '/assets/css/natca-tokens.css', [], '0.4.0-beta.4');
-  wp_enqueue_style('natca-components', get_template_directory_uri() . '/assets/css/natca-components.css', ['natca-tokens'], '0.4.0-beta.4');
+  wp_enqueue_style('natca-tokens', get_template_directory_uri() . '/assets/css/natca-tokens.css', [], '0.4.0-beta.34');
+  wp_enqueue_style('natca-components', get_template_directory_uri() . '/assets/css/natca-components.css', ['natca-tokens'], '0.4.0-beta.34');
 }
 add_action('wp_enqueue_scripts', 'natca_enqueue_design_system');
 ```

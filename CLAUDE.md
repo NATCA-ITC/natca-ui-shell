@@ -5,7 +5,7 @@ Design system, Vuetify theme preset, and shared Vue components for all NATCA web
 ## Project Context
 
 - **Status:** Phase 2 (BETA) — Vue + Vuetify component library with shared theme + SASS overrides
-- **Package:** `@natca-itc/ui-shell@0.4.0-beta.33` on GitHub Packages
+- **Package:** `@natca-itc/ui-shell@0.4.0-beta.34` on GitHub Packages
 - **Org:** NATCA-ITC
 - **Repo:** `NATCA-ITC/natca-ui-shell`
 - **Port:** 1310 (playground dev server, `strictPort: true`)
@@ -152,7 +152,7 @@ path. Two ways for them to consume it, with what is actually known about each
   verification silently tests nothing.
 
 Either way the app should NOT commit the version bump until the release is
-published; it bumps to the real `^0.4.0-beta.N` afterwards.
+published; it bumps to the real version afterwards, pinned exactly (`"0.4.0-beta.N"`, no caret — see component-usage.md → "Version pinning").
 
 ## Rules
 

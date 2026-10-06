@@ -87,8 +87,10 @@ defineSlots<{
 }
 
 /* NAT-1335: phone widths — stack explicitly so a long action cluster sits
-   left-aligned under the title rather than centred by space-between. */
-@media (max-width: 600px) {
+   left-aligned under the title rather than centred by space-between.
+   beta.34: on the shell's one phone breakpoint (--natca-phone-breakpoint /
+   NATCA_PHONE_BREAKPOINT) instead of a 600px of its own. */
+@media (max-width: 768px) {
   .natca-page-header {
     flex-direction: column;
     align-items: stretch;
