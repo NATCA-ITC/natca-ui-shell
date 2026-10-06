@@ -103,6 +103,30 @@ never leave the viewport, whatever the slot holds — but anything clipped is
 unreachable, so give every slot control a phone form. `overflow-y` stays
 visible, so a dropdown positioned below the bar still escapes it (NAT-335).
 
+**Overhang — badges and focus rings (0.4.0-beta.34+).** The horizontal clip
+only cuts from the left. On the right (toward the theme toggle) the region
+allows **24px of overhang** past its last item, squeezed or not, so a
+`v-badge` on your last control is no longer cut off (beta.33 cut BID's bell
+badge by 4px for "1" and 18.4px for "99+"). The allowance does not move
+anything: the slot sits exactly where it did.
+
+The shell's own controls stack **above** the slot. Overhang that is wider than
+the gap between the slot and the theme toggle (6px desktop, 2px at ≤768px)
+runs *under* the toggle. It is not clipped, but the toggle is drawn over it,
+and the toggle still gets the click. If a badge must sit fully clear of the
+toggle, reserve the room on your own control:
+
+```css
+/* BID's bell: v-badge offset-x="-3" overhangs a 36px v-btn by ~4px ("1") and
+   ~18.4px ("99+"). Clearing the toggle needs (overhang - gap) of margin. */
+.notification-bell-wrap { margin-inline-end: 2px; }        /* "1": 4 - 2 on phones */
+.notification-bell-wrap.has-wide-badge { margin-inline-end: 17px; }  /* "99+": 18.4 - 2 */
+```
+
+Do not counter the overhang with a positive `z-index` on your badge. The slot
+region is `isolation: isolate`, so a z-index inside it never lifts anything
+above the shell's controls, by design.
+
 #### Tab switcher (dropdown tab)
 
 A top-level tab can render as a switcher dropdown by setting `children`. Useful for area/region/workspace pickers that should stay inline with the other tabs.
@@ -929,7 +953,7 @@ user is doing.
 
 ## Version pinning — use an exact version on the beta line
 
-Pin `@natca-itc/ui-shell` **exactly** (`"0.4.0-beta.26"`), not with a caret.
+Pin `@natca-itc/ui-shell` **exactly** (`"0.4.0-beta.34"`), not with a caret.
 
 A caret range does not do what it looks like it does here. `^0.4.0-beta.17`
 resolves to `>=0.4.0-beta.17 <0.5.0`, which **admits every later 0.4.0 beta and

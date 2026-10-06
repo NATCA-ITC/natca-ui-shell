@@ -1,6 +1,6 @@
 # NATCA UI Shell
 
-> **Status: Phase 2 BETA** — `@natca-itc/ui-shell@0.4.0-beta.4` on GitHub Packages. Vue shell + Vuetify theme preset + 21 shared components + SASS customization.
+> **Status: Phase 2 BETA** — `@natca-itc/ui-shell@0.4.0-beta.34` on GitHub Packages. Vue shell + Vuetify theme preset + shared components + SASS customization.
 
 Design system, shared Vuetify theme, and component library for all NATCA web properties. Single source of truth for visual direction, design tokens, shell layout, and cross-app components.
 
