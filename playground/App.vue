@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { NatcaShell, NatcaAppFooter } from '@/index'
+import { NatcaShell, NatcaAppFooter, NatcaTopBarAction } from '@/index'
 import type { NatcaTab, NatcaNavSection, NatcaBreadcrumb, NatcaApp, NatcaUser, NatcaProfileMenuItem } from '@/types'
 
 const route = useRoute()
@@ -130,6 +130,9 @@ const shellConfig = computed(() => {
 // Append ?guest=1 to any URL to preview the unauthenticated topbar (sign-in icon button).
 const isGuest = computed(() => route.query.guest !== undefined && route.query.guest !== 'false')
 
+// Append ?overflow=1 to stress the topbar slot + breadcrumb row (NAT-1986).
+const isOverflow = computed(() => route.query.overflow !== undefined && route.query.overflow !== 'false')
+
 // Standalone routes (e.g. the pre-login NatcaAuthLayout) render full-page, no shell.
 const isStandalone = computed(() => route.meta.standalone === true)
 
@@ -176,6 +179,23 @@ const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
     @profile-action="onProfileAction"
     @theme-change="pref => localStorage.setItem('natca-theme', pref)"
   >
+    <!-- NAT-1986: BID ships two pills here. The member variant mirrors that
+         with NatcaTopBarAction; append ?overflow=1 to any route to add a
+         deliberately oversized, non-collapsing control and prove the shell's
+         own theme toggle + avatar stay on-screen anyway. -->
+    <template v-if="mode === 'member' || isOverflow" #toolbar-actions>
+      <NatcaTopBarAction icon="mdi-help-circle-outline" label="Support" />
+      <NatcaTopBarAction icon="mdi-open-in-new" label="Go to BID v5" href="#" variant="warning" />
+      <button v-if="isOverflow" type="button" class="playground-oversized">
+        A deliberately oversized app control that never collapses on phones
+      </button>
+    </template>
+
+    <template v-if="isOverflow" #breadcrumb-right>
+      <span class="playground-crumb-pill">Bidding open · 08:00–16:00</span>
+      <span class="playground-crumb-pill">Live updates</span>
+    </template>
+
     <router-view />
 
     <!-- NAT-1082: the shell pins this block. No wrapper, no min-height:100%,
@@ -217,5 +237,8 @@ html, body, #app {
   height: calc(100vh - 52px) !important;
 }
 
+/* NAT-1986 stress content — deliberately hostile: wide, labelled, no phone form. */
+.playground-oversized { flex-shrink: 0; height: 32px; padding: 0 14px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #FFFFFF; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.playground-crumb-pill { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; margin-left: 6px; border-radius: 999px; background: var(--overlay-active); color: var(--color-text-primary); font-size: 11px; font-weight: 600; }
 .playground-notice { background: var(--overlay-active); color: var(--color-text-primary); font-size: 11.5px; padding: 6px 16px; text-align: center; }
 </style>

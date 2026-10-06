@@ -6,6 +6,7 @@ import ComponentsPage from './pages/ComponentsPage.vue'
 import DesignStandardsPage from './pages/DesignStandardsPage.vue'
 import BlocksPage from './pages/BlocksPage.vue'
 import AuthLandingPage from './pages/AuthLandingPage.vue'
+import PageGutterPage from './pages/PageGutterPage.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -204,6 +205,19 @@ export const router = createRouter({
           { label: 'BID', to: '/member' },
           { label: 'Area', to: '/member/area' },
           { label: ':area' },
+        ],
+      },
+    },
+    {
+      // NAT-1987: the canonical page skeleton on the shell-owned gutter.
+      path: '/member/page',
+      component: PageGutterPage,
+      meta: {
+        title: 'Page gutter',
+        breadcrumbs: [
+          { label: 'BID', to: '/member' },
+          { label: 'Facility ZJX — Jacksonville ARTCC', to: '/member' },
+          { label: 'Page gutter' },
         ],
       },
     },

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useShellState } from '../composables/useShellState'
 import type { NatcaBreadcrumb } from '../types'
+import { NATCA_PHONE_BREAKPOINT } from '../lib/breakpoints'
 
 const props = defineProps<{
   breadcrumbs: NatcaBreadcrumb[]
@@ -18,7 +19,7 @@ const { state, toggleSidebar, toggleMobileDrawer } = useShellState()
 
 function handleHamburgerClick() {
   // On mobile, toggle the drawer; on desktop, toggle sidebar collapse
-  if (window.innerWidth <= 768) {
+  if (window.innerWidth <= NATCA_PHONE_BREAKPOINT) {
     toggleMobileDrawer()
   } else {
     toggleSidebar()

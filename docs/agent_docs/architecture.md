@@ -34,7 +34,7 @@ Apps should use Vuetify components directly for standard UI (buttons, forms, dia
 
 ## Shell Contract
 
-**Shell provides:** topbar (with theme toggle + toolbar-actions slot), tab navigation, sidebar, breadcrumbs, search drawer, app switcher, theme
+**Shell provides:** topbar (with theme toggle + toolbar-actions slot — apps fill it with `NatcaTopBarAction`; the slot region is the only part of the bar that gives way on phones), tab navigation, sidebar, breadcrumbs, search drawer, app switcher, theme, the page gutter (`.natca-page`, `--natca-page-gutter`) and the one phone breakpoint (`max-width: 768px`, `NATCA_PHONE_BREAKPOINT`)
 
 **App provides via props:**
 - `appId` / `appName` — identifies the app in the switcher

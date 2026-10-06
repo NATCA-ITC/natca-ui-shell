@@ -51,6 +51,58 @@ setTheme(localStorage.getItem('natca-theme') ?? 'dark')
 
 The shell includes a sun/moon theme toggle in the topbar by default. To disable: `:show-theme-toggle="false"`.
 
+#### Topbar actions — `NatcaTopBarAction` (0.4.0-beta.33+)
+
+App controls go in the `#toolbar-actions` slot as `NatcaTopBarAction`. Icon +
+label on desktop; **icon-only at the phone breakpoint** (`max-width: 768px`),
+with the label kept as the accessible name (visually hidden, not removed) and as
+the `title` tooltip.
+
+```vue
+<NatcaShell …>
+  <template #toolbar-actions>
+    <NatcaTopBarAction icon="mdi-help-circle-outline" label="Support" @click="openSupport" />
+    <NatcaTopBarAction icon="mdi-open-in-new" label="Go to BID v5"
+                       :href="legacyUrl" target="_blank" variant="warning" />
+  </template>
+  <router-view />
+</NatcaShell>
+```
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `icon` | `string` (required) | — | MDI name. Always visible. |
+| `label` | `string` (required) | — | Visible on desktop; accessible name at every width. |
+| `variant` | `'ghost' \| 'warning' \| 'primary'` | `'ghost'` | `ghost` matches the shell's own icons; `warning` is filled amber (escape hatches); `primary` is filled red. |
+| `collapse` | `'phone' \| 'never'` | `'phone'` | `never` keeps the label on phones — it is then clipped, not wrapped, if the bar runs out of room. |
+| `href` / `target` / `rel` | `string` | — | Renders an `<a>`. `rel` defaults to `noopener noreferrer` for `target="_blank"`. |
+| `type`, `disabled`, `title` | | `'button'`, `false`, `label` | `click` is emitted (suppressed when disabled). |
+
+**The class contract.** When the control must stay your own component (say it
+owns a dialog), opt in with classes instead — the styles are global in
+`/shell-styles`:
+
+```vue
+<button class="natca-topbar-action" type="button" @click="open">
+  <v-icon class="natca-topbar-action__icon" size="15" icon="mdi-discord" aria-hidden="true" />
+  <span class="natca-topbar-action__label">Discord</span>
+</button>
+```
+
+Modifiers: `natca-topbar-action--warning`, `natca-topbar-action--primary`,
+`natca-topbar-action--no-collapse`. A brand colour (Discord blurple) is a
+scoped `background`/`border-color` on top of the base class — keep the label
+span so it still collapses.
+
+**What the shell guarantees.** The slot sits in its own region between the
+shell's lead controls (facility, search, notifications) and its trail controls
+(theme toggle, avatar / sign-in). Only that region gives way: when the bar is
+too narrow it shrinks and clips its content horizontally (cut from the left, so
+the items nearest the theme toggle stay visible). The shell's own controls
+never leave the viewport, whatever the slot holds — but anything clipped is
+unreachable, so give every slot control a phone form. `overflow-y` stays
+visible, so a dropdown positioned below the bar still escapes it (NAT-335).
+
 #### Tab switcher (dropdown tab)
 
 A top-level tab can render as a switcher dropdown by setting `children`. Useful for area/region/workspace pickers that should stay inline with the other tabs.
@@ -236,6 +288,41 @@ renders above the dialog's 2400 overlay. If your app carries a local
 ```
 
 `.section-title` (red-underlined 20px Barlow) and `.section-body` (14px body paragraph) are global helpers shipped from `@natca-itc/ui-shell/shell-styles` (already imported by `NatcaShell`). Don't paste the CSS into your scoped block — just use the classes.
+
+### Page container — `.natca-page` (0.4.0-beta.33+)
+
+The shell owns the page gutter. Put `class="natca-page"` on each routed view's
+root and `class="natca-page-section"` on its sections:
+
+| Token / class | Desktop | Phone (`max-width: 768px`) |
+|---|---|---|
+| `--natca-page-gutter` (left/right) | 24px | 12px |
+| `--natca-page-gutter-bottom` | 32px | 24px |
+| `--natca-page-max-width` | 1080px | 1080px |
+| `.natca-page` | `padding: 0 gutter gutter-bottom; max-width` | same tokens |
+| `.natca-page--full` | no max-width | — |
+| `.natca-page-section` | `padding: 24px 0` | `16px 0` |
+
+The breadcrumb row, `.natca-shell-content-head` and `.natca-shell-stat-grid`
+use the same gutter, so page content and shell chrome share one left edge at
+every width. Don't redefine the gutter per view; if a view needs the value for
+its own layout, read `var(--natca-page-gutter)`. Nothing targets the old
+hand-rolled `.page` class, so views that still define it keep working —
+migrate them when you touch them.
+
+### The phone breakpoint — one value
+
+`max-width: 768px`. It is `--natca-phone-breakpoint` in CSS (documentation
+only — media queries cannot read custom properties), and
+`NATCA_PHONE_BREAKPOINT` (`768`) / `NATCA_PHONE_MEDIA_QUERY`
+(`'(max-width: 768px)'`) in JS:
+
+```ts
+import { NATCA_PHONE_MEDIA_QUERY } from '@natca-itc/ui-shell'
+const isPhone = window.matchMedia(NATCA_PHONE_MEDIA_QUERY).matches
+```
+
+Use it for app-side phone rules instead of inventing 600px / 374px.
 
 ### NatcaAlert — no icons, just colored strong + border
 
@@ -821,6 +908,9 @@ user is doing.
 | Data table with filters | `<NatcaPillNav>` + `<v-data-table>` |
 | Form inputs | `<v-text-field>`, `<v-select>`, `<v-switch>`, etc. (styled by ui-shell overrides) |
 | Light/dark toggle | Built into topbar via `NatcaShell` (automatic) |
+| App control in the topbar | `<NatcaTopBarAction icon label>` in `#toolbar-actions` — icon-only on phones |
+| Page padding / gutter | `class="natca-page"` on the view root, `class="natca-page-section"` on sections |
+| Phone check in JS | `NATCA_PHONE_MEDIA_QUERY` / `NATCA_PHONE_BREAKPOINT` (768) |
 | Pre-login sign-in landing page | `<NatcaAuthLayout app-name="..." app-id="...">` + `#action` slot |
 | App-switcher list | Built-in `natcaApps` registry — do not pass your own `apps` |
 | Custom profile dropdown items | `:profile-menu-items` on `<NatcaShell>` — omit for the default menu |
