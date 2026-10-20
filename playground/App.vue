@@ -131,6 +131,24 @@ const shellConfig = computed(() => {
 const isGuest = computed(() => route.query.guest !== undefined && route.query.guest !== 'false')
 
 // Append ?overflow=1 to stress the topbar slot + breadcrumb row (NAT-1986).
+// NatcaDiscordSupport: ?discord=1 adds it; ?discord=unlinked|noposition|down|fail picks the
+// answer the fake backend gives, so each of the modal's outcomes can be seen.
+const discordMode = computed(() => {
+  const q = route.query.discord
+  return typeof q === 'string' && q !== 'false' ? q : null
+})
+const discordSupport = computed(() => discordMode.value === null ? undefined : {
+  channel: 'pay-support',
+  inviteUrl: typeof route.query.invite === 'string' ? route.query.invite : undefined,
+  description: 'Pay Calculator: reading your LES, entering shifts, and what a difference means',
+  requestAccess: async () => {
+    await new Promise((r) => setTimeout(r, 400))
+    if (discordMode.value === 'noposition') throw Object.assign(new Error('forbidden'), { status: 403 })
+    if (discordMode.value === 'fail') throw new Error('boom')
+    if (discordMode.value === 'down') return { linked: false, granted: false }
+    return { linked: discordMode.value !== 'unlinked', granted: true }
+  },
+})
 const isOverflow = computed(() => route.query.overflow !== undefined && route.query.overflow !== 'false')
 
 // Append ?lean=1 to drop the shell's search + notifications controls, which
@@ -190,6 +208,7 @@ const breadcrumbs = computed<NatcaBreadcrumb[] | undefined>(() => {
     :show-search="!isLean"
     :show-notifications="!isLean"
     :notification-count="3"
+    :discord-support="discordSupport"
     @profile-action="onProfileAction"
     @theme-change="pref => localStorage.setItem('natca-theme', pref)"
   >

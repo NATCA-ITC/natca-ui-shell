@@ -11,6 +11,7 @@ import NatcaBreadcrumbRow from './NatcaBreadcrumbRow.vue'
 import NatcaSidebar from './NatcaSidebar.vue'
 import NatcaSearchDrawer from './NatcaSearchDrawer.vue'
 import NatcaAppSwitcher from './NatcaAppSwitcher.vue'
+import NatcaDiscordSupport from './NatcaDiscordSupport.vue'
 
 const props = withDefaults(defineProps<NatcaShellProps>(), {
   authenticated: true,
@@ -130,7 +131,8 @@ function handleShellClick(e: MouseEvent) {
       @profile-action="(action: string) => emit('profile-action', action)"
       @theme-change="(pref: string) => emit('theme-change', pref)"
     >
-      <template v-if="$slots['toolbar-actions']" #toolbar-actions>
+      <template v-if="discordSupport || $slots['toolbar-actions']" #toolbar-actions>
+        <NatcaDiscordSupport v-if="discordSupport" v-bind="discordSupport" />
         <slot name="toolbar-actions" />
       </template>
     </NatcaTopBar>
