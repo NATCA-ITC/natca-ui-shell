@@ -7,6 +7,7 @@ import type { App } from 'vue'
 import NatcaShell from './components/NatcaShell.vue'
 import NatcaTopBar from './components/NatcaTopBar.vue'
 import NatcaTopBarAction from './components/NatcaTopBarAction.vue'
+import NatcaDiscordSupport from './components/NatcaDiscordSupport.vue'
 import NatcaTabNav from './components/NatcaTabNav.vue'
 import NatcaBreadcrumbRow from './components/NatcaBreadcrumbRow.vue'
 import NatcaSidebar from './components/NatcaSidebar.vue'
@@ -56,6 +57,7 @@ export {
   NatcaShell,
   NatcaTopBar,
   NatcaTopBarAction,
+  NatcaDiscordSupport,
   NatcaTabNav,
   NatcaBreadcrumbRow,
   NatcaSidebar,
@@ -193,6 +195,7 @@ export const NatcaUiShell = {
     app.component('NatcaShell', NatcaShell)
     app.component('NatcaTopBar', NatcaTopBar)
     app.component('NatcaTopBarAction', NatcaTopBarAction)
+    app.component('NatcaDiscordSupport', NatcaDiscordSupport)
     app.component('NatcaTabNav', NatcaTabNav)
     app.component('NatcaBreadcrumbRow', NatcaBreadcrumbRow)
     app.component('NatcaSidebar', NatcaSidebar)
@@ -231,3 +234,6 @@ export const NatcaUiShell = {
 }
 
 export default NatcaUiShell
+
+export { NATCA_DISCORD_INVITE_URL } from './types/discord'
+export type { NatcaDiscordSupportProps, NatcaDiscordSupportOutcome } from './types/discord'

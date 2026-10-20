@@ -355,6 +355,9 @@
 .natca-topbar-action--warning:hover { background: var(--color-warning); border-color: var(--color-warning); filter: brightness(1.08); }
 .natca-topbar-action--primary { background: var(--natca-red); border-color: var(--natca-red); color: #FFFFFF; }
 .natca-topbar-action--primary:hover { background: var(--natca-red-dark); border-color: var(--natca-red-dark); }
+/* Discord blurple is the brand colour, so there is no NATCA token for it. Only 2.74:1 against the navy bar: fine for the white label (4.61:1, AA) but under the 3:1 wanted for a component edge, so a light border draws the boundary. */
+.natca-topbar-action--discord { --natca-discord-blurple: #5865F2; background: var(--natca-discord-blurple); border-color: rgba(255,255,255,0.45); color: #FFFFFF; }
+.natca-topbar-action--discord:hover { background: var(--natca-discord-blurple); border-color: rgba(255,255,255,0.65); filter: brightness(0.85); }
 
 /* ── Page container (NAT-1987) ───────────────────────────────────────────
    The shell owns the page gutter. --natca-page-gutter is also the breadcrumb

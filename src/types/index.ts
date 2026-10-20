@@ -1,3 +1,4 @@
+import type { NatcaDiscordSupportProps } from './discord'
 import type { RouteLocationRaw } from 'vue-router'
 
 export interface NatcaThemeOption {
@@ -116,6 +117,11 @@ export interface NatcaShellProps {
    * menu (My Profile / Settings / Sign Out). See `NatcaProfileMenuItem`.
    */
   profileMenuItems?: NatcaProfileMenuItem[]
+  /**
+   * Renders a "Discord Support" action (and its modal) in the topbar, ahead of
+   * anything in `#toolbar-actions`. See NatcaDiscordSupport.
+   */
+  discordSupport?: NatcaDiscordSupportProps
 }
 
 /**
