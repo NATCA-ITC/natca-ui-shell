@@ -24,7 +24,7 @@ test.describe('NatcaDiscordSupport', () => {
     const box = await page.locator(BTN).boundingBox()
     expect(box!.height).toBe(32)
     expect((await page.locator(`${BTN} .natca-topbar-action__label`).boundingBox())!.width).toBeGreaterThan(40)
-    await expect(page.locator(BTN)).toHaveAttribute('aria-label', /pay-support/)
+    await expect(page.locator(BTN)).toHaveAttribute('aria-label', /bid-support/)
   })
 
   for (const width of [390, 360, 320]) {
@@ -36,7 +36,7 @@ test.describe('NatcaDiscordSupport', () => {
       // visually hidden, not removed: still the accessible name
       const label = await page.locator(`${BTN} .natca-topbar-action__label`).boundingBox()
       expect(label!.width).toBeLessThanOrEqual(1)
-      await expect(page.locator(BTN)).toHaveAttribute('aria-label', /pay-support/)
+      await expect(page.locator(BTN)).toHaveAttribute('aria-label', /bid-support/)
       const avatarRight = await page.evaluate(() => {
         const el = document.querySelector('.natca-shell-topbar-trail') as HTMLElement
         return el.getBoundingClientRect().right
@@ -46,6 +46,14 @@ test.describe('NatcaDiscordSupport', () => {
       await expect(page.getByRole('dialog')).toBeVisible()
     })
   }
+
+  test('modal copy: intro, per-channel restriction, join prompt', async ({ page }) => {
+    await page.goto(`${BASE}/admin?discord=1`)
+    await page.locator(BTN).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toContainText('#bid-support is a private channel in the national NATCA Discord server. Get answers and support from the ITC and other NATCA members. The channel is restricted to FacReps, VPs, and members helping to run bidding for your local.')
+    await expect(dialog).toContainText('Not on the NATCA Discord yet? Join first, then link and verify your Discord account in MyNATCA so the channel can be applied to you.')
+  })
 
   test('join link uses the default invite', async ({ page }) => {
     await page.goto(`${BASE}/admin?discord=1`)
@@ -60,7 +68,7 @@ test.describe('NatcaDiscordSupport', () => {
   })
 
   const outcomes: Array<[string, RegExp]> = [
-    ['1', /You're in\. Find #pay-support/],
+    ['1', /You're in\. Find #bid-support/],
     ['unlinked', /Access saved\. Link and verify/],
     ['noposition', /members who hold a position/],
     ['down', /temporarily unavailable/],
