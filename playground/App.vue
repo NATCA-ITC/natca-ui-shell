@@ -138,9 +138,9 @@ const discordMode = computed(() => {
   return typeof q === 'string' && q !== 'false' ? q : null
 })
 const discordSupport = computed(() => discordMode.value === null ? undefined : {
-  channel: 'pay-support',
+  channel: 'bid-support',
   inviteUrl: typeof route.query.invite === 'string' ? route.query.invite : undefined,
-  description: 'Pay Calculator: reading your LES, entering shifts, and what a difference means',
+  restriction: 'The channel is restricted to FacReps, VPs, and members helping to run bidding for your local.',
   requestAccess: async () => {
     await new Promise((r) => setTimeout(r, 400))
     if (discordMode.value === 'noposition') throw Object.assign(new Error('forbidden'), { status: 403 })

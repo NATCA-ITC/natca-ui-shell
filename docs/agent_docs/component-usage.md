@@ -127,7 +127,7 @@ Do not counter the overhang with a positive `z-index` on your badge. The slot
 region is `isolation: isolate`, so a z-index inside it never lifts anything
 above the shell's controls, by design.
 
-#### Discord support — `NatcaDiscordSupport` (0.4.0-beta.35+)
+#### Discord support — `NatcaDiscordSupport` (0.4.0-beta.35+; copy and `restriction` prop in beta.36)
 
 A "Discord Support" topbar action that opens a modal with the join link and a
 "Request access" button for one private support channel (`#pay-support`,
@@ -135,7 +135,7 @@ A "Discord Support" topbar action that opens a modal with the join link and a
 the copy; the app owns the call.
 
 ```vue
-<NatcaShell … :discord-support="{ channel: 'pay-support', description: 'Pay Calculator', requestAccess }" />
+<NatcaShell … :discord-support="{ channel: 'pay-support', requestAccess }" />
 <!-- or, in the slot, next to your other actions -->
 <template #toolbar-actions>
   <NatcaDiscordSupport channel="pay-support" :request-access="requestAccess" />
@@ -149,7 +149,9 @@ the copy; the app owns the call.
   position only"; anything else as a generic failure.
 - `inviteUrl` — the Discord server invite. Defaults to the shared non-expiring
   invite (`NATCA_DISCORD_INVITE_URL`); pass your own to give an app a separate one.
-- `description` — what the channel answers questions about ("Pay Calculator").
+- `restriction` — who the channel is for, one sentence ("The channel is restricted to FacReps,
+  VPs, and members helping to run bidding for your local."). Defaults to "The channel is
+  restricted to members who hold a position." (beta.36; replaces `description`.)
 - `label` — topbar text, "Discord Support" by default.
 
 Collapses to the Discord mark on phones like any topbar action. Do not hand-roll
@@ -981,7 +983,7 @@ user is doing.
 
 ## Version pinning — use an exact version on the beta line
 
-Pin `@natca-itc/ui-shell` **exactly** (`"0.4.0-beta.35"`), not with a caret.
+Pin `@natca-itc/ui-shell` **exactly** (`"0.4.0-beta.36"`), not with a caret.
 
 A caret range does not do what it looks like it does here. `^0.4.0-beta.17`
 resolves to `>=0.4.0-beta.17 <0.5.0`, which **admits every later 0.4.0 beta and

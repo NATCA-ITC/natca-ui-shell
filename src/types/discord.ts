@@ -25,8 +25,11 @@ export interface NatcaDiscordSupportProps {
   requestAccess: () => Promise<{ linked: boolean; granted: boolean }>
   /** Discord server invite. Defaults to {@link NATCA_DISCORD_INVITE_URL}; set it per app to use a different one. */
   inviteUrl?: string
-  /** What the channel answers questions about, finishing "questions about …": "Pay Calculator". */
-  description?: string
+  /**
+   * Who the channel is for, as one sentence ending the intro paragraph. Defaults to
+   * "The channel is restricted to members who hold a position."
+   */
+  restriction?: string
   /** Topbar label. Defaults to "Discord Support". */
   label?: string
 }

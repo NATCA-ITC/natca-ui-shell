@@ -14,6 +14,11 @@
  * it renders this for you. Either way the pill collapses to the mark alone at
  * the phone breakpoint; the label stays the accessible name.
  *
+
+ * `restriction` is the one sentence about who may join, because it differs per channel:
+ * "The channel is restricted to FacReps, VPs, and members helping to run bidding for your
+ * local." Everything else in the modal is the same for every support channel.
+ *
  * `inviteUrl` is per app on purpose: the default is the shared non-expiring
  * invite, but an app that wants its own (separate analytics, a different server)
  * passes it.
@@ -42,6 +47,7 @@ import {
 const props = withDefaults(defineProps<NatcaDiscordSupportProps>(), {
   inviteUrl: NATCA_DISCORD_INVITE_URL,
   label: 'Discord Support',
+  restriction: 'The channel is restricted to members who hold a position.',
 })
 
 const open = ref(false)
@@ -109,9 +115,8 @@ async function request() {
     :max-width="520"
   >
     <p class="natca-discord-copy">
-      <strong>{{ channelTag }}</strong> is a private channel under the ITC category where ITC and other
-      members answer questions{{ description ? ` about ${description}` : '' }}.
-      Access is for members who hold a position.
+      <strong>{{ channelTag }}</strong> is a private channel in the national NATCA Discord server. Get answers
+      and support from the ITC and other NATCA members. {{ restriction }}
     </p>
     <p class="natca-discord-copy">
       Not on the NATCA Discord yet? Join first, then link and verify your Discord account in MyNATCA so
