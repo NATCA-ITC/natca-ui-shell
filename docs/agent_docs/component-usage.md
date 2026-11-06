@@ -882,7 +882,8 @@ switcher is correct with zero configuration.
 | `eyebrow` | `string` | `''` | Small label above the sign-in heading |
 | `heading` | `string` | `'Welcome back'` | Sign-in card heading (rendered uppercase) |
 | `subheading` | `string` | `''` | Supporting line under the heading |
-| `capabilities` | `NatcaCapability[]` | `[]` | Identity-panel tiles — `{ icon, title, text }`. Omit to hide them |
+| `capabilities` | `NatcaCapability[]` | `[]` | Identity-panel tiles — `{ icon, title, text }`. Omit to hide them. Split layout only |
+| `layout` | `'split' \| 'stacked'` | `'split'` | `stacked` (beta.37+): navy band with the heading and action, content full width below — see below |
 
 ### Slots
 
@@ -894,6 +895,32 @@ switcher is correct with zero configuration.
 | `#subtext` | Optional fine print under the action, e.g. a link to a legacy system |
 
 `#action` is the only slot most apps need.
+
+### Stacked layout (0.4.0-beta.37+)
+
+`layout="stacked"` is for an app whose landing shows several tools, which the
+split's narrow identity panel can't hold (Pay, NAT-2637). A navy band carries
+`eyebrow`, `heading` (not uppercased here) and `subheading` on the left and the
+`#action` slot on the right; the **default slot** fills the page below it on
+`--color-bg-page`, inside the same 1200px column. Below 860px the action drops
+under the heading at full width.
+
+```vue
+<NatcaAuthLayout
+  layout="stacked" app-name="Pay Calculator" app-id="pay"
+  eyebrow="Pay Calculator" heading="Check your pay against your LES"
+  subheading="Upload your LES PDFs and see, line by line, what you should have been paid."
+>
+  <template #action>
+    <NatcaButton variant="primary" size="md" block @click="signIn">Sign in</NatcaButton>
+  </template>
+  <!-- default slot: the app's own content, e.g. a grid of NatcaHeaderCard -->
+</NatcaAuthLayout>
+```
+
+In stacked mode `capabilities`/`#capabilities` and `tagline`/`logoSrc` are not
+rendered; `#identity` replaces the band's eyebrow/heading/subheading block, and
+`#subtext` sits under the action.
 
 ---
 
@@ -983,7 +1010,7 @@ user is doing.
 
 ## Version pinning — use an exact version on the beta line
 
-Pin `@natca-itc/ui-shell` **exactly** (`"0.4.0-beta.36"`), not with a caret.
+Pin `@natca-itc/ui-shell` **exactly** (`"0.4.0-beta.37"`), not with a caret.
 
 A caret range does not do what it looks like it does here. `^0.4.0-beta.17`
 resolves to `>=0.4.0-beta.17 <0.5.0`, which **admits every later 0.4.0 beta and

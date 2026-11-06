@@ -77,8 +77,14 @@ export interface NatcaAuthLayoutProps {
   /** Sign-in card heading. Defaults to "Welcome back" (rendered uppercase). */
   heading?: string
   subheading?: string
-  /** Identity-panel capability tiles. Omit to hide them. */
+  /** Identity-panel capability tiles. Omit to hide them. Split layout only. */
   capabilities?: NatcaCapability[]
+  /**
+   * `split` (default): identity panel left, sign-in card right.
+   * `stacked`: a navy band carrying eyebrow/heading/subheading and the action,
+   * then the default slot full width below it.
+   */
+  layout?: 'split' | 'stacked'
 }
 
 export interface NatcaUser {
