@@ -10,11 +10,16 @@
   on/off without forking the layout:
 
     props:  app-name, app-id, tagline, logo-src, apps, eyebrow, heading,
-            subheading, capabilities
+            subheading, capabilities, layout
     slots:  #identity      (override the whole left brand block)
             #capabilities  (override the default tiles)
             #action        (the sign-in button — each app wires its own auth)
             #subtext       (optional fine print, e.g. a legacy-system link)
+            default        (stacked layout only: full-width content under the band)
+
+  layout="stacked" (NAT-2637, Pay): a navy band with eyebrow/heading/subheading
+  and the action, then the default slot full width below it, for an app whose
+  landing shows several tools that the split's narrow left panel can't hold.
 
   The `apps` prop defaults to the built-in `natcaApps` registry (NAT-833), so a
   consuming app gets a correct, DMS-hidden switcher with zero configuration.
@@ -59,7 +64,33 @@
       </div>
     </transition>
 
-    <div class="natca-auth-body">
+    <!-- STACKED: navy band (heading + action), app content full width below -->
+    <div v-if="layout === 'stacked'" class="natca-auth-stacked">
+      <section class="natca-auth-band">
+        <div class="natca-auth-band__inner">
+          <div class="natca-auth-band__text">
+            <slot name="identity">
+              <div v-if="eyebrow" class="natca-auth-band__eyebrow">{{ eyebrow }}</div>
+              <h1 class="natca-auth-band__heading">{{ heading }}</h1>
+              <p v-if="subheading" class="natca-auth-band__sub">{{ subheading }}</p>
+            </slot>
+          </div>
+          <div class="natca-auth-band__action natca-signin-action">
+            <slot name="action" />
+            <div v-if="$slots.subtext" class="natca-auth-band__subtext">
+              <slot name="subtext" />
+            </div>
+          </div>
+        </div>
+      </section>
+      <main class="natca-auth-content">
+        <div class="natca-auth-content__inner">
+          <slot />
+        </div>
+      </main>
+    </div>
+
+    <div v-else class="natca-auth-body">
       <!-- LEFT — identity -->
       <aside class="natca-auth-identity">
         <div class="natca-identity-brand">
@@ -122,6 +153,7 @@ const props = withDefaults(defineProps<NatcaAuthLayoutProps>(), {
   heading: 'Welcome back',
   subheading: '',
   capabilities: () => [],
+  layout: 'split',
 })
 
 defineSlots<{
@@ -129,6 +161,7 @@ defineSlots<{
   capabilities?: () => any
   action?: () => any
   subtext?: () => any
+  default?: () => any
 }>()
 
 const slots = useSlots()
@@ -384,6 +417,88 @@ function onAppSelect(_app: NatcaApp) {
 }
 .natca-signin-subtext :deep(a:hover) {
   text-decoration: underline;
+}
+
+/* ---- STACKED: band on top, content full width below ---- */
+.natca-auth-stacked {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+.natca-auth-band {
+  background: var(--natca-navy, #003366);
+  color: #fff;
+  padding: 3.5rem 4rem 3.75rem;
+}
+.natca-auth-band__inner,
+.natca-auth-content__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.natca-auth-band__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1.5rem 3rem;
+}
+.natca-auth-band__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.natca-auth-band__eyebrow {
+  font-family: var(--font-display, 'Barlow', sans-serif);
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  color: var(--natca-sky, #5BA3D9);
+}
+.natca-auth-band__heading {
+  font-family: var(--font-display, 'Barlow', sans-serif);
+  font-size: clamp(34px, 4.4vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+  margin: 0;
+  text-wrap: balance;
+}
+.natca-auth-band__sub {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 52ch;
+  text-wrap: pretty;
+}
+/* Shares the split card's hero CTA rules (.natca-signin-action), sized for the band */
+.natca-auth-band__action {
+  margin-top: 0;
+  min-width: 260px;
+}
+.natca-auth-band__subtext {
+  margin-top: 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+}
+.natca-auth-content {
+  flex: 1 1 auto;
+  background: var(--color-bg-page);
+  padding: 2.5rem 4rem 3rem;
+}
+@media (max-width: 860px) {
+  .natca-auth-band {
+    padding: 2rem 1.5rem 2.25rem;
+  }
+  .natca-auth-band__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .natca-auth-band__action {
+    min-width: 0;
+  }
+  .natca-auth-content {
+    padding: 1.5rem 1rem 2.5rem;
+  }
 }
 
 /* ---- app-switcher overlay (NatcaAppSwitcher self-positions at 52/140) ---- */
